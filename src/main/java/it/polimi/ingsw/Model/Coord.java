@@ -7,4 +7,10 @@ public class Coord {
         this.x=x;
         this.y=y;
     }
+
+    @Override
+    public String toString(){
+        String s = "X: " + this.x + " Y: " + this.y;
+        return s;
+    }
 }

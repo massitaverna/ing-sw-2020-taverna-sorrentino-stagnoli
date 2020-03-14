@@ -95,4 +95,6 @@ fabric.properties
 # Whole .idea folder
 .idea
 
+target
+
 # End of https://www.gitignore.io/api/intellij
