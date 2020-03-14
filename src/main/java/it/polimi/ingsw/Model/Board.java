@@ -27,7 +27,7 @@ public class Board {
         if(!isValidCoord(position))
             throw new InvalidParameterException();
 
-        //se space già occupato
+        //se space gia' occupato
         if(board[position.x][position.y].getOccupied()) {
             throw new IllegalMoveException();
         }
