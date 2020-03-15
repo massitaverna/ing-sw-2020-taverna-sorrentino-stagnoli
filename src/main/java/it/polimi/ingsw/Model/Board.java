@@ -12,7 +12,7 @@ public class Board {
     public Board(){
 
         this.board = new Space[DIM][DIM];
-        this.workersPositions = new HashMap<Worker, Coord>();
+        this.workersPositions = new HashMap<>();
         for(int i = 0; i < DIM; i++) {
             for (int j = 0; j < DIM; j++) {
                 this.board[i][j] = new Space();
@@ -82,7 +82,7 @@ public class Board {
         if(!isValidCoord(c))
             throw new InvalidParameterException();
 
-        ArrayList<Coord> result = new ArrayList<Coord>();
+        ArrayList<Coord> result = new ArrayList<>();
         Level currentHeight = this.board[c.x][c.y].getLevel();
 
         //check all neighbours
@@ -91,7 +91,7 @@ public class Board {
 
                 //skip the central Space
                 if(i==0 && j==0)
-                    break;
+                    continue;
 
                 Coord neighbour = new Coord(c.x+i, c.y+j);
 
@@ -115,7 +115,7 @@ public class Board {
         if(!isValidCoord(c))
             throw new InvalidParameterException();
 
-        ArrayList<Coord> result = new ArrayList<Coord>();
+        ArrayList<Coord> result = new ArrayList<>();
         Level currentHeight = this.board[c.x][c.y].getLevel();
 
         for(int i = -1; i <= 1; i++) {
@@ -123,7 +123,7 @@ public class Board {
 
                 //skip the central Space
                 if(i==0 && j==0)
-                    break;
+                    continue;
 
                 Coord neighbour = new Coord(c.x+i, c.y+j);
 

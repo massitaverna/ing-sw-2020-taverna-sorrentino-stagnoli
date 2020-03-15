@@ -25,6 +25,10 @@ public class Game {
             gameQueue.remove(currentPlayer);
             System.out.println(currentPlayer.getNickname() + "'s turn.");
 
+            //TODO: CheckUnpickableWorkers()
+            //restituisce array list di lavoratori non selezionabili
+            //verrà notificato l'utente che non puo usarlo
+
             //sceglie operaio
             Worker currentWorker = currentPlayer.PickWorker();
             //posizione dell'operaio
@@ -45,7 +49,6 @@ public class Game {
                     " in position X: " + move.x + " Y: " + move.y + " height: " + gameBoard.getHeight(move));
 
             //dopo mossa, controlla vincita
-            //TODO : Check for win
             if(gameBoard.getHeight(move).ordinal() == 3){
                 this.Win(currentPlayer);
                 break;
