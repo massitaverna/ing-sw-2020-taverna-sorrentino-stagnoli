@@ -6,79 +6,79 @@ public class Model extends Observable {
 
     Game game;
     Board board;
-    Player challanger;
+    Player challenger;
 
     public Model(int numPlayers){
         this.game = new Game(numPlayers);
         this.board = new Board();
     }
 
-    public void AddPlayer(Player p){
+    public void addPlayer(Player p){
         this.game.addPlayer(p);
     }
 
-    public void SetChallanger(Player p){
-        this.challanger = p;
+    public void setChallenger(Player p){
+        this.challenger = p;
     }
 
-    public void SetChosenGods(God[] list){
+    public void setChosenGods(God[] list){
         game.setChosenGods(list);
     }
 
-    public void SetGodChoose(Player p, God g){
+    public void setGodChoose(Player p, God g){
         p.setGod(g);
     }
 
-    public void SetStartingPlayerChoose(Player p){
+    public void setStartingPlayerChoose(Player p){
         this.game.createGameQueue();
     }
 
-    public Worker SetPlayerWorkerChose(Player p, Worker w){
+    public Worker setPlayerWorkerChose(Player p, Worker w){
 
     }
 
-    public void SetPlayerMoveChose(Player p, Worker w, Coord m){
+    public void setPlayerMoveChose(Player p, Worker w, Coord m){
 
     }
 
-    public void SetPlayerBuildChose(Player p, Worker w, Coord b){
+    public void setPlayerBuildChose(Player p, Worker w, Coord b){
 
     }
 
-    public void SetWin(Player p){
+    public void setWin(Player p){
         p.win();
     }
 
-    public void SetLose(Player p){
+    public void setLose(Player p){
         p.lose();
     }
 
-    public void GetPlayersList(){
+    public void getPlayersList(){
         return game.getAllPlayers();
     }
 
-    public Player GetNextPlayer(){
-        return this.game.NextPlayer();
+    public Player getNextPlayer(){
+        return this.game.nextPlayer();
     }
 
-    public Board GetGameBoard(){
+    public Board getGameBoard(){
         return this.board;
     }
 
-    public bool isGameReady(){
+    public boolean isGameReady(){
         return  this.game.isReady();
     }
 
     //interrogazioni dalla gui
-    public void GetBoardView(){
+    public void getBoardView(){
 
     }
 
-    public void GetAllWorkersPositions(){
+    public void getAllWorkersPositions(){
 
     }
 
-    public void GetOtherPlayersInfo(){
+    public void getOtherPlayersInfo(){
 
     }
 
