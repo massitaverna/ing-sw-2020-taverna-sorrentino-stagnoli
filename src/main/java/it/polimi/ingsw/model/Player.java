@@ -27,7 +27,7 @@ public class Player {
 
     public void win(){
 
-        // la logica per la vittoria va in questa classe?
+        // la logica per la vittoria va in questa classe? non credo
 
         hasWon = true;
     }
