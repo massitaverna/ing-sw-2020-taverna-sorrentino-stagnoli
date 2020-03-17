@@ -42,4 +42,12 @@ public class Player {
     public String getNickname() {
         return nickname;
     }
+
+    public void play(){
+
+    }
+
+    public void setUp(){
+
+    }
 }
