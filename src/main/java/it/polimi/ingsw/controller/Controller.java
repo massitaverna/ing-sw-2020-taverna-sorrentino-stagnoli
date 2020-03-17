@@ -58,7 +58,15 @@ public class Controller implements Observer {
         //Deve controllare che il god scelto sia tra i 3 selezionabili
     }
 
-    public void initializeWorkers(Player p, Worker)
+    public void initializeWorker(Player p, int x, int y) {
+        Player curr = model.getCurrentPlayer();
+        if (!(p.equals(curr))) {
+            throw new IllegalAccessException("Player is trying to setup not in his turn");
+        }
+        model.initializeWorker(p, x, y);
+        // Deve controllare che sia fattibile
+        // Deve aggiornare il currentWorker se sono stati settati 2 lavoratori
+    }
 //Setup scheme:
         //  caso1: setto challenger e numPlayers
         //  caso2: aggiungo player/s
