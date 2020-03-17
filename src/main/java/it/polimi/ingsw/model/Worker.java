@@ -29,4 +29,16 @@ public class Worker {
         Space position = board.getSpace(x, y);
         position.levelUp();
     }
+
+    public int getX(){
+        return x;
+    }
+
+    public Color getColor() {
+        return color;
+    }
+
+    public int getY(){
+        return y;
+    }
 }
