@@ -1,7 +1,7 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.model.God;
-import it.polimi.ingsw.model.Model;
+import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.view.View;
 
@@ -13,11 +13,11 @@ import java.util.Observer;
 public class Controller implements Observer {
 
     private Player challenger;
-    private Model model;
+    private GameModel model;
     private View view;
 
     public Controller(){
-        model = new Model();
+        model = new GameModel();
         view = new View();
     }
 
@@ -66,6 +66,11 @@ public class Controller implements Observer {
         model.initializeWorker(p, x, y);
         // Deve controllare che sia fattibile
         // Deve aggiornare il currentWorker se sono stati settati 2 lavoratori
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+
     }
 //Setup scheme:
         //  caso1: setto challenger e numPlayers

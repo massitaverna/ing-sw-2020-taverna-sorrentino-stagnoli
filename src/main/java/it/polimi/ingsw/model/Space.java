@@ -29,6 +29,8 @@ public class Space {
 
     // TODO: eccezione se viene invocata su Space con cupola o player
     public void levelUp(){
-        height = Level.values()[height.ordinal() + 1];
+        if(this.height != Level.DOME) {
+            height = Level.values()[height.ordinal() + 1];
+        }
     }
 }

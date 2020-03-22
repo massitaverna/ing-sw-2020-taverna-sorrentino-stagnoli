@@ -11,13 +11,15 @@ public class Player {
     private boolean hasWon;
     private Collection<Rule> rules;
     private List<Worker> workerList;
+    private Color workerColor;
 
-    public Player(String nickname){
+    public Player(String nickname, Color c){
         this.nickname = nickname;
-        workerList = new ArrayList<Worker>();
-        workerList.add(new Worker());
-        workerList.add(new Worker());
-        rules = new Collection<Rule>();
+        this.workerColor = c;
+        this.workerList = new ArrayList<Worker>();
+        this.workerList.add(new Worker(this.workerColor));
+        this.workerList.add(new Worker(this.workerColor));
+        this.rules = new Collection<Rule>();
         this.hasWon = false;
     }
 

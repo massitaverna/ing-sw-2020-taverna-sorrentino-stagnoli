@@ -5,20 +5,20 @@ public class Worker {
     private Color color;
     private int x;
     private int y;
-    private Board board;
+//  private Board board;
+
+    public Worker(Color c){
+        this.color = c;
+    }
 
     public void place(int x, int y){
         this.x = x;
         this.y = y;
-        Space position = board.getSpace(x, y);
-        position.setOccupied();
+/*      Space position = board.getSpace(x, y);
+        position.setOccupied();*/
     }
 
-    public Space getPosition(){
-        return board.getSpace(x, y);
-    }
-
-    public void move(int newX, int newY){
+    /*public void move(int newX, int newY){
         Space position = board.getSpace(this.x, this.y);
         position.setUnoccupied();
         this.place(newX, newY);
@@ -28,7 +28,7 @@ public class Worker {
     public void build(int x, int y){
         Space position = board.getSpace(x, y);
         position.levelUp();
-    }
+    }*/
 
     public int getX(){
         return x;
