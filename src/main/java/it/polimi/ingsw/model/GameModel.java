@@ -2,35 +2,56 @@ package it.polimi.ingsw.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
-public class GameModel {
+public class GameModel extends Observable {
 
     private int numPlayers;
     private List<Player> queue;
     private List<God> godsList;
     private Board board;
+    private Player challenger;
+    private Player currentPlayer;
 
-    public GameModel(int numPlayers, Player challenger){
+    // Controller must build an empty GameModel --> default constructor used
+    /*public GameModel(int numPlayers, Player challenger){
         this.numPlayers = numPlayers;
         this.queue = new ArrayList<Player>();
         this.queue.add(challenger);
         this.godsList = null;
+    }*/
+
+    public void setNumPlayers(int numPlayers) {
+        this.numPlayers = numPlayers;
+    }
+
+    public Player getChallenger() {
+        return challenger;
     }
 
     public boolean isReady(){
         return this.queue.size() == this.numPlayers;
     }
 
-    public void addPlayer(Player player){
+    public void addNewPlayer(Player player) {
+        if (queue.isEmpty()) {
+            challenger = player;
+        }
         queue.add(player);
+        setChanged();
+        notifyObservers(challenger.getNickname());
     }
 
     public List<Player> getQueue(){
         return null;
     }
 
-    public void setChosenGods(List<God> list){
+    public void setGods(List<God> list){
         this.godsList = list;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
     }
 
     public void setGodChoose(Player p, God g){
@@ -38,15 +59,16 @@ public class GameModel {
         p.setGod(g);
     }
 
-    public void setStartingPlayerChoose(Player p){
+    public void setStartPlayer(Player p){
         //TODO: Check that players p is part of the game
         this.queue.remove(p);
         this.queue.add(0, p);
+        currentPlayer = p;
     }
 
-    public Worker setPlayerWorkerChose(Player p, Worker w){
+    public Worker setPlayerWorkerChose(Player p, Worker w) {
         //TODO: Check that players p is part of the game
-
+        return null;
     }
 
     public void setPlayerMoveChose(Player p, Worker w, Coord m){
@@ -65,12 +87,11 @@ public class GameModel {
         //TODO: End of the Game
     }
 
-    public Player nextPlayer(){
+    public void nextPlayer(){
         //TODO: Check the game is ready
-        Player p = this.queue.get(0);
-        this.queue.remove(p);
-        this.queue.add(p);
-        return p;
+        this.queue.remove(currentPlayer);
+        this.queue.add(currentPlayer);
+        currentPlayer = this.queue.get(0);
     }
 
     public Board getBoard(){

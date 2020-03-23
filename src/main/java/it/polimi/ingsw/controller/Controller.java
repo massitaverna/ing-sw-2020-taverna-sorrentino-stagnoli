@@ -6,11 +6,12 @@ import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.view.View;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 //TODO: Map a view on a player (security check)
-public class Controller implements Observer {
+public class Controller /*implements Observer*/ {
 
     private Player challenger;
     private GameModel model;
@@ -21,8 +22,10 @@ public class Controller implements Observer {
         view = new View();
     }
 
-    //TODO: Check that the methods "invoked by Challenger" are actually invoked by him
-    public void setNumPlayers(int numPlayers) { // invoked by Challenger
+    public void setNumPlayers(int numPlayers, Player invoker) { // invoked by Challenger
+        if (!(invoker.equals(model.getChallenger()))) {
+            throw new IllegalAccessException("Player is invoking challenger's methods, but he is not challenger.")
+        }
         model.setNumPlayers(numPlayers);
     }
 
@@ -38,16 +41,24 @@ public class Controller implements Observer {
 
     //TODO: Le view accedono al modello e vedono se sono la View Challenger
     // Se si, invoca i metodi marcati come "invoked by Challenger"
-    public void setStartPlayer(Player p) { // invoked by Challenger
+    public void setStartPlayer(Player p, Player invoker) { // invoked by Challenger
+        if (!(invoker.equals(model.getChallenger()))) {
+            throw new IllegalAccessException("Player is invoking challenger's methods, but he is not challenger.")
+        }
         model.setStartPlayer(p);
         // Deve ordinare la lista dei player nel model
     }
 
-    public void setGods(Collection<God> gods) { // invoked by Challenger
+    public void setGods(List<God> gods, Player invoker) { // invoked by Challenger
+        if (!(invoker.equals(model.getChallenger()))) {
+            throw new IllegalAccessException("Player is invoking challenger's methods, but he is not challenger.")
+        }
         model.setGods(gods);
         // Da qui, il model ha un currentPlayer
     }
 
+    //NOTA: L'ordine per assegnare i Gods parte dal giocatore dopo Challenger
+    //      L'ordine per posizionare gli operai parte dallo startPlayer
     //TODO: Correct handling of exception
     public void assignGodToPlayer(Player p, God g) throws IllegalAccessException {
         Player curr = model.getCurrentPlayer();
