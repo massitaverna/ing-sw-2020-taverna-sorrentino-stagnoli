@@ -1,0 +1,10 @@
+controllare che dopo una move/force lo spazio occupato dal worker precedentemente risulti vuoto e la nuova posizione risulti occupata
+controllare che non si possa agire nel turno degli altri
+controllare che nel proprio turno non si possano effettuare azioni sui worker degli altri player
+controllare che effettivamente i livelli dopo una build vengano aggiornati
+controllare l'impossibilità di costruire e/o muoversi in una casella con DOME
+controllare che una volta mosso un worker non si possa costruire con l'altro
+controllare che salendo a un terzo livello la partita termini
+controllare che spostarsi da terzo livello a terzo livello non faccia vincere la partita
+controllare che una forzare un wroker al terzo livello non faccia vincere la partita
+controllare che la turnazione sia sempre la stessa (A->B->C->A->B->C....)
