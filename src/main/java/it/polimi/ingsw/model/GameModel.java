@@ -36,6 +36,7 @@ public class GameModel extends Observable {
     public void addNewPlayer(Player player) {
         if (queue.isEmpty()) {
             challenger = player;
+            currentPlayer = player;
         }
         queue.add(player);
         setChanged();
@@ -54,16 +55,25 @@ public class GameModel extends Observable {
         return currentPlayer;
     }
 
-    public void setGodChoose(Player p, God g){
+    public void assignGodToPlayer(Player p, God g){
         //TODO: Check that players p is part of the game
         p.setGod(g);
     }
 
-    public void setStartPlayer(Player p){
+    public void setStartPlayer(Player startPlayer){
         //TODO: Check that players p is part of the game
-        this.queue.remove(p);
-        this.queue.add(0, p);
-        currentPlayer = p;
+
+        boolean ordered = false;
+
+        if (startPlayer.equals(queue.get(0))) ordered = true;
+        while (!ordered) {
+            Player moved = queue.remove(0);
+            queue.add(moved);
+            if (startPlayer.equals(queue.get(0))) ordered = true;
+        }
+
+        currentPlayer = startPlayer;
+        setChanged();
     }
 
     public Worker setPlayerWorkerChose(Player p, Worker w) {

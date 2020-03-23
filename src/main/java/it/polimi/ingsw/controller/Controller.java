@@ -41,6 +41,18 @@ public class Controller /*implements Observer*/ {
 
     //TODO: Le view accedono al modello e vedono se sono la View Challenger
     // Se si, invoca i metodi marcati come "invoked by Challenger"
+
+    public void setGods(List<God> gods, Player invoker) { // invoked by Challenger
+        if (!(invoker.equals(model.getChallenger()))) {
+            throw new IllegalAccessException("Player is invoking challenger's methods, but he is not challenger.")
+        }
+        model.setGods(gods);
+        model.nextPlayer();
+        // currentPlayer viene settato a Challenger+1
+        // l'ordine della queue non deve essere modificato fino a che non sono stati assegnati tutti i Gods
+
+    }
+
     public void setStartPlayer(Player p, Player invoker) { // invoked by Challenger
         if (!(invoker.equals(model.getChallenger()))) {
             throw new IllegalAccessException("Player is invoking challenger's methods, but he is not challenger.")
@@ -49,23 +61,18 @@ public class Controller /*implements Observer*/ {
         // Deve ordinare la lista dei player nel model
     }
 
-    public void setGods(List<God> gods, Player invoker) { // invoked by Challenger
-        if (!(invoker.equals(model.getChallenger()))) {
-            throw new IllegalAccessException("Player is invoking challenger's methods, but he is not challenger.")
-        }
-        model.setGods(gods);
-        // Da qui, il model ha un currentPlayer
-    }
-
     //NOTA: L'ordine per assegnare i Gods parte dal giocatore dopo Challenger
     //      L'ordine per posizionare gli operai parte dallo startPlayer
-    //TODO: Correct handling of exception
+    //TODO: Correct handling of exceptions
     public void assignGodToPlayer(Player p, God g) throws IllegalAccessException {
         Player curr = model.getCurrentPlayer();
         if (!(p.equals(curr))) {
             throw new IllegalAccessException("Player is trying to setup not in his turn");
         }
         model.assignGodToPlayer(p, g);
+        if (!(curr.equals(model.getChallenger()))) {
+            model.nextPlayer();
+        }
         //Deve controllare che il god scelto sia tra i 3 selezionabili
     }
 
