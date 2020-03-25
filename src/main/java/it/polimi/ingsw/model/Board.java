@@ -33,7 +33,7 @@ public class Board {
     }
 
     //potrebbero essere messe nel controller
-/*    public Map<Coord, Space> getMovableSpacesAround(Coord c, int maxDiff){
+    public Map<Coord, Space> getMovableSpacesAround(Coord c, int maxDiff){
         //TODO: Check coordinates c are valid
         Map<Coord, Space> result = new HashMap<>();
         for (int i = -1; i < 1; i++) {
@@ -72,5 +72,6 @@ public class Board {
         }
 
         return result;
-    }*/
+    }
+
 }

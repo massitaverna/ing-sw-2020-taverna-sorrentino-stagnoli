@@ -113,12 +113,15 @@ public class GameModel extends Observable {
 
     }
 
-    public void getAllWorkersPositions(){
-
+    public ArrayList<Worker> getAllWorkers(){
+        ArrayList<Worker> workers = new ArrayList<>();
+        //TODO: implement later
+        return workers;
     }
 
     public void getOtherPlayersInfo(){
 
     }
+
 
 }

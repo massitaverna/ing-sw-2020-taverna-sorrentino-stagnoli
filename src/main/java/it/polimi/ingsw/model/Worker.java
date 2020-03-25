@@ -12,14 +12,14 @@ public class Worker {
 
     public void place(Coord c){
         this.c = c;
-      Space position = board.getSpace(c);
+        Space position = board.getSpace(c);
         position.setOccupied();
     }
 
     public void move(Coord newC){
         Space position = board.getSpace(c);
         position.setUnoccupied();
-        this.place(newC);
+        this.place(c);
     }
 
     // si presuppone che si sia già controllato che la posizione sia valida
@@ -28,13 +28,11 @@ public class Worker {
         position.levelUp();
     }
 
-    public Coord getCoord(){
-        return c;
-    }
-
     public Color getColor() {
         return color;
     }
 
-
+    public Coord getCoord() {
+        return c;
+    }
 }
