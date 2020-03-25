@@ -3,42 +3,38 @@ package it.polimi.ingsw.model;
 public class Worker {
 
     private Color color;
-    private int x;
-    private int y;
-//  private Board board;
+    private Coord c;
+    private Board board;
 
     public Worker(Color c){
         this.color = c;
     }
 
-    public void place(int x, int y){
-        this.x = x;
-        this.y = y;
-/*      Space position = board.getSpace(x, y);
-        position.setOccupied();*/
+    public void place(Coord c){
+        this.c = c;
+      Space position = board.getSpace(c);
+        position.setOccupied();
     }
 
-    /*public void move(int newX, int newY){
-        Space position = board.getSpace(this.x, this.y);
+    public void move(Coord newC){
+        Space position = board.getSpace(c);
         position.setUnoccupied();
-        this.place(newX, newY);
+        this.place(newC);
     }
 
     // si presuppone che si sia già controllato che la posizione sia valida
-    public void build(int x, int y){
-        Space position = board.getSpace(x, y);
+    public void build(Coord c){
+        Space position = board.getSpace(c);
         position.levelUp();
-    }*/
+    }
 
-    public int getX(){
-        return x;
+    public Coord getCoord(){
+        return c;
     }
 
     public Color getColor() {
         return color;
     }
 
-    public int getY(){
-        return y;
-    }
+
 }
