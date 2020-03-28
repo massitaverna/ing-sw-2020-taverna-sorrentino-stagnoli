@@ -33,6 +33,7 @@ public class View extends Observable {
         model.addPropertyChangeListener(TL);
     }
 
+    // chiamato dopo aver aperto una connessione
     public void createPlayer(){
         outputStream.println("What's your nickname? ");
         String nick = s.nextLine();
@@ -41,13 +42,14 @@ public class View extends Observable {
 
         // se la queue è vuota
         if(model.getQueueState() == 0) {
-            outputStream.println("Chose a color: ");
+            outputStream.println("Chose a color (RED, BLUE, YELLOW): ");
             input = s.nextLine().toUpperCase();
             color = Color.valueOf(input);
         }
         else {
             //TODO: controllare quali colori sono disponibili e valutare l'input
-            outputStream.println("Chose a color: ");
+            String viableColors = model.getViableColorsToString();
+            outputStream.println("Chose a color"+ viableColors +": ");
             input = s.nextLine().toUpperCase();
             color = Color.valueOf(input);
         }

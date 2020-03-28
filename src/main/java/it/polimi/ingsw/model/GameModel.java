@@ -136,9 +136,14 @@ public class GameModel extends Observable {
     }
 
     public int getQueueState(){
-        if (queue.isEmpty()) return 0;
-        else{
-            return queue.size();
-        }
+        return queue.size();
+    }
+
+    public String getViableColorsToString(){
+        String output = "(RED, BLUE, YELLOW)";
+
+        //TODO: ciclare la coda per vedere quali colori sono stati presi e modificare output
+
+        return output;
     }
 }
