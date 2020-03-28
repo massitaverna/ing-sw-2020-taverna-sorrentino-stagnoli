@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -12,6 +14,9 @@ public class GameModel extends Observable {
     private Board board;
     private Player challenger;
     private Player currentPlayer;
+    private PropertyChangeSupport mPcs =
+            new PropertyChangeSupport(this);
+
 
     // Controller must build an empty GameModel --> default constructor used
     /*public GameModel(int numPlayers, Player challenger){
@@ -84,6 +89,7 @@ public class GameModel extends Observable {
     public void setPlayerMoveChose(Player p, Worker w, Coord m){
         //TODO: Check that players p is part of the game
 
+        mPcs.firePropertyChange("board", null, board);
     }
 
     public void setPlayerBuildChose(Player p, Worker w, Coord b){
@@ -102,6 +108,7 @@ public class GameModel extends Observable {
         this.queue.remove(currentPlayer);
         this.queue.add(currentPlayer);
         currentPlayer = this.queue.get(0);
+        mPcs.firePropertyChange("currentPlayer", null, currentPlayer);
     }
 
     public Board getBoard(){
@@ -121,6 +128,10 @@ public class GameModel extends Observable {
 
     public void getOtherPlayersInfo(){
 
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener){
+        mPcs.addPropertyChangeListener(listener);
     }
 
 
