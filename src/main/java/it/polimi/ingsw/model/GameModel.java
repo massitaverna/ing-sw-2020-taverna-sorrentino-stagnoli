@@ -95,6 +95,7 @@ public class GameModel extends Observable {
     public void setPlayerBuildChose(Player p, Worker w, Coord b){
         //TODO: Check that players p is part of the game
 
+        mPcs.firePropertyChange("board", null, board);
     }
 
     public void setWin(Player p){
@@ -134,5 +135,10 @@ public class GameModel extends Observable {
         mPcs.addPropertyChangeListener(listener);
     }
 
-
+    public int getQueueState(){
+        if (queue.isEmpty()) return 0;
+        else{
+            return queue.size();
+        }
+    }
 }

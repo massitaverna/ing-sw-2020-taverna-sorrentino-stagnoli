@@ -26,7 +26,7 @@ public class Client {
         Scanner stdin = new Scanner(System.in);
         String socketLine;
         try {
-            socketLine = myView.getNickname();
+            socketLine = myView.getNick();
 
         } catch(NoSuchElementException e){
             System.out.println("Connection closed from the client side");
