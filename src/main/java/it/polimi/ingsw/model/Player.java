@@ -9,17 +9,17 @@ public class Player {
     private String nickname;
     private God god;
     private boolean hasWon;
-    private Collection<Rule> rules;
+    /*private Collection<Rule> rules;*/
     private List<Worker> workerList;
     private Color workerColor;
 
-    public Player(String nickname, Color c){
+    public Player(String nickname){
         this.nickname = nickname;
-        this.workerColor = c;
+        this.workerColor = null;
         this.workerList = new ArrayList<Worker>();
-        this.workerList.add(new Worker(this.workerColor));
-        this.workerList.add(new Worker(this.workerColor));
-        this.rules = new Collection<Rule>();
+        this.workerList.add(new Worker());
+        this.workerList.add(new Worker());
+        /*this.rules = new Collection<Rule>();*/
         this.hasWon = false;
     }
 
@@ -27,8 +27,8 @@ public class Player {
         this.god = god;
     }
 
-    public void win(){
-        hasWon = true;
+    public God getGod() {
+        return god;
     }
 
     // prende come parametro il numero del lavoratore (1 o 2) e
@@ -37,12 +37,20 @@ public class Player {
         return workerList.get(num-1);
     }
 
-    public God getGod() {
-        return god;
-    }
-
     public String getNickname() {
         return nickname;
+    }
+
+    public void setWorkerColor(Color c){
+        this.workerColor = c;
+    }
+
+    public Color getWorkerColor(){
+        return this.workerColor;
+    }
+
+    public void win(){
+        hasWon = true;
     }
 
     public void play(){

@@ -2,20 +2,32 @@ package it.polimi.ingsw.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Board {
 
     private Space[][] board;
+    private List<Worker> workers;
 
     public Board(){
-        board = new Space[5][5];
+        this.board = new Space[5][5];
+        this.workers = new ArrayList<>();
     }
 
     public Space getSpace(Coord c){
         //TODO: Check coordinates c are valid
         return board[c.x][c.y];
     }
+
+    public void addWorker(Worker w){
+        this.workers.add(w);
+    }
+
+    public Worker[] getAllWorkers(){
+        return (Worker[])this.workers.toArray();
+    }
+
 
     public ArrayList<Space> getUnoccupiedSpaces(){
 
@@ -32,7 +44,7 @@ public class Board {
         return unoccupiedSpaces;
     }
 
-    //potrebbero essere messe nel controller
+    //potrebbero essere messe nel controller, perchè qua in mezzo ci andrà anche la logica degli effetti delle divinità
     public Map<Coord, Space> getMovableSpacesAround(Coord c, int maxDiff){
         //TODO: Check coordinates c are valid
         Map<Coord, Space> result = new HashMap<>();
@@ -74,4 +86,30 @@ public class Board {
         return result;
     }
 
+    public void workerMove(Worker w, Coord newPos) throws Exception{
+        //TODO: Check newPos is valid
+        //TODO: Check that worker w in in the list of workers
+        Space currentSpace, newSpace;
+        currentSpace = this.board[w.getPosition().x][w.getPosition().y];
+        newSpace = this.board[newPos.x][newPos.y];
+        if(!currentSpace.getOccupied() && !(newSpace.getHeight() == Level.DOME)) {
+            w.setPosition(newPos);
+            currentSpace.setUnoccupied();
+            newSpace.setOccupied();
+        }
+        else {
+            throw new Exception();
+        }
+    }
+
+    public void workerBuild(Worker w, Coord buildPos) throws Exception{
+        //TODO: Check newPos is valid
+        //TODO: Check that worker w in in the list of workers
+        if(!this.board[buildPos.x][buildPos.y].getOccupied() && !(this.board[buildPos.x][buildPos.y].getHeight() == Level.DOME)) {
+            this.board[buildPos.x][buildPos.y].levelUp();
+        }
+        else{
+            throw new Exception();
+        }
+    }
 }

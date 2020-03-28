@@ -1,6 +1,8 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.view.listeners.Model.BoardChangeListener;
+import it.polimi.ingsw.view.listeners.Model.TurnListener;
 
 import java.beans.PropertyChangeSupport;
 import java.io.PrintStream;
@@ -28,9 +30,9 @@ public class View extends Observable {
         outputStream = new PrintStream(System.out);
         BCL = new BoardChangeListener();
         this.model = model;
-        model.addPropertyChangeListener(BCL);
+        model.addPropertyChangeListener("board", BCL);
         TL = new TurnListener(this);
-        model.addPropertyChangeListener(TL);
+        model.addPropertyChangeListener("turn", TL);
     }
 
     // chiamato dopo aver aperto una connessione
@@ -48,8 +50,9 @@ public class View extends Observable {
         }
         else {
             //TODO: controllare quali colori sono disponibili e valutare l'input
-            String viableColors = model.getViableColorsToString();
-            outputStream.println("Chose a color"+ viableColors +": ");
+            Color[] viableColors = model.getViableColorsToString();
+            outputStream.println("Chose a color: ");
+            for(Color c: viableColors){ outputStream.println(c.name());
             input = s.nextLine().toUpperCase();
             color = Color.valueOf(input);
         }

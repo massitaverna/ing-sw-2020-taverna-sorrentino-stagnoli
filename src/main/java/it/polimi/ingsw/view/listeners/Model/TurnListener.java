@@ -1,4 +1,6 @@
-package it.polimi.ingsw.view;
+package it.polimi.ingsw.view.listeners.Model;
+
+import it.polimi.ingsw.view.View;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
