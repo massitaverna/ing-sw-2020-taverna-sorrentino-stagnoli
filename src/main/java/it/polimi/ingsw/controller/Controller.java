@@ -21,18 +21,20 @@ public class Controller /*implements Observer*/ implements PropertyChangeListene
         model = new GameModel(numPlayers);
     }
 
+    /*
     public void setNumPlayers(int numPlayers, Player invoker) { // invoked by Challenger
         if (!(invoker.equals(model.getChallenger()))) {
             throw new IllegalAccessException("Player is invoking challenger's methods, but he is not challenger.")
         }
         model.setNumPlayers(numPlayers);
     }
+    */
 
-    //The following method is not used
-
-    /*public void setChallenger(Player challenger) {
+    /*
+    public void setChallenger(Player challenger) {
         model.setChallenger(challenger);
-    }*/
+    }
+    */
 
     public void addNewPlayer(Player p) {
         model.addNewPlayer(p); // The first player is set in the model as Challenger
@@ -41,7 +43,7 @@ public class Controller /*implements Observer*/ implements PropertyChangeListene
     //TODO: Le view accedono al modello e vedono se sono la View Challenger
     // Se si, invoca i metodi marcati come "invoked by Challenger"
 
-    public void setGods(List<God> gods, Player invoker) { // invoked by Challenger
+    public void setGods(List<God> gods, Player invoker) throws IllegalAccessException { // invoked by Challenger
         if (!(invoker.equals(model.getChallenger()))) {
             throw new IllegalAccessException("Player is invoking challenger's methods, but he is not challenger.")
         }
@@ -68,7 +70,7 @@ public class Controller /*implements Observer*/ implements PropertyChangeListene
         if (!(p.equals(curr))) {
             throw new IllegalAccessException("Player is trying to setup not in his turn");
         }
-        model.assignGodToPlayer(p, g);
+        model.assignGodToPlayer(p, g); // Should throw IllegalArgumentException, but no warnings...
         if (!(curr.equals(model.getChallenger()))) {
             model.nextPlayer();
         }
@@ -96,10 +98,52 @@ public class Controller /*implements Observer*/ implements PropertyChangeListene
         //Invoke correct model's methods
         if (evt.getPropertyName().equals("nickname")) {
             String nickname = (String) evt.getNewValue();
-            addNewPlayer(new Player(nickname, null));
+            addNewPlayer(new Player(nickname));
+            return;
         }
 
-        if () // FARE PROSSIMI CASI
+        if (evt.getPropertyName().equals("startPlayer")) {
+            Player startPlayer = (Player) evt.getNewValue();
+            Player invoker = ((MassiProvaCoseView) evt.getSource()).getPlayer();
+            try {
+                setStartPlayer(startPlayer, invoker);
+            }
+
+            catch (IllegalAccessException e) {
+                System.out.println(e.getMessage());
+                System.out.println(("This means no player has been set as startPlayer."));
+            }
+            return;
+        }
+
+        if (evt.getPropertyName().equals("godsList")) {
+            List<God> godsList = (List<God>) evt.getNewValue();
+            Player invoker = ((MassiProvaCoseView) evt.getSource()).getPlayer();
+            try {
+                setGods(godsList, invoker);
+            }
+            catch (IllegalAccessException e) {
+                System.out.println(e.getMessage());
+                System.out.println(("This means no gods have been set for this game."));
+            }
+            return;
+        }
+
+        if (evt.getPropertyName().equals("god")) {
+            God god = (God) evt.getNewValue();
+            Player invoker = ((MassiProvaCoseView) evt.getSource()).getPlayer();
+            try {
+                assignGodToPlayer(invoker, god);
+            }
+            catch (IllegalAccessException e) {
+                System.out.println(e.getMessage());
+                e.printStackTrace();
+            }
+            return;
+        }
+
+        if (false || true) {}// FARE PROSSIMI CASI
+        throw new IllegalArgumentException("Controller received an unknown event.");
     }
 //Setup scheme:
         //  caso1: setto challenger e numPlayers

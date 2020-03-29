@@ -65,7 +65,7 @@ public class GameModel extends Observable {
         this.godsList = list;
     }
 
-    public void setPlayerColor(Player p, Color c) throws Exception{
+    public void setPlayerColor(Player p, Color c) throws Exception {
         //TODO: Check that player p is part of the game
         //If color has been choose by another player, throw exception
         if(!this.colors.contains(c))
@@ -79,13 +79,13 @@ public class GameModel extends Observable {
         return currentPlayer;
     }
 
-    public void assignGodToPlayer(Player p, God g) throws Exception{
+    public void assignGodToPlayer(Player p, God g) throws IllegalArgumentException {
         //TODO: Check that player p is part of the game
         //If god has been choose by another player, throw exception
         if(!this.godsList.contains(g))
-            throw new Exception();
+            throw new IllegalArgumentException("Chosen god is not available in this game.");
         p.setGod(g);
-        this.godsList.remove(p);
+        this.godsList.remove(p); //  Rimuovo Player p dalla godsList???
     }
 
     public void setStartPlayer(Player startPlayer){
