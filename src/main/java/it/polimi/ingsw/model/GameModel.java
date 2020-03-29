@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -9,15 +11,24 @@ public class GameModel extends Observable {
     private int numPlayers;
     private List<Player> queue;
     private List<God> godsList;
+    private List<Color> colors;
     private Board board;
     private Player challenger;
     private Player currentPlayer;
+    private PropertyChangeSupport mPcs;
 
-    public GameModel(int numPlayers/*, Player challenger*/){
+
+    public GameModel(int numPlayers){
         this.numPlayers = numPlayers;
-        this.queue = new ArrayList<Player>();
-        //this.queue.add(challenger);
+        this.queue = new ArrayList<>();
+        this.colors = new ArrayList<>();
+        this.colors.add(Color.YELLOW);
+        this.colors.add(Color.RED);
+        this.colors.add(Color.BLUE);
+        this.board = new Board();
         this.godsList = null;
+        this.currentPlayer = null;
+        this.mPcs = new PropertyChangeSupport(this);
     }
 
     public void setNumPlayers(int numPlayers) {
@@ -28,18 +39,22 @@ public class GameModel extends Observable {
         return challenger;
     }
 
-    public boolean isReady(){
+    private boolean allPlayersArrived(){
         return this.queue.size() == this.numPlayers;
     }
 
     public void addNewPlayer(Player player) {
-        if (queue.isEmpty()) {
+        /*if (queue.isEmpty()) {
             challenger = player;
             currentPlayer = player;
-        }
+        }*/
         queue.add(player);
-        setChanged();
-        notifyObservers(challenger.getNickname());
+
+        /*setChanged();
+        notifyObservers(challenger.getNickname()); --> Serve? */
+        if(allPlayersArrived()){
+            this.mPcs.firePropertyChange("allPlayersArrived", false, true);
+        }
     }
 
     public List<Player> getQueue(){
@@ -50,17 +65,31 @@ public class GameModel extends Observable {
         this.godsList = list;
     }
 
+    public void setPlayerColor(Player p, Color c) throws Exception{
+        //TODO: Check that player p is part of the game
+        //If color has been choose by another player, throw exception
+        if(!this.colors.contains(c))
+            throw new Exception();
+        p.setWorkerColor(c);
+        this.colors.remove(c);
+        mPcs.firePropertyChange("colors", null, this.colors);
+    }
+
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
 
-    public void assignGodToPlayer(Player p, God g){
-        //TODO: Check that players p is part of the game
+    public void assignGodToPlayer(Player p, God g) throws Exception{
+        //TODO: Check that player p is part of the game
+        //If god has been choose by another player, throw exception
+        if(!this.godsList.contains(g))
+            throw new Exception();
         p.setGod(g);
+        this.godsList.remove(p);
     }
 
     public void setStartPlayer(Player startPlayer){
-        //TODO: Check that players p is part of the game
+        //TODO: Check that player startPlyaer is part of the game
 
         boolean ordered = false;
 
@@ -75,23 +104,22 @@ public class GameModel extends Observable {
         setChanged();
     }
 
-    public Worker setPlayerWorkerChose(Player p, Worker w) {
-        //TODO: Check that players p is part of the game
+    /*public Worker setPlayerWorkerChose(Player p, Worker w) {
         return null;
+    }*/
+
+    public void setPlayerMoveChose(Worker w, Coord m){
+        /*this.board.workerMove(w, m);*/
+        mPcs.firePropertyChange("board", null, board);
     }
 
-    public void setPlayerMoveChose(Player p, Worker w, Coord m){
-        //TODO: Check that players p is part of the game
-
-    }
-
-    public void setPlayerBuildChose(Player p, Worker w, Coord b){
-        //TODO: Check that players p is part of the game
-
+    public void setPlayerBuildChose(Worker w, Coord b){
+        /*this.board.workerBuild(w, b);*/
+        mPcs.firePropertyChange("board", null, board);
     }
 
     public void setWin(Player p){
-        //TODO: Check that players p is part of the game
+        //TODO: Check that player p is part of the game
         p.win();
         //TODO: End of the Game
     }
@@ -101,6 +129,7 @@ public class GameModel extends Observable {
         this.queue.remove(currentPlayer);
         this.queue.add(currentPlayer);
         currentPlayer = this.queue.get(0);
+        mPcs.firePropertyChange("turn", null, currentPlayer);
     }
 
     public Board getBoard(){
@@ -112,12 +141,25 @@ public class GameModel extends Observable {
 
     }
 
-    public void getAllWorkersPositions(){
-
+    public ArrayList<Worker> getAllWorkers(){
+        ArrayList<Worker> workers = new ArrayList<>();
+        //TODO: implement later
+        return workers;
     }
 
     public void getOtherPlayersInfo(){
 
     }
 
+    public void addPropertyChangeListener(String property, PropertyChangeListener listener){
+        mPcs.addPropertyChangeListener(property, listener);
+    }
+
+    public int getQueueState(){
+        return queue.size();
+    }
+
+    public Color[] getViableColorsToString(){
+        return (Color[])this.colors.toArray();
+    }
 }
