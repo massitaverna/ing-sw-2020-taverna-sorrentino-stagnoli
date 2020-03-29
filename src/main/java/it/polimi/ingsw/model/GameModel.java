@@ -1,12 +1,10 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.view.listeners.Model.*;
+import it.polimi.ingsw.listeners.Model.*;
 
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 
 public class GameModel {
 
@@ -31,7 +29,6 @@ public class GameModel {
         this.board = new Board();
         this.godsList = null;
         this.currentPlayer = null;
-        this.mPcs = new PropertyChangeSupport(this);
     }
 
     public void setNumPlayers(int numPlayers) {
@@ -55,7 +52,9 @@ public class GameModel {
         this.board.addWorker(player.getWorker(0));
         this.board.addWorker(player.getWorker(1));
         if(allPlayersArrived()){
-            this.mPcs.firePropertyChange("allPlayersArrived", false, true);
+            for (ModelEventListener view: modelListeners) {
+                view.onAllPlayersArrived();
+            }
         }
     }
 
@@ -74,7 +73,6 @@ public class GameModel {
             throw new Exception();
         p.setWorkerColor(c);
         this.colors.remove(c);
-        mPcs.firePropertyChange("colors", null, this.colors);
     }
 
     public Player getCurrentPlayer() {
@@ -112,12 +110,10 @@ public class GameModel {
 
     public void setPlayerMoveChose(Worker w, Coord m){
         /*this.board.workerMove(w, m);*/
-        mPcs.firePropertyChange("board", null, board);
     }
 
     public void setPlayerBuildChose(Worker w, Coord b){
         /*this.board.workerBuild(w, b);*/
-        mPcs.firePropertyChange("board", null, board);
     }
 
     public void setWin(Player p){
@@ -131,7 +127,6 @@ public class GameModel {
         this.queue.remove(currentPlayer);
         this.queue.add(currentPlayer);
         currentPlayer = this.queue.get(0);
-        mPcs.firePropertyChange("turn", null, currentPlayer);
     }
 
     public Board getBoard(){
@@ -156,15 +151,11 @@ public class GameModel {
 
     }
 
-    public void addPropertyChangeListener(String property, PropertyChangeListener listener){
-        mPcs.addPropertyChangeListener(property, listener);
-    }
-
     public int getQueueState(){
         return queue.size();
     }
 
-    public Color[] getViableColorsToString(){
+    public Color[] getViableColors(){
         return (Color[])this.colors.toArray();
     }
 

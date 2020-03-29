@@ -1,19 +1,20 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.model.GameModel;
-import it.polimi.ingsw.model.God;
-import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.listeners.Model.ModelEventListener;
+import it.polimi.ingsw.listeners.View.ViewEventListener;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class ChallengerView {
+public class ChallengerView implements ModelEventListener {
 
     private GameModel model;
     private Scanner s;
     private PrintWriter outputStream;
+    private ViewEventListener listener;
 
     // Delego a una view generica i metodi comuni a tutti i player
     private View view;
@@ -24,14 +25,19 @@ public class ChallengerView {
         this.outputStream = new PrintWriter(System.out);
     }
 
-    public int chooseNumberOfPlayers(){
-        outputStream.println("The challenger chooses the number of players: ");
-        int n = s.nextInt();
-        return n;
+    public void chooseNumberOfPlayers(){
+        int n = 0;
+
+        while(n<1 || n>2){
+            outputStream.println("Chose the number of opponents (1 or 2): ");
+            n = s.nextInt();
+        }
+
+        listener.onNumberOfPlayerChosen(n+1);
     }
 
-    public String chooseStartingPlayer(){
-        outputStream.println("The challenger chooses the starting player: ");
+    public void chooseStartingPlayer(){
+        outputStream.println("Who do you want to be the starting player? ");
 
         List<String> players = this.model.requestPlayersNicknames();
         for(String name: players){
@@ -40,13 +46,14 @@ public class ChallengerView {
 
         String choose = s.next();
         while(!players.contains(choose)){
+            outputStream.println("Player name may be incorrect, please try again.");
             choose = s.next();
         }
 
-        return choose;
+        listener.onStartingPlayerChosen(choose);
     }
 
-    public List<String> chooseGods(){
+    public void chooseGods(){
         System.out.println("The challenger chooses the gods: ");
 
         int numPlayers = this.model.getQueueState();
@@ -55,7 +62,7 @@ public class ChallengerView {
             gods.add(s.next());
         }
 
-        return gods;
+        listener.onGodsChosen(gods);
     }
 
     public void getNick (){
@@ -70,4 +77,38 @@ public class ChallengerView {
         view.initializeWorkersPosition();
     }
 
+    @Override
+    public void onAllPlayersArrived() {
+        view.onAllPlayersArrived();
+    }
+
+    @Override
+    public void onBoardChanged() {
+        view.onBoardChanged();
+    }
+
+    @Override
+    public void onColorChosen() {
+        view.onColorChosen();
+    }
+
+    @Override
+    public void onGameReadyListener() {
+        view.onGameReadyListener();
+    }
+
+    @Override
+    public void onGodsChosenListener() {
+        view.onGodsChosenListener();
+    }
+
+    @Override
+    public void onPlayerAddedListener(String nickname) {
+        view.onPlayerAddedListener(nickname);
+    }
+
+    @Override
+    public void onTurnChanged(String nick) {
+        view.onTurnChanged(nick);
+    }
 }

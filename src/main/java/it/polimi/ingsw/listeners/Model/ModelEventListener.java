@@ -1,4 +1,4 @@
-package it.polimi.ingsw.view.listeners.Model;
+package it.polimi.ingsw.listeners.Model;
 
 public interface ModelEventListener {
     public void onAllPlayersArrived();
@@ -6,6 +6,6 @@ public interface ModelEventListener {
     public void onColorChosen();
     public void onGameReadyListener();
     public void onGodsChosenListener();
-    public void onPlayerAddedListener();
-    public void onTurnChanged();
+    public void onPlayerAddedListener(String nickname);
+    public void onTurnChanged(String nick);
 }
