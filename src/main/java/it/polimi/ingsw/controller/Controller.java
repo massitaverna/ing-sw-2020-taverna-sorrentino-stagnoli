@@ -3,23 +3,22 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.model.God;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.view.MassiProvaCoseView;
 import it.polimi.ingsw.view.View;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.*;
 
 //TODO: Map a view on a player (security check)
-public class Controller /*implements Observer*/ {
+public class Controller /*implements Observer*/ implements PropertyChangeListener {
 
-    private Player challenger;
+    //private Player challenger;
     private GameModel model;
-    private View view;
 
-    public Controller(){
-        model = new GameModel();
-        view = new View();
+
+    public Controller(int numPlayers){
+        model = new GameModel(numPlayers);
     }
 
     public void setNumPlayers(int numPlayers, Player invoker) { // invoked by Challenger
@@ -53,9 +52,9 @@ public class Controller /*implements Observer*/ {
 
     }
 
-    public void setStartPlayer(Player p, Player invoker) { // invoked by Challenger
+    public void setStartPlayer(Player p, Player invoker) throws IllegalAccessException { // invoked by Challenger
         if (!(invoker.equals(model.getChallenger()))) {
-            throw new IllegalAccessException("Player is invoking challenger's methods, but he is not challenger.")
+            throw new IllegalAccessException("Player is invoking challenger's methods, but he is not challenger.");
         }
         model.setStartPlayer(p);
         // Deve ordinare la lista dei player nel model
@@ -76,7 +75,7 @@ public class Controller /*implements Observer*/ {
         //Deve controllare che il god scelto sia tra i 3 selezionabili
     }
 
-    public void initializeWorker(Player p, int x, int y) {
+    public void initializeWorker(Player p, int x, int y) throws IllegalAccessException {
         Player curr = model.getCurrentPlayer();
         if (!(p.equals(curr))) {
             throw new IllegalAccessException("Player is trying to setup not in his turn");
@@ -89,6 +88,18 @@ public class Controller /*implements Observer*/ {
     @Override
     public void update(Observable o, Object arg) {
 
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        //Unpack event
+        //Invoke correct model's methods
+        if (evt.getPropertyName().equals("nickname")) {
+            String nickname = (String) evt.getNewValue();
+            addNewPlayer(new Player(nickname, null));
+        }
+
+        if () // FARE PROSSIMI CASI
     }
 //Setup scheme:
         //  caso1: setto challenger e numPlayers

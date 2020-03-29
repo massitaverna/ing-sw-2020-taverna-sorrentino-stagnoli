@@ -13,13 +13,12 @@ public class GameModel extends Observable {
     private Player challenger;
     private Player currentPlayer;
 
-    // Controller must build an empty GameModel --> default constructor used
-    /*public GameModel(int numPlayers, Player challenger){
+    public GameModel(int numPlayers/*, Player challenger*/){
         this.numPlayers = numPlayers;
         this.queue = new ArrayList<Player>();
-        this.queue.add(challenger);
+        //this.queue.add(challenger);
         this.godsList = null;
-    }*/
+    }
 
     public void setNumPlayers(int numPlayers) {
         this.numPlayers = numPlayers;
