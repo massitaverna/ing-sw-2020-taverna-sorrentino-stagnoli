@@ -5,6 +5,6 @@ import java.beans.PropertyChangeListener;
 
 public interface PlayerAddedListener {
 
-    public void onPlayerAddedListener(PropertyChangeEvent evt);
+    public void onPlayerAddedListener();
 
 }

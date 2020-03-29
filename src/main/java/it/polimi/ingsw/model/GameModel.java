@@ -87,8 +87,10 @@ public class GameModel {
         this.godsList.remove(g); //  Rimuovo Player p dalla godsList???
     }
 
-    public void setStartPlayer(Player startPlayer){
-        //TODO: Check that player startPlyaer is part of the game
+    public void setStartPlayer(Player startPlayer) throws IllegalArgumentException{
+
+        if(!queue.contains(startPlayer))
+            throw new IllegalArgumentException("Chosen player is not in the game.");
 
         boolean ordered = false;
         if (startPlayer.equals(queue.get(0))) ordered = true;
@@ -161,5 +163,9 @@ public class GameModel {
 
     public Color[] getViableColorsToString(){
         return (Color[])this.colors.toArray();
+    }
+
+    public List<String> requestPlayersNicknames() {
+
     }
 }

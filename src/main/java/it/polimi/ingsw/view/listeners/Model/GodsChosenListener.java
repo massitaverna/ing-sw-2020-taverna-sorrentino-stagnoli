@@ -5,6 +5,6 @@ import java.beans.PropertyChangeListener;
 
 public interface GodsChosenListener {
 
-    public void onGodsChosenListener(PropertyChangeEvent evt);
+    public void onGodsChosenListener();
 
 }

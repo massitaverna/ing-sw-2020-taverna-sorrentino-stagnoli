@@ -8,5 +8,5 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 public interface TurnChangedListener {
-    public void onTurnChanged();
+    public void onTurnChanged(String nickname);
 }

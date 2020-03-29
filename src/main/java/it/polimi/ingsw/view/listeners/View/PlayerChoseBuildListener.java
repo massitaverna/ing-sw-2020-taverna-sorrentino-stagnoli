@@ -6,5 +6,5 @@ import java.util.EventListener;
 
 public interface PlayerChoseBuildListener {
 
-    public void onPlayerChoseBuild();
+    public void onPlayerChoseBuild(String input);
 }

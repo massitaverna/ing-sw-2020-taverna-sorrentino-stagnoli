@@ -5,6 +5,6 @@ import java.beans.PropertyChangeListener;
 
 public interface GameReadyListener {
 
-    public void onGameReadyListener(PropertyChangeEvent evt);
+    public void onGameReadyListener();
 
 }

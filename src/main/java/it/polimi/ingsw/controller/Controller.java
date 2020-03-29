@@ -45,7 +45,7 @@ public class Controller /*implements Observer*/ implements PropertyChangeListene
 
     public void setGods(List<God> gods, Player invoker) throws IllegalAccessException { // invoked by Challenger
         if (!(invoker.equals(model.getChallenger()))) {
-            throw new IllegalAccessException("Player is invoking challenger's methods, but he is not challenger.")
+            throw new IllegalAccessException("Player is invoking challenger's methods, but he is not challenger.");
         }
         model.setGods(gods);
         model.nextPlayer();

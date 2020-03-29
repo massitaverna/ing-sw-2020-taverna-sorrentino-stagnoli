@@ -4,6 +4,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 public interface PlayerChoseMoveListener {
-    public void onPlayerChoseMove();
+    public void onPlayerChoseMove(String input);
 
 }
