@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.view.listeners.Model.*;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ public class GameModel {
     private Player currentPlayer;
     private PropertyChangeSupport mPcs;
 
+    private List<ModelEventListener> modelListeners = new ArrayList<>();
 
     public GameModel(int numPlayers){
         this.numPlayers = numPlayers;

@@ -1,8 +1,6 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.view.listeners.Model.BoardChangeListener;
-import it.polimi.ingsw.view.listeners.Model.TurnChangedListener;
 
 import java.beans.PropertyChangeSupport;
 import java.io.PrintStream;
