@@ -20,6 +20,11 @@ public class GameModel {
     private PropertyChangeSupport mPcs;
 
     private List<ModelEventListener> modelListeners = new ArrayList<>();
+    /*per sollevare un evento (esempio) :
+        for(ModelEventListener l: modelListeners){
+            l.onAllPlayersArrived();
+        }*/
+
 
     public GameModel(int numPlayers){
         this.numPlayers = numPlayers;
