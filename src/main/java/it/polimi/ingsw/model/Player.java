@@ -43,6 +43,8 @@ public class Player {
 
     public void setWorkerColor(Color c){
         this.workerColor = c;
+        this.workerList.get(0).setColor(this.workerColor);
+        this.workerList.get(1).setColor(this.workerColor);
     }
 
     public Color getWorkerColor(){

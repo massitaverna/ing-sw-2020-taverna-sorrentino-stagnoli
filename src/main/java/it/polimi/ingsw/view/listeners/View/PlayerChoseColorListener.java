@@ -3,10 +3,8 @@ package it.polimi.ingsw.view.listeners.View;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public class PlayerChoseColorListener implements PropertyChangeListener {
+public interface PlayerChoseColorListener {
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
+    public void onPlayerChoseColor();
 
-    }
 }

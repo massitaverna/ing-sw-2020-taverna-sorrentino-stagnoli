@@ -2,7 +2,7 @@ package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.view.listeners.Model.BoardChangeListener;
-import it.polimi.ingsw.view.listeners.Model.TurnListener;
+import it.polimi.ingsw.view.listeners.Model.TurnChangedListener;
 
 import java.beans.PropertyChangeSupport;
 import java.io.PrintStream;
@@ -11,7 +11,7 @@ import java.util.*;
 public class View extends Observable {
 
     private BoardChangeListener BCL;
-    private TurnListener TL;
+    private TurnChangedListener TL;
     private Scanner s;
     private PrintStream outputStream;
     private PropertyChangeSupport mPcs =
@@ -31,7 +31,7 @@ public class View extends Observable {
         BCL = new BoardChangeListener();
         this.model = model;
         model.addPropertyChangeListener("board", BCL);
-        TL = new TurnListener(this);
+        TL = new TurnChangedListener(this);
         model.addPropertyChangeListener("turn", TL);
     }
 

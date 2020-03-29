@@ -3,10 +3,8 @@ package it.polimi.ingsw.view.listeners.Model;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public class BoardChangeListener implements PropertyChangeListener {
+public interface BoardChangeListener {
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        // print new board
-    }
+    public void onBoardChanged();
+
 }

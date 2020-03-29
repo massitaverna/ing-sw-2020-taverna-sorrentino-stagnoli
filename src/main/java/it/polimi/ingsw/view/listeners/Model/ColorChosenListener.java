@@ -3,8 +3,8 @@ package it.polimi.ingsw.view.listeners.Model;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-public interface AllPlayersArrivedListener {
+public interface ColorChosenListener {
 
-    public void onAllPlayersArrived();
+    public void onColorChosen();
 
 }

@@ -2,11 +2,9 @@ package it.polimi.ingsw.view.listeners.View;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.EventListener;
 
-public class PlayerChoseBuildListener implements PropertyChangeListener {
+public interface PlayerChoseBuildListener {
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-
-    }
+    public void onPlayerChoseBuild();
 }

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
-public class GameModel extends Observable {
+public class GameModel {
 
     private int numPlayers;
     private List<Player> queue;
@@ -43,15 +43,14 @@ public class GameModel extends Observable {
         return this.queue.size() == this.numPlayers;
     }
 
-    public void addNewPlayer(Player player) {
+    public void addNewPlayer(Player player){
         /*if (queue.isEmpty()) {
             challenger = player;
             currentPlayer = player;
         }*/
         queue.add(player);
-
-        /*setChanged();
-        notifyObservers(challenger.getNickname()); --> Serve? */
+        this.board.addWorker(player.getWorker(0));
+        this.board.addWorker(player.getWorker(1));
         if(allPlayersArrived()){
             this.mPcs.firePropertyChange("allPlayersArrived", false, true);
         }
@@ -85,14 +84,13 @@ public class GameModel extends Observable {
         if(!this.godsList.contains(g))
             throw new IllegalArgumentException("Chosen god is not available in this game.");
         p.setGod(g);
-        this.godsList.remove(p); //  Rimuovo Player p dalla godsList???
+        this.godsList.remove(g); //  Rimuovo Player p dalla godsList???
     }
 
     public void setStartPlayer(Player startPlayer){
         //TODO: Check that player startPlyaer is part of the game
 
         boolean ordered = false;
-
         if (startPlayer.equals(queue.get(0))) ordered = true;
         while (!ordered) {
             Player moved = queue.remove(0);
@@ -101,7 +99,6 @@ public class GameModel extends Observable {
         }
 
         currentPlayer = startPlayer;
-        setChanged();
     }
 
     /*public Worker setPlayerWorkerChose(Player p, Worker w) {
@@ -143,7 +140,10 @@ public class GameModel extends Observable {
 
     public ArrayList<Worker> getAllWorkers(){
         ArrayList<Worker> workers = new ArrayList<>();
-        //TODO: implement later
+        for(Player p: this.queue){
+            workers.add(p.getWorker(0));
+            workers.add(p.getWorker(1));
+        }
         return workers;
     }
 
