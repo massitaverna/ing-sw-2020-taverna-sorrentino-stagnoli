@@ -16,6 +16,7 @@ public class ChallengerView implements ModelEventListener {
     private PrintWriter outputStream;
     private ViewEventListener listener;
 
+
     // Delego a una view generica i metodi comuni a tutti i player
     private View view;
 

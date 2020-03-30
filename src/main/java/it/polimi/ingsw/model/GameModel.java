@@ -15,7 +15,13 @@ public class GameModel {
     private Board board;
     private Player challenger;
     private Player currentPlayer;
-    private PropertyChangeSupport mPcs;
+
+    //messi per poter eseguire i test (in realtà non sono necessari, il controller controlla che le mosse siano lecite,
+    // oppure i client non possono fare mosse illecite perchè gli viene detto cosa possono fare e non possono fare altrimenti)
+    //giusto????
+    private Coord moveChose;
+    private Coord buildChose;
+    private Worker workerChose;
 
     private List<ModelEventListener> modelListeners = new ArrayList<>();
     /*per sollevare un evento (esempio) :
@@ -65,6 +71,16 @@ public class GameModel {
                 listener.onAllPlayersArrived();
             }
         }
+    }
+
+    public Player getPlayerByNickname(String nick){
+        Player res = null;
+        for(Player p: this.queue){
+            if(p.getNickname().compareTo(nick) == 0){
+                res = p;
+            }
+        }
+        return res;
     }
 
     public List<Player> getQueue(){
@@ -157,10 +173,6 @@ public class GameModel {
         return workers;
     }
 
-    public void getOtherPlayersInfo(){
-
-    }
-
     public int getQueueState(){
         return queue.size();
     }
@@ -170,6 +182,10 @@ public class GameModel {
     }
 
     public List<String> requestPlayersNicknames() {
-
+        List<String> res = new ArrayList<>();
+        for(Player p: this.queue){
+            res.add(p.getNickname());
+        }
+        return res;
     }
 }
