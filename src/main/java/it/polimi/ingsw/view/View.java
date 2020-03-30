@@ -129,20 +129,36 @@ public class View implements ModelEventListener {
     public void onTurnChanged(String nickname) {
         // if it's my turn to play with basic rules
         if(this.nickname.equals(nickname)){
+
             outputStream.println("Where do you want to move?");
             // the input should be like "A1"
             String input = s.nextLine();
+            input = input.toUpperCase();
             Coord c = convertStringToCoord(input);
+            while (!Coord.isValidCoord(c)){
+                outputStream.println("Your input is invalid, please try again.");
+                // the input should be like "A1"
+                input = s.nextLine();
+                input = input.toUpperCase();
+                c = convertStringToCoord(input);
+            }
             listener.onPlayerChoseMove(c);
+
             outputStream.println("Where do you want to build?");
             input = s.nextLine();
             c = convertStringToCoord(input);
+            while (!Coord.isValidCoord(c)){
+                outputStream.println("Your input is invalid, please try again.");
+                // the input should be like "A1"
+                input = s.nextLine();
+                input = input.toUpperCase();
+                c = convertStringToCoord(input);
+            }
             listener.onPlayerChoseBuild(c);
         }
     }
 
     private Coord convertStringToCoord(String input){
-        input = input.toUpperCase();
         int x = (int) input.charAt(0) - 65;
         int y = (int) input.charAt(1) - 1;
 
