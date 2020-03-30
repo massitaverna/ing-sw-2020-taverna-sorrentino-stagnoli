@@ -142,7 +142,7 @@ public class GameModel {
         return this.board;
     }
 
-    //interrogazioni dalla gui
+    //INTERROGAZIONI DALLE VIEW
     public void getBoardView(){
         // using a CLI
         board.toString();

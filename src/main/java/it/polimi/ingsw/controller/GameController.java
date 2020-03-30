@@ -13,6 +13,5 @@ public class GameController {
     private GameModel model;
 
     public GameController(){
-        this.model = new GameModel();
-    }
+        this.model = new GameModel();    }
 }

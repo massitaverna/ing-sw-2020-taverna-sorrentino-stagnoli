@@ -10,8 +10,5 @@ public interface ViewEventListener {
     public void onWorkerToMoveChosen(String workerID);
     public void onFirstWorkerPositioned(String position);
     public void onSecondWorkerPositioned(String position);
-    public void onGodsChosen(List<String > gods);
     public void onGodChosen(String god);
-    public void onStartingPlayerChosen(String playerNick);
-    public void onNumberOfPlayerChosen(int num);
 }
