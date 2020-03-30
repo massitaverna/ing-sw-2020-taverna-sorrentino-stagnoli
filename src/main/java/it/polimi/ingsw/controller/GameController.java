@@ -1,7 +1,7 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.listeners.View.ChallengerViewEventListener;
-import it.polimi.ingsw.listeners.View.ViewEventListener;
+import it.polimi.ingsw.listeners.View.PlayerEventListener;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.God;
 import it.polimi.ingsw.model.Player;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //implementato da nico, solo una prova
-public class GameController implements ChallengerViewEventListener, ViewEventListener {
+public class GameController implements ChallengerViewEventListener, PlayerEventListener {
 
     private GameModel model;
 

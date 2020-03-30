@@ -2,7 +2,7 @@ package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.listeners.Model.*;
-import it.polimi.ingsw.listeners.View.ViewEventListener;
+import it.polimi.ingsw.listeners.View.PlayerEventListener;
 import java.io.PrintStream;
 import java.util.*;
 
@@ -14,7 +14,7 @@ public class View implements ModelEventListener {
 
     // stare in ascolto su queste variabile per controllare che sia stato creato il player
     private String nickname;
-    private ViewEventListener listener;
+    private PlayerEventListener listener;
 
 
     private GameModel model;
@@ -32,23 +32,36 @@ public class View implements ModelEventListener {
     }
 
     public void getNick () {
-        outputStream.println("Chose a nickname: ");
+        outputStream.println("Choose a nickname: ");
         String input = s.nextLine();
+
+        while (!model.requestPlayersNicknames().contains(input)){
+            outputStream.println("Nickname already taken, please choose another nickname: ");
+            input = s.nextLine();
+        }
+
         this.nickname = input;
-        // TODO: definire un listener per la scelta del nick
+
         listener.onNicknameChosen(input);
     }
 
     public void getColor(){
-        outputStream.println("Chose your color (RED, BLUE, YELLOW):");
+        outputStream.println("Choose your color (RED, BLUE, YELLOW):");
         String input = s.nextLine();
+        Color c = Color.valueOf(input);
 
-        // Do you want me to check if the color is viable?
+        while (!model.getViableColors().contains(c)){
+            outputStream.println("Color already taken, please choose a new one: ");
+            input = s.nextLine();
+            c = Color.valueOf(input);
+        }
+
+        listener.onColorChosen(c);
     }
 
     // viene chiamata solo se entrambi i worker sono spostabili o sempre?
     public void choseWorkerToMove(){
-        outputStream.println("Chose a worker to move (1, 2): ");
+        outputStream.println("Choose a worker to move (1, 2): ");
         String input = s.nextLine();
 
         listener.onWorkerToMoveChosen(input);
@@ -117,11 +130,22 @@ public class View implements ModelEventListener {
         // if it's my turn to play with basic rules
         if(this.nickname.equals(nickname)){
             outputStream.println("Where do you want to move?");
+            // the input should be like "A1"
             String input = s.nextLine();
-            listener.onPlayerChoseMove(input);
+            Coord c = convertStringToCoord(input);
+            listener.onPlayerChoseMove(c);
             outputStream.println("Where do you want to build?");
             input = s.nextLine();
-            listener.onPlayerChoseBuild(input);
+            c = convertStringToCoord(input);
+            listener.onPlayerChoseBuild(c);
         }
+    }
+
+    private Coord convertStringToCoord(String input){
+        input = input.toUpperCase();
+        int x = (int) input.charAt(0) - 65;
+        int y = (int) input.charAt(1) - 1;
+
+        return new Coord(x, y);
     }
 }

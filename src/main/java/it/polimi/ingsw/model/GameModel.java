@@ -177,8 +177,8 @@ public class GameModel {
         return queue.size();
     }
 
-    public Color[] getViableColors(){
-        return (Color[])this.colors.toArray();
+    public List<Color> getViableColors(){
+        return colors;
     }
 
     public List<String> requestPlayersNicknames() {
