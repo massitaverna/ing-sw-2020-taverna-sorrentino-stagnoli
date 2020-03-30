@@ -4,7 +4,6 @@ public class Worker {
 
     private Color color;
     private Coord position;
-    private Board board;
 
     /*public Worker(){
     }*/
