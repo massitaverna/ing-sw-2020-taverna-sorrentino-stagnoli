@@ -87,10 +87,10 @@ public class ChallengerView implements ModelEventListener {
         view.onBoardChanged();
     }
 
-    @Override
-    public void onColorChosen() {
-        view.onColorChosen();
-    }
+//    @Override
+//    public void onColorChosen() {
+//        view.onColorChosen();
+//    }
 
     @Override
     public void onGameReadyListener() {

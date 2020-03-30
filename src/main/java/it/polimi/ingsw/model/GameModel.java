@@ -40,6 +40,10 @@ public class GameModel {
         this.numPlayers = numPlayers;
     }
 
+    public int getNumPlayers() {
+        return numPlayers;
+    }
+
     public Player getChallenger() {
         return challenger;
     }
@@ -57,8 +61,8 @@ public class GameModel {
         this.board.addWorker(player.getWorker(0));
         this.board.addWorker(player.getWorker(1));
         if(allPlayersArrived()){
-            for (ModelEventListener view: modelListeners) {
-                view.onAllPlayersArrived();
+            for (ModelEventListener listener: modelListeners) {
+                listener.onAllPlayersArrived();
             }
         }
     }
@@ -140,7 +144,8 @@ public class GameModel {
 
     //interrogazioni dalla gui
     public void getBoardView(){
-
+        // using a CLI
+        board.toString();
     }
 
     public ArrayList<Worker> getAllWorkers(){

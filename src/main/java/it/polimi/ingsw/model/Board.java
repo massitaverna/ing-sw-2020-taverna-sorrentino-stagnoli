@@ -112,4 +112,11 @@ public class Board {
             throw new Exception();
         }
     }
+
+    @Override
+    public String toString() {
+
+        //TODO: redefine this method
+        return super.toString();
+    }
 }
