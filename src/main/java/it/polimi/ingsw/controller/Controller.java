@@ -1,19 +1,18 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.listeners.EventSource;
-import it.polimi.ingsw.listeners.Listener;
 import it.polimi.ingsw.model.God;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.listeners.ViewEventListener;
+import it.polimi.ingsw.listeners.ChallengerViewEventListener;
 import it.polimi.ingsw.view.MassiProvaCoseView;
-import it.polimi.ingsw.view.View;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.*;
 
 //TODO: Map a view on a player (security check)
-public class Controller /*implements Observer*/ implements PropertyChangeListener {
+public class Controller implements ViewEventListener, ChallengerViewEventListener {
 
     //private Player challenger;
     private GameModel model;

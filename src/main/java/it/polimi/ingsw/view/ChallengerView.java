@@ -1,22 +1,19 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.listeners.View.ChallengerEventListener;
+import it.polimi.ingsw.listeners.*;
 import it.polimi.ingsw.model.GameModel;
-import it.polimi.ingsw.listeners.ModelEventListener;
-import it.polimi.ingsw.listeners.ViewEventListener;
-import it.polimi.ingsw.listeners.Model.ModelEventListener;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class ChallengerView implements ModelEventListener {
+public class ChallengerView implements ModelEventListener, EventSource {
 
     private GameModel model;
     private Scanner s;
     private PrintWriter outputStream;
-    private ChallengerEventListener listener;
+    private ChallengerViewEventListener listener;
 
 
     // Delego a una view generica i metodi comuni a tutti i player
@@ -114,5 +111,15 @@ public class ChallengerView implements ModelEventListener {
     @Override
     public void onTurnChanged(String nick) {
         view.onTurnChanged(nick);
+    }
+
+    @Override
+    public void addListener(Listener listener) {
+        if (!(listener instanceof ChallengerViewEventListener)) {
+            throw new IllegalArgumentException("Tried to register a non-ChallengerViewEventListener " +
+                    "to ChallengerView.");
+        }
+
+        this.listener = (ChallengerViewEventListener) listener;
     }
 }

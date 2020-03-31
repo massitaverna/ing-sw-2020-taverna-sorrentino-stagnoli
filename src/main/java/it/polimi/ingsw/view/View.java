@@ -1,14 +1,14 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.listeners.ModelEventListener;
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.listeners.Model.*;
-import it.polimi.ingsw.listeners.View.PlayerEventListener;
+import it.polimi.ingsw.listeners.ModelEventListener;
 import it.polimi.ingsw.listeners.ViewEventListener;
+import it.polimi.ingsw.listeners.EventSource;
+import it.polimi.ingsw.listeners.Listener;
 import java.io.PrintStream;
 import java.util.*;
 
-public class View implements ModelEventListener {
+public class View implements ModelEventListener, EventSource {
 
     private Scanner s;
     private PrintStream outputStream;
@@ -16,7 +16,7 @@ public class View implements ModelEventListener {
 
     // stare in ascolto su queste variabile per controllare che sia stato creato il player
     private String nickname;
-    private PlayerEventListener listener;
+    private ViewEventListener listener;
 
 
     private GameModel model;
@@ -164,5 +164,13 @@ public class View implements ModelEventListener {
         int y = (int) input.charAt(1) - 1;
 
         return new Coord(x, y);
+    }
+
+    @Override
+    public void addListener(Listener listener) {
+        if (!(listener instanceof ViewEventListener)) {
+            throw new IllegalArgumentException("Tried to register a non-ViewEventListener to View.");
+        }
+        this.listener = (ViewEventListener) listener;
     }
 }
