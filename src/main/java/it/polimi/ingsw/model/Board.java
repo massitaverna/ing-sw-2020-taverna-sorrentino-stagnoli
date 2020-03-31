@@ -35,7 +35,7 @@ public class Board {
 
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
-                if(!board[i][j].getOccupied()){
+                if(!board[i][j].isOccupied()){
                     unoccupiedSpaces.add(board[i][j]);
                 }
             }
@@ -44,7 +44,8 @@ public class Board {
         return unoccupiedSpaces;
     }
 
-    //potrebbero essere messe nel controller, perchè qua in mezzo ci andrà anche la logica degli effetti delle divinità
+    // potrebbero essere messe nel controller, perchè qua in mezzo ci andrà anche la
+    // logica degli effetti delle divinità
     public Map<Coord, Space> getMovableSpacesAround(Coord c, int maxDiff){
         //TODO: Check coordinates c are valid
         Map<Coord, Space> result = new HashMap<>();
@@ -54,10 +55,12 @@ public class Board {
                     continue;
 
                 //if(space not occupied/dome && Rules.CheckSomething) ??
-                if(!this.board[c.x + i][c.y + j].getOccupied() &&
+                if(!this.board[c.x + i][c.y + j].isOccupied() &&
                         !this.board[c.x + i][c.y + j].isDome() &&
-                        (this.board[c.x + i][c.y + j].height.ordinal() - this.board[c.x][c.y].height.ordinal() <= maxDiff) ){
-
+                        (this.board[c.x + i][c.y + j].height.ordinal() - this.board[c.x][c.y].height.ordinal()
+                                <= maxDiff
+                        )
+                ) {
                     result.put(new Coord(c.x + i, c.y + j), this.board[c.x + i][c.y + j]);
                 }
             }
@@ -75,7 +78,7 @@ public class Board {
                     continue;
 
                 //if(space not occupied/dome && Rules.CheckSomething) ??
-                if(!this.board[c.x + i][c.y + j].getOccupied() &&
+                if(!this.board[c.x + i][c.y + j].isOccupied() &&
                         !this.board[c.x + i][c.y + j].isDome() ){
 
                     result.put(new Coord(c.x + i, c.y + j), this.board[c.x + i][c.y + j]);
@@ -89,13 +92,13 @@ public class Board {
     public void workerMove(Worker w, Coord newPos) throws Exception{
         //TODO: Check newPos is valid
         //TODO: Check that worker w in in the list of workers
-        Space currentSpace, newSpace;
-        currentSpace = this.board[w.getPosition().x][w.getPosition().y];
-        newSpace = this.board[newPos.x][newPos.y];
-        if(!currentSpace.getOccupied() && !(newSpace.getHeight() == Level.DOME)) {
+        Space currentSpace = this.board[w.getPosition().x][w.getPosition().y];
+        Space newSpace = this.board[newPos.x][newPos.y];
+        if(!currentSpace.isOccupied() && !(newSpace.getHeight() == Level.DOME)) {
+            // placeWorker(w, newSpace); // Sostituisce le seguenti istruzioni commentate
             w.setPosition(newPos);
-            currentSpace.setUnoccupied();
             newSpace.setOccupied();
+            currentSpace.setUnoccupied();
         }
         else {
             throw new Exception();
@@ -105,7 +108,8 @@ public class Board {
     public void workerBuild(Worker w, Coord buildPos) throws Exception{
         //TODO: Check newPos is valid
         //TODO: Check that worker w in in the list of workers
-        if(!this.board[buildPos.x][buildPos.y].getOccupied() && !(this.board[buildPos.x][buildPos.y].getHeight() == Level.DOME)) {
+        if(!this.board[buildPos.x][buildPos.y].isOccupied() &&
+                this.board[buildPos.x][buildPos.y].getHeight() != Level.DOME) {
             this.board[buildPos.x][buildPos.y].levelUp();
         }
         else{
@@ -113,6 +117,17 @@ public class Board {
         }
     }
 
+    public void initializeWorker(Worker worker, Coord coord) throws IllegalArgumentException,
+            IllegalStateException {
+        Space dest = board[coord.x][coord.y];
+        if (dest.isOccupied()) {
+            throw new IllegalArgumentException("Tried to initialize worker on an occupied space.");
+        }
+        if (worker.getPosition() != null) {
+            throw new IllegalStateException("Tried to initialize worker when he is already placed in board.");
+        }
+        worker.setPosition(coord);
+    }
     @Override
     public String toString() {
 

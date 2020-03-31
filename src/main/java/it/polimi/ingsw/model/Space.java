@@ -19,7 +19,7 @@ public class Space {
         occupied = false;
     }
 
-    public boolean getOccupied(){
+    public boolean isOccupied(){
         return occupied;
     }
 

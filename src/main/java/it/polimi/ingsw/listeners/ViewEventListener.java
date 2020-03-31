@@ -7,15 +7,11 @@ import it.polimi.ingsw.model.Coord;
 import java.util.List;
 
 public interface ViewEventListener extends Listener {
-    public void onPlayerChoseBuild(Coord position);
-    public void onColorChosen(Color color);
-    public void onPlayerChoseMove(Coord position);
-    public void onNicknameChosen(String nick);
-    public void onWorkerToMoveChosen(String workerID);
-    public void onFirstWorkerPositioned(String position);
-    public void onSecondWorkerPositioned(String position);
-    public void onGodChosen(String god);
-    public void onGodsChosen(List<String> gods);
-    public void onStartingPlayerChosen(String playerNick);
-    public void onNumberOfPlayerChosen(int num);
+    public void onPlayerChoseBuild(EventSource source, Coord position);
+    public void onColorChosen(EventSource source, Color color);
+    public void onPlayerChoseMove(EventSource source, Coord position);
+    public void onNicknameChosen(EventSource source, String nickname);
+    public void onWorkerToMoveChosen(EventSource source, String workerID);
+    public void onWorkerInitialized(EventSource source, int whichWorker, int x, int y);
+    public void onGodChosen(EventSource source, String god);
 }

@@ -3,6 +3,7 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.Listener;
 import it.polimi.ingsw.listeners.ModelEventListener;
+import it.polimi.ingsw.model.god.God;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,11 +93,15 @@ public class GameModel implements EventSource {
         this.godsList = list;
     }
 
-    public void setPlayerColor(Player p, Color c) throws Exception {
+    public List<God> getGods() {
+        return godsList;
+    }
+
+    public void setPlayerColor(Player p, Color c) throws IllegalStateException {
         //TODO: Check that player p is part of the game
         //If color has been choose by another player, throw exception
         if(!this.colors.contains(c))
-            throw new Exception();
+            throw new IllegalStateException("Chosen color is not available any longer.");
         p.setWorkerColor(c);
         this.colors.remove(c);
     }
@@ -109,12 +114,13 @@ public class GameModel implements EventSource {
         //TODO: Check that player p is part of the game
         //If god has been choose by another player, throw exception
         if(!this.godsList.contains(g))
-            throw new IllegalArgumentException("Chosen god is not available in this game.");
+            throw new IllegalArgumentException("Chosen god has been previously chosen by another player " +
+                    "or has never been selected by Challenger.");
         p.setGod(g);
-        this.godsList.remove(g); //  Rimuovo Player p dalla godsList???
+        this.godsList.remove(g);
     }
 
-    public void setStartPlayer(Player startPlayer) throws IllegalArgumentException{
+    public void setStartPlayer(Player startPlayer) throws IllegalArgumentException {
 
         if(!queue.contains(startPlayer))
             throw new IllegalArgumentException("Chosen player is not in the game.");
@@ -128,6 +134,10 @@ public class GameModel implements EventSource {
         }
 
         currentPlayer = startPlayer;
+    }
+
+    public void initializeWorker(Worker w, Coord c) {
+        board.initializeWorker(w, c);
     }
 
     /*public Worker setPlayerWorkerChose(Player p, Worker w) {

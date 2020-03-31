@@ -29,11 +29,11 @@ public class View implements ModelEventListener, EventSource {
 
     // chiamato dopo aver aperto una connessione
     public void createPlayer() {
-        this.getNick();
+        this.readNickname();
         this.getColor();
     }
 
-    public void getNick () {
+    public void readNickname() {
         outputStream.println("Choose a nickname: ");
         String input = s.nextLine();
 
@@ -78,7 +78,7 @@ public class View implements ModelEventListener, EventSource {
         listener.onSecondWorkerPositioned(input);
     }
 
-    public void choseGod(){
+    public void chooseGod(){
         outputStream.print("Chose a god between these: ");
         // TODO: get the viable gods, print them and validate the input
         String input = s.nextLine();
@@ -86,6 +86,9 @@ public class View implements ModelEventListener, EventSource {
         listener.onGodChosen(input);
     }
 
+    public String getNickname() {
+        return nickname;
+    }
 
     @Override
     public void onAllPlayersArrived() {

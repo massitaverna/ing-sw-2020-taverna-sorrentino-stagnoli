@@ -3,7 +3,7 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.listeners.View.ChallengerViewEventListener;
 import it.polimi.ingsw.listeners.View.PlayerEventListener;
 import it.polimi.ingsw.model.GameModel;
-import it.polimi.ingsw.model.God;
+import it.polimi.ingsw.model.god.God;
 import it.polimi.ingsw.model.Player;
 
 import java.util.ArrayList;

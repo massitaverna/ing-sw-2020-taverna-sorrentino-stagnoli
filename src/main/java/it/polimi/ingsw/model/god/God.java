@@ -1,6 +1,9 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.god;
+
+import it.polimi.ingsw.model.Player;
 
 public interface God {
+
 
     public String getDescription();
 
@@ -8,6 +11,8 @@ public interface God {
     public void applyEffect(Player player);
 
     public boolean hasCondition();
+
+    public String getName();
 
     //metodo per ottenere la condizione
 }

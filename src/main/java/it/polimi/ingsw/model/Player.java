@@ -1,7 +1,8 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.model.god.God;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class Player {
@@ -10,15 +11,15 @@ public class Player {
     private God god;
     private boolean hasWon;
     /*private Collection<Rule> rules;*/
-    private List<Worker> workerList;
+    private List<Worker> workersList;
     private Color workerColor;
 
     public Player(String nickname){
         this.nickname = nickname;
         this.workerColor = null;
-        this.workerList = new ArrayList<Worker>();
-        this.workerList.add(new Worker());
-        this.workerList.add(new Worker());
+        this.workersList = new ArrayList<Worker>();
+        this.workersList.add(new Worker());
+        this.workersList.add(new Worker());
         /*this.rules = new Collection<Rule>();*/
         this.hasWon = false;
     }
@@ -34,7 +35,10 @@ public class Player {
     // prende come parametro il numero del lavoratore (1 o 2) e
     // restituisce il lavoratore corrispondente
     public Worker getWorker(int num){
-        return workerList.get(num-1);
+        return workersList.get(num-1);
+    }
+    public List<Worker> getWorkersList() {
+        return workersList;
     }
 
     public String getNickname() {
@@ -43,8 +47,8 @@ public class Player {
 
     public void setWorkerColor(Color c){
         this.workerColor = c;
-        this.workerList.get(0).setColor(this.workerColor);
-        this.workerList.get(1).setColor(this.workerColor);
+        this.workersList.get(0).setColor(this.workerColor);
+        this.workersList.get(1).setColor(this.workerColor);
     }
 
     public Color getWorkerColor(){

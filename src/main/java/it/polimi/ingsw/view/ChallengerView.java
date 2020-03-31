@@ -33,7 +33,7 @@ public class ChallengerView implements ModelEventListener, EventSource {
             n = s.nextInt();
         }
 
-        listener.onNumberOfPlayerChosen(n+1);
+        listener.onNumberOfPlayersChosen(this, n+1);
     }
 
     public void chooseStartingPlayer(){
@@ -50,7 +50,7 @@ public class ChallengerView implements ModelEventListener, EventSource {
             choose = s.next();
         }
 
-        listener.onStartingPlayerChosen(choose);
+        listener.onStartPlayerChosen(this, choose);
     }
 
     public void chooseGods(){
@@ -62,11 +62,11 @@ public class ChallengerView implements ModelEventListener, EventSource {
             gods.add(s.next());
         }
 
-        listener.onGodsChosen(gods);
+        listener.onGodsChosen(this, gods);
     }
 
     public void getNick (){
-        view.getNick();
+        view.readNickname();
     }
 
     public void choseWorkerToMove(){

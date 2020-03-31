@@ -15,3 +15,5 @@ controllare che il challenger sia l'ultimo a selezionare il proprio God
 controllare che non ci sia più di un worker su una stessa casella ------------ MESSO
 controllare che il blocco costruito sia nel raggio di costruzione del worker selezionato
 controllare che ogni giocatore abbia God diversi ---------- MESSO
+controllare che non ci siano null nella workersList dei players
+controllare che, se si è dopo il setup, ogni worker abbia coordinate non nulle

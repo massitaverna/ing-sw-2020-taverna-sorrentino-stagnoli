@@ -40,5 +40,8 @@ public class MassiProvaCoseView {
     public Player getPlayer() {
         return player;
     }
+    public String getNickname() {
+        return player.getNickname(); // Needs changing: RemoteView shouldn't access Player
+    }
 
 }
