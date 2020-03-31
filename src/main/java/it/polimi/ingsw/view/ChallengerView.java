@@ -1,8 +1,10 @@
 package it.polimi.ingsw.view;
 
+import it.polimi.ingsw.listeners.View.ChallengerEventListener;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.listeners.ModelEventListener;
 import it.polimi.ingsw.listeners.ViewEventListener;
+import it.polimi.ingsw.listeners.Model.ModelEventListener;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -14,7 +16,8 @@ public class ChallengerView implements ModelEventListener {
     private GameModel model;
     private Scanner s;
     private PrintWriter outputStream;
-    private ViewEventListener listener;
+    private ChallengerEventListener listener;
+
 
     // Delego a una view generica i metodi comuni a tutti i player
     private View view;
@@ -80,6 +83,7 @@ public class ChallengerView implements ModelEventListener {
     @Override
     public void onAllPlayersArrived() {
         view.onAllPlayersArrived();
+        this.chooseGods();
     }
 
     @Override

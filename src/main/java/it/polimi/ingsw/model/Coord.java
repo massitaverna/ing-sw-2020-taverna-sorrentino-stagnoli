@@ -8,4 +8,11 @@ public class Coord {
         this.x=x;
         this.y=y;
     }
+
+    public static boolean isValidCoord(Coord c){
+        if(c.x < 0 || c.x > 4 || c.y < 0 || c.y > 4) {
+            return false;
+        }
+        return true;
+    }
 }

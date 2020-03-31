@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.listeners.Model.*;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.Listener;
 import it.polimi.ingsw.listeners.ModelEventListener;
@@ -17,7 +18,13 @@ public class GameModel implements EventSource {
     private Board board;
     private Player challenger;
     private Player currentPlayer;
-    private PropertyChangeSupport mPcs;
+
+    //messi per poter eseguire i test (in realtà non sono necessari, il controller controlla che le mosse siano lecite,
+    // oppure i client non possono fare mosse illecite perchè gli viene detto cosa possono fare e non possono fare altrimenti)
+    //giusto????
+    private Coord moveChose;
+    private Coord buildChose;
+    private Worker workerChose;
 
     private List<ModelEventListener> modelListeners = new ArrayList<>();
     /*per sollevare un evento (esempio) :
@@ -67,6 +74,16 @@ public class GameModel implements EventSource {
                 listener.onAllPlayersArrived();
             }
         }
+    }
+
+    public Player getPlayerByNickname(String nick){
+        Player res = null;
+        for(Player p: this.queue){
+            if(p.getNickname().compareTo(nick) == 0){
+                res = p;
+            }
+        }
+        return res;
     }
 
     public List<Player> getQueue(){
@@ -144,7 +161,7 @@ public class GameModel implements EventSource {
         return this.board;
     }
 
-    //interrogazioni dalla gui
+    //INTERROGAZIONI DALLE VIEW
     public void getBoardView(){
         // using a CLI
         board.toString();
@@ -159,20 +176,20 @@ public class GameModel implements EventSource {
         return workers;
     }
 
-    public void getOtherPlayersInfo(){
-
-    }
-
     public int getQueueState(){
         return queue.size();
     }
 
-    public Color[] getViableColors(){
-        return (Color[])this.colors.toArray();
+    public List<Color> getViableColors(){
+        return colors;
     }
 
     public List<String> requestPlayersNicknames() {
-        return null;
+        List<String> res = new ArrayList<>();
+        for(Player p: this.queue){
+            res.add(p.getNickname());
+        }
+        return res;
     }
 
     @Override
