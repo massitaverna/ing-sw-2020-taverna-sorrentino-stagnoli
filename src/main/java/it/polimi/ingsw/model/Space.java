@@ -28,11 +28,11 @@ public class Space {
     }
 
     // TODO: eccezione se viene invocata su Space con cupola o player
-    public void levelUp() throws Exception{
+    public void levelUp() throws SpaceFullException {
         if(this.height != Level.DOME) {
             height = Level.values()[height.ordinal() + 1];
         }
         else
-            throw new Exception();
+            throw new SpaceFullException("This space is full (DOME).");
     }
 }

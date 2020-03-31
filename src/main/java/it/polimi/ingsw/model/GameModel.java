@@ -15,15 +15,15 @@ public class GameModel implements EventSource {
     private List<God> godsList;
     private List<Color> colors;
     private Board board;
-    private Player challenger;
     private Player currentPlayer;
+    private Worker currentWorker;
 
-    //messi per poter eseguire i test (in realtà non sono necessari, il controller controlla che le mosse siano lecite,
+/*    //messi per poter eseguire i test (in realtà non sono necessari, il controller controlla che le mosse siano lecite,
     // oppure i client non possono fare mosse illecite perchè gli viene detto cosa possono fare e non possono fare altrimenti)
     //giusto????
     private Coord moveChose;
     private Coord buildChose;
-    private Worker workerChose;
+    private Worker workerChose;*/
 
     private List<ModelEventListener> modelListeners = new ArrayList<>();
     /*per sollevare un evento (esempio) :
@@ -42,7 +42,10 @@ public class GameModel implements EventSource {
         this.board = new Board();
         this.godsList = null;
         this.currentPlayer = null;
+        this.currentWorker = null;
     }
+
+    //SETUP FUNCTIONS//
 
     public void setNumPlayers(int numPlayers) {
         this.numPlayers = numPlayers;
@@ -52,41 +55,21 @@ public class GameModel implements EventSource {
         return numPlayers;
     }
 
-    public Player getChallenger() {
-        return challenger;
-    }
-
     private boolean allPlayersArrived(){
         return this.queue.size() == this.numPlayers;
     }
 
     public void addNewPlayer(Player player){
-        /*if (queue.isEmpty()) {
-            challenger = player;
-            currentPlayer = player;
-        }*/
+
         queue.add(player);
         this.board.addWorker(player.getWorker(0));
         this.board.addWorker(player.getWorker(1));
+
         if(allPlayersArrived()){
             for (ModelEventListener listener: modelListeners) {
                 listener.onAllPlayersArrived();
             }
         }
-    }
-
-    public Player getPlayerByNickname(String nick){
-        Player res = null;
-        for(Player p: this.queue){
-            if(p.getNickname().compareTo(nick) == 0){
-                res = p;
-            }
-        }
-        return res;
-    }
-
-    public List<Player> getQueue(){
-        return null;
     }
 
     public void setGods(List<God> list){
@@ -104,10 +87,6 @@ public class GameModel implements EventSource {
             throw new IllegalStateException("Chosen color is not available any longer.");
         p.setWorkerColor(c);
         this.colors.remove(c);
-    }
-
-    public Player getCurrentPlayer() {
-        return currentPlayer;
     }
 
     public void assignGodToPlayer(Player p, God g) throws IllegalArgumentException {
@@ -140,16 +119,43 @@ public class GameModel implements EventSource {
         board.initializeWorker(w, c);
     }
 
+    //GAME FUNCTIONS//
+
+
     /*public Worker setPlayerWorkerChose(Player p, Worker w) {
         return null;
     }*/
 
-    public void setPlayerMoveChose(Worker w, Coord m){
-        /*this.board.workerMove(w, m);*/
+    public Player getPlayerByNickname(String nick) throws Exception{
+        Player res = null;
+        for(Player p: this.queue){
+            if(p.getNickname().compareTo(nick) == 0){
+                res = p;
+            }
+        }
+        if (res != null){
+            return res;
+        }else{
+            throw new Exception();
+        }
     }
 
-    public void setPlayerBuildChose(Worker w, Coord b){
-        /*this.board.workerBuild(w, b);*/
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void setPlayerWorkerChose(Coord workerPos) throws Exception{
+        Worker selected = this.board.getWorkerByPosition(workerPos);
+        //TODO: Check that in workerPos there is a worker that belongs to currentPlayer
+        this.currentWorker = selected;
+    }
+
+    public void setPlayerMoveChose(Coord m) throws Exception{
+        this.board.workerMove(currentWorker, m);
+    }
+
+    public void setPlayerBuildChose(Coord b) throws Exception{
+        this.board.workerBuild(currentWorker, b);
     }
 
     public void setWin(Player p){

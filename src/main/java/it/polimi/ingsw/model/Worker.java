@@ -4,9 +4,13 @@ public class Worker {
 
     private Color color;
     private Coord position;
+    private Player player;
 
-    /*public Worker(){
-    }*/
+    public Worker(Player p){
+        this.player = p;
+        this.position.x = -1;
+        this.position.y = -1;
+    }
 
     /*public void place(Coord c){
         //TODO: controllare che lo space in posizione c sia disoccupato
@@ -43,5 +47,9 @@ public class Worker {
 
     public void setColor(Color c){
         this.color = c;
+    }
+
+    public String getPlayerNickname(){
+        return this.player.getNickname();
     }
 }

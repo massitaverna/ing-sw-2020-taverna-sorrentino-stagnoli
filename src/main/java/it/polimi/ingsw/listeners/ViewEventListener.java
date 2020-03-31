@@ -4,7 +4,6 @@ import it.polimi.ingsw.listeners.Listener;
 import it.polimi.ingsw.model.Color;
 import it.polimi.ingsw.model.Coord;
 
-import java.util.List;
 
 public interface ViewEventListener extends Listener {
     public void onPlayerChoseBuild(EventSource source, Coord position);

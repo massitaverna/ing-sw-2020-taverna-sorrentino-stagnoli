@@ -37,6 +37,7 @@ public class Player {
     public Worker getWorker(int num){
         return workersList.get(num-1);
     }
+
     public List<Worker> getWorkersList() {
         return workersList;
     }
@@ -57,13 +58,5 @@ public class Player {
 
     public void win(){
         hasWon = true;
-    }
-
-    public void play(){
-
-    }
-
-    public void setUp(){
-
     }
 }

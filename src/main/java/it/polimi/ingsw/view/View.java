@@ -139,7 +139,7 @@ public class View implements ModelEventListener, EventSource {
             String input = s.nextLine();
             input = input.toUpperCase();
             Coord c = convertStringToCoord(input);
-            while (!Coord.isValidCoord(c)){
+            while (!Coord.validCoord(c)){
                 outputStream.println("Your input is invalid, please try again.");
                 // the input should be like "A1"
                 input = s.nextLine();
@@ -151,7 +151,7 @@ public class View implements ModelEventListener, EventSource {
             outputStream.println("Where do you want to build?");
             input = s.nextLine();
             c = convertStringToCoord(input);
-            while (!Coord.isValidCoord(c)){
+            while (!Coord.validCoord(c)){
                 outputStream.println("Your input is invalid, please try again.");
                 // the input should be like "A1"
                 input = s.nextLine();
