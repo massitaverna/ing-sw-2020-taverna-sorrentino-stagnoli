@@ -11,15 +11,18 @@ public class Coord {
         this.y=y;
     }
 
-    public static void validCoord(Coord c) throws InvalidCoordinatesException {
+    public static boolean validCoord(Coord c) throws InvalidCoordinatesException {
         if(c.x < 0 || c.x > 4 || c.y < 0 || c.y > 4) {
             throw new InvalidCoordinatesException("Coordinates x & y must be between 0 and 4.");
+        }
+        else{
+            return true;
         }
     }
 
     public boolean isNear(Coord c) throws InvalidCoordinatesException {
-        Coord.validCoord(this);
-        Coord.validCoord(c);
+        if(Coord.validCoord(this));
+        if(Coord.validCoord(c));
 
         int diffX = Math.abs(this.x - c.x);
         int diffY = Math.abs(this.y - c.y);

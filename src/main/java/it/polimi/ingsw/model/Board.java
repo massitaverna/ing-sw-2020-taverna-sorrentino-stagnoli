@@ -54,7 +54,7 @@ public class Board {
 
     public void workerMove(Worker w, Coord newPos) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException {
         //TODO: Check newPos is valid
-        Coord.validCoord(newPos);
+        if(Coord.validCoord(newPos));
 
         //TODO: Check that worker w is in the list of workers
 
@@ -84,7 +84,7 @@ public class Board {
 
     public void workerBuild(Worker w, Coord buildPos) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException{
         //TODO: Check buildPos is valid
-        Coord.validCoord(buildPos);
+        if(Coord.validCoord(buildPos));
 
         //TODO: Check that worker w in is the list of workers
 
@@ -109,7 +109,7 @@ public class Board {
     //potrebbero essere messe nel controller, perchè qua in mezzo ci andrà anche la logica degli effetti delle divinità
     public /*Map<Coord, Space>*/ List<Coord> getMovableSpacesAround(Coord c, int maxDiff) throws InvalidCoordinatesException{
         //TODO: Check coordinates c are valid
-        Coord.validCoord(c);
+        if(Coord.validCoord(c));
 
         List<Coord> result = new ArrayList<Coord>();
         for (int i = -1; i < 1; i++) {
@@ -133,7 +133,7 @@ public class Board {
 
     public /*Map<Coord, Space>*/  List<Coord> getBuildableSpacesAround(Coord c) throws InvalidCoordinatesException{
         //TODO: Check coordinates c are valid
-        Coord.validCoord(c);
+        if(Coord.validCoord(c));
 
         List<Coord> result = new ArrayList<>();
         for (int i = -1; i < 1; i++) {
