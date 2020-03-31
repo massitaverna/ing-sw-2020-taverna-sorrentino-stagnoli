@@ -52,7 +52,7 @@ public class View implements ModelEventListener, EventSource {
         String input = s.nextLine();
         Color c = Color.valueOf(input);
 
-        while (!model.getViableColors().contains(c)){
+        while (!model.getAvailableColors().contains(c)){
             outputStream.println("Color already taken, please choose a new one: ");
             input = s.nextLine();
             c = Color.valueOf(input);

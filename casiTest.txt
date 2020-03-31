@@ -12,6 +12,6 @@ controllare che forzare un worker al terzo livello non faccia vincere la partita
 controllare che la turnazione sia sempre la stessa (A->B->C->A->B->C....)
 controllare che i non-challenger non possano svolgere operazioni del challenger
 controllare che il challenger sia l'ultimo a selezionare il proprio God
-controllare che non ci sia più di un worker su una stessa casella
+controllare che non ci sia più di un worker su una stessa casella ------------ MESSO
 controllare che il blocco costruito sia nel raggio di costruzione del worker selezionato
-controllare che ogni giocatore abbia God diversi
+controllare che ogni giocatore abbia God diversi ---------- MESSO

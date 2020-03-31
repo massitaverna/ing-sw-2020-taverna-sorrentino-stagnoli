@@ -88,10 +88,6 @@ public class Controller implements ViewEventListener, ChallengerViewEventListene
         // Deve aggiornare il currentWorker se sono stati settati 2 lavoratori
     }
 
-    @Override
-    public void update(Observable o, Object arg) {
-
-    }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {

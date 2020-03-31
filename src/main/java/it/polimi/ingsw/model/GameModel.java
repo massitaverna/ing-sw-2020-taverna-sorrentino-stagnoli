@@ -178,7 +178,7 @@ public class GameModel implements EventSource {
         return queue.size();
     }
 
-    public List<Color> getViableColors(){
+    public List<Color> getAvailableColors(){
         return colors;
     }
 
