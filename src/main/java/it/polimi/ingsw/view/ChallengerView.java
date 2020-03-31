@@ -1,8 +1,8 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.model.GameModel;
-import it.polimi.ingsw.listeners.Model.ModelEventListener;
-import it.polimi.ingsw.listeners.View.ViewEventListener;
+import it.polimi.ingsw.listeners.ModelEventListener;
+import it.polimi.ingsw.listeners.ViewEventListener;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;

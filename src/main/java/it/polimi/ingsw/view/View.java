@@ -1,8 +1,8 @@
 package it.polimi.ingsw.view;
 
+import it.polimi.ingsw.listeners.ModelEventListener;
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.listeners.Model.*;
-import it.polimi.ingsw.listeners.View.ViewEventListener;
+import it.polimi.ingsw.listeners.ViewEventListener;
 import java.io.PrintStream;
 import java.util.*;
 

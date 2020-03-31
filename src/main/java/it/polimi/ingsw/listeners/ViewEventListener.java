@@ -1,8 +1,8 @@
-package it.polimi.ingsw.listeners.View;
+package it.polimi.ingsw.listeners;
 
 import java.util.List;
 
-public interface ViewEventListener {
+public interface ViewEventListener extends Listener {
     public void onPlayerChoseBuild(String position);
     public void onColorChosen(String color);
     public void onPlayerChoseMove(String position);

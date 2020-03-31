@@ -1,12 +1,14 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.listeners.Model.*;
+import it.polimi.ingsw.listeners.EventSource;
+import it.polimi.ingsw.listeners.Listener;
+import it.polimi.ingsw.listeners.ModelEventListener;
 
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameModel {
+public class GameModel implements EventSource {
 
     private int numPlayers;
     private List<Player> queue;
@@ -170,6 +172,14 @@ public class GameModel {
     }
 
     public List<String> requestPlayersNicknames() {
+        return null;
+    }
 
+    @Override
+    public void addListener(Listener listener) {
+        if (!(listener instanceof ModelEventListener)) {
+            throw new IllegalArgumentException("Tried to register a non-ModelEventListener to Model");
+        }
+        modelListeners.add((ModelEventListener) listener);
     }
 }

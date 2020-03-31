@@ -1,6 +1,6 @@
-package it.polimi.ingsw.listeners.Model;
+package it.polimi.ingsw.listeners;
 
-public interface ModelEventListener {
+public interface ModelEventListener extends Listener {
     public void onAllPlayersArrived();
     public void onBoardChanged();
     // public void onColorChosen();  I don't think this method is useful

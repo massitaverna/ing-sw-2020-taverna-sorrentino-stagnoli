@@ -1,5 +1,7 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.listeners.EventSource;
+import it.polimi.ingsw.listeners.Listener;
 import it.polimi.ingsw.model.God;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.Player;
@@ -145,6 +147,7 @@ public class Controller /*implements Observer*/ implements PropertyChangeListene
         if (false || true) {}// FARE PROSSIMI CASI
         throw new IllegalArgumentException("Controller received an unknown event.");
     }
+
 //Setup scheme:
         //  caso1: setto challenger e numPlayers
         //  caso2: aggiungo player/s
