@@ -17,8 +17,8 @@ public class Player {
         this.nickname = nickname;
         this.workerColor = null;
         this.workerList = new ArrayList<Worker>();
-        this.workerList.add(new Worker());
-        this.workerList.add(new Worker());
+        this.workerList.add(new Worker(this));
+        this.workerList.add(new Worker(this));
         /*this.rules = new Collection<Rule>();*/
         this.hasWon = false;
     }
@@ -53,13 +53,5 @@ public class Player {
 
     public void win(){
         hasWon = true;
-    }
-
-    public void play(){
-
-    }
-
-    public void setUp(){
-
     }
 }
