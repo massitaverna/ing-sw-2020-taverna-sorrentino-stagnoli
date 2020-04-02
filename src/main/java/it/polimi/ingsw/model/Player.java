@@ -18,8 +18,8 @@ public class Player {
         this.nickname = nickname;
         this.workerColor = null;
         this.workersList = new ArrayList<Worker>();
-        this.workersList.add(new Worker());
-        this.workersList.add(new Worker());
+        this.workersList.add(new Worker(this));
+        this.workersList.add(new Worker(this));
         /*this.rules = new Collection<Rule>();*/
         this.hasWon = false;
     }

@@ -55,18 +55,21 @@ public class GameModel implements EventSource {
         return numPlayers;
     }
 
-    private boolean allPlayersArrived(){
+    public boolean allPlayersArrived(){
         return this.queue.size() == this.numPlayers;
     }
 
     public void addNewPlayer(Player player){
 
+        if (queue.size() == 0) {
+            currentPlayer = player; // Set Challenger as currentPlayer
+        }
         queue.add(player);
         this.board.addWorker(player.getWorker(0));
         this.board.addWorker(player.getWorker(1));
 
-        if(allPlayersArrived()){
-            for (ModelEventListener listener: modelListeners) {
+        if(allPlayersArrived()) {
+            for (ModelEventListener listener : modelListeners) {
                 listener.onAllPlayersArrived();
             }
         }
@@ -119,6 +122,12 @@ public class GameModel implements EventSource {
         board.initializeWorker(w, c);
     }
 
+    public void startSetup() {
+        getListenerByNickname(currentPlayer.getNickname()).onMyGodsSelection();
+    }
+    public void askForGodChoice() {
+        getListenerByNickname(currentPlayer.getNickname()).onMyGodChoice();
+    }
     //GAME FUNCTIONS//
 
 
@@ -126,17 +135,21 @@ public class GameModel implements EventSource {
         return null;
     }*/
 
-    public Player getPlayerByNickname(String nick) throws Exception{
-        Player res = null;
+    public Player getPlayerByNickname(String nick) throws IllegalArgumentException {
+        // @Nico: cosi' e' piu' bellina :)
+        Player res = queue.stream().filter(p -> p.getNickname().equals(nick)).findFirst().orElse(null);
+
+        /*Player res = null;
         for(Player p: this.queue){
             if(p.getNickname().compareTo(nick) == 0){
                 res = p;
             }
-        }
-        if (res != null){
+        }*/
+
+        if (res != null) {
             return res;
-        }else{
-            throw new Exception();
+        } else {
+            throw new IllegalArgumentException("There is no player with the provided name.");
         }
     }
 
@@ -175,6 +188,7 @@ public class GameModel implements EventSource {
         return this.board;
     }
 
+
     //INTERROGAZIONI DALLE VIEW
     public void getBoardView(){
         // using a CLI
@@ -212,5 +226,10 @@ public class GameModel implements EventSource {
             throw new IllegalArgumentException("Tried to register a non-ModelEventListener to Model");
         }
         modelListeners.add((ModelEventListener) listener);
+    }
+    private ModelEventListener getListenerByNickname(String nickname) {
+        return modelListeners.stream()
+                .filter(listener -> listener.getNickname().equals(nickname)).
+                findFirst().orElse(null);
     }
 }

@@ -15,7 +15,7 @@ public class Coord {
         if(c.x < 0 || c.x > 4 || c.y < 0 || c.y > 4) {
             throw new InvalidCoordinatesException("Coordinates x & y must be between 0 and 4.");
         }
-        else{
+        else {
             return true;
         }
     }
@@ -32,6 +32,14 @@ public class Coord {
         else{
             return true;
         }
+    }
+
+    public static Coord convertStringToCoord(String input){
+        input = input.toUpperCase();
+        int x = (input.charAt(0) - 'A');
+        int y = (input.charAt(1) - '1');
+
+        return new Coord(x, y);
     }
 
     @Override

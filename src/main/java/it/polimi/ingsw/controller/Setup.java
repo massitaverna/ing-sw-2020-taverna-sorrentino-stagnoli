@@ -3,27 +3,22 @@ package it.polimi.ingsw.controller;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.god.God;
-import it.polimi.ingsw.listeners.ViewEventListener;
-import it.polimi.ingsw.listeners.ChallengerViewEventListener;
 import it.polimi.ingsw.model.god.GodCreator;
+import it.polimi.ingsw.view.ChallengerView;
 import it.polimi.ingsw.view.MassiProvaCoseView;
 import it.polimi.ingsw.view.View;
 
-import java.beans.PropertyChangeEvent;
 import java.util.*;
-import java.util.stream.Collectors;
 
 //TODO: Map a view on a player (security check)
-public class Setup /*implements ViewEventListener, ChallengerViewEventListener*/ {
+public class Setup {
 
-    //private Player challenger;
     private GameModel model;
 
 
     public Setup(GameModel model){
         this.model = model;
     }
-
 
     public void setNumPlayers(int numPlayers) { // invoked by Challenger
         /*if (!(invoker.equals(model.getChallenger()))) {
@@ -33,14 +28,11 @@ public class Setup /*implements ViewEventListener, ChallengerViewEventListener*/
         model.setNumPlayers(numPlayers);
     }
 
-    /*
-    public void setChallenger(Player challenger) {
-        model.setChallenger(challenger);
-    }
-    */
-
     public void addNewPlayer(Player p) {
-        model.addNewPlayer(p); // The first player is set in the model as Challenger
+        model.addNewPlayer(p); // The first player should be the Challenger
+        if (model.allPlayersArrived()) {
+            model.startSetup();
+        }
     }
 
     public void setPlayerColor(Player p, Color c) {
@@ -52,8 +44,6 @@ public class Setup /*implements ViewEventListener, ChallengerViewEventListener*/
         }
         // Handle re-asking for color
     }
-    //TODO: Le view accedono al modello e vedono se sono la View Challenger
-    // Se si, invoca i metodi marcati come "invoked by Challenger"
 
     public void setGods(List<God> gods) { // invoked by Challenger
         /*if (!(invoker.equals(model.getChallenger()))) {
@@ -62,6 +52,7 @@ public class Setup /*implements ViewEventListener, ChallengerViewEventListener*/
         }*/
         model.setGods(gods);
         model.nextPlayer();
+        model.askForGodChoice();
         // currentPlayer viene settato a Challenger+1
         // l'ordine della queue non deve essere modificato fino a che non sono stati assegnati tutti i Gods
 
@@ -82,6 +73,10 @@ public class Setup /*implements ViewEventListener, ChallengerViewEventListener*/
     public void assignGodToPlayer(Player p, God g) throws IllegalArgumentException,
             IllegalStateException {
 
+        if (p == null) {
+            throw new IllegalArgumentException("Cannot assign a god to a Null player.");
+        }
+
         Player curr = model.getCurrentPlayer();
         if (!(p.equals(curr))) {
             throw new IllegalStateException("Player is trying to setup not in his turn.");
@@ -93,16 +88,21 @@ public class Setup /*implements ViewEventListener, ChallengerViewEventListener*/
         }
 
         model.assignGodToPlayer(p, g); // Should throw IllegalArgumentException, but no warnings...
-        if (!(curr.equals(model.getChallenger()))) {
-            model.nextPlayer();
-        }
+        model.nextPlayer();
+        model.askForGodChoice();
+
     }
 
     public void initializeWorker(Player player, Coord place) throws IllegalStateException {
+        if (player == null) {
+            throw new IllegalArgumentException("Cannot initialize workers for a Null player.");
+        }
+
         Player curr = model.getCurrentPlayer();
         if (!(player.equals(curr))) {
             throw new IllegalStateException("Player is trying to setup not in his turn.");
         }
+
         Worker toBeInitialized = player.getWorkersList().stream()
                 .filter(worker -> worker.getPosition() == null).findFirst().orElse(null);
         if (toBeInitialized == null) {
@@ -130,8 +130,14 @@ public class Setup /*implements ViewEventListener, ChallengerViewEventListener*/
 
     public void onColorChosen(EventSource source, Color color) {
         String nickname = ((View) source).getNickname();
-        Player player = model.getPlayerByNickname(nickname);
-        setPlayerColor(player, color);
+        try {
+            Player player = model.getPlayerByNickname(nickname);
+            setPlayerColor(player, color);
+        }
+        catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            System.out.println("View's and Model's nicknames mismatch.");
+        }
     }
 
     public void onNumberOfPlayersChosen(EventSource source, int num) {
@@ -154,7 +160,15 @@ public class Setup /*implements ViewEventListener, ChallengerViewEventListener*/
                 .findFirst().orElse(null);
 
         String nickname = ((View) source).getNickname();
-        Player player = model.getPlayerByNickname(nickname);
+        Player player;
+        try {
+            player = model.getPlayerByNickname(nickname);
+        }
+        catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            System.out.println("View's and Model's nicknames mismatch.");
+            player = null;
+        }
         try {
             assignGodToPlayer(player, chosenGod);
         }
@@ -170,15 +184,28 @@ public class Setup /*implements ViewEventListener, ChallengerViewEventListener*/
     }
 
     public void onStartPlayerChosen(EventSource source, String startPlayerNickname) {
-        Player startPlayer = model.getPlayerByNickname(startPlayerNickname);
-        setStartPlayer(startPlayer);
+        try {
+            Player startPlayer = model.getPlayerByNickname(startPlayerNickname);
+            setStartPlayer(startPlayer);
+        }
+        catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            System.out.print("This means no player has been set as startPlayer.");
+        }
     }
 
-    public void onWorkerInitialized(EventSource source, int whichWorker, int x, int y) {
+    public void onWorkerInitialized(EventSource source, int x, int y) {
         //TODO: check that the player has not initialized both workers yet
         Coord coord = new Coord(x, y);
         String nickname = ((View) source).getNickname();
-        Player player = model.getPlayerByNickname(nickname);
+        Player player;
+        try {
+            player = model.getPlayerByNickname(nickname);
+        }
+        catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            player = null;
+        }
         try {
             initializeWorker(player, coord);
         }
@@ -187,11 +214,14 @@ public class Setup /*implements ViewEventListener, ChallengerViewEventListener*/
             System.out.println(e.getMessage());
             System.out.println("There may be something wrong in turn rotation handling");
         }
+        catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            System.out.println("This means the worker has not been initialized for the player.");
+        }
     }
 
 
 //Setup scheme:
-        //  caso1: setto challenger e numPlayers
         //  caso2: aggiungo player/s
         //  caso3: sono tutti collegati -> setUp()
 

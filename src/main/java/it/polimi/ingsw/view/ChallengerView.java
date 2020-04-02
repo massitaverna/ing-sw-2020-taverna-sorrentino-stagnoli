@@ -65,12 +65,12 @@ public class ChallengerView implements ModelEventListener, EventSource {
         listener.onGodsChosen(this, gods);
     }
 
-    public void getNick (){
+    public void readNickname(){
         view.readNickname();
     }
 
     public void choseWorkerToMove(){
-        view.choseWorkerToMove();
+        view.chooseWorkerToMove();
     }
 
     public void initializeWorkersPosition(){
@@ -108,7 +108,7 @@ public class ChallengerView implements ModelEventListener, EventSource {
         view.onPlayerAddedListener(nickname);
     }
 
-    @Override
+    //@Override
     public void onTurnChanged(String nick) {
         view.onTurnChanged(nick);
     }

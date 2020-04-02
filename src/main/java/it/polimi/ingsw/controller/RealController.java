@@ -72,8 +72,8 @@ public class RealController implements ViewEventListener, ChallengerViewEventLis
     }
 
     @Override
-    public void onWorkerInitialized(EventSource source, int whichWorker, int x, int y) {
-        setup.onWorkerInitialized(source, whichWorker, x, y);
+    public void onWorkerInitialized(EventSource source, int x, int y) {
+        setup.onWorkerInitialized(source, x, y);
     }
 
 }

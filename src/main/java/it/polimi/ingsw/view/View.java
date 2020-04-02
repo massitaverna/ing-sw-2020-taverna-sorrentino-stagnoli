@@ -1,5 +1,6 @@
 package it.polimi.ingsw.view;
 
+import it.polimi.ingsw.exceptions.InvalidCoordinatesException;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.listeners.ModelEventListener;
 import it.polimi.ingsw.listeners.ViewEventListener;
@@ -20,11 +21,14 @@ public class View implements ModelEventListener, EventSource {
 
 
     private GameModel model;
+    private String god;
+    private boolean setupDone;
 
     public View(GameModel model){
         s = new Scanner(System.in);
         outputStream = new PrintStream(System.out);
         this.model = model;
+        setupDone = false;
     }
 
     // chiamato dopo aver aperto una connessione
@@ -44,7 +48,7 @@ public class View implements ModelEventListener, EventSource {
 
         this.nickname = input;
 
-        listener.onNicknameChosen(input);
+        listener.onNicknameChosen(this, input);
     }
 
     public void getColor(){
@@ -58,32 +62,43 @@ public class View implements ModelEventListener, EventSource {
             c = Color.valueOf(input);
         }
 
-        listener.onColorChosen(c);
+        listener.onColorChosen(this, c);
     }
 
     // viene chiamata solo se entrambi i worker sono spostabili o sempre?
-    public void choseWorkerToMove(){
+    public void chooseWorkerToMove(){
         outputStream.println("Choose a worker to move (1, 2): ");
         String input = s.nextLine();
 
-        listener.onWorkerToMoveChosen(input);
+        listener.onWorkerToMoveChosen(this, input);
     }
 
     public void initializeWorkersPosition(){
         outputStream.println("Where do you want to place the first worker?");
-        String input  = s.nextLine();
-        listener.onFirstWorkerPositioned(input);
-        outputStream.println("Where do you want to place the second worker?");
+        while (true) {
+            String input  = s.nextLine();
+            Coord c = Coord.convertStringToCoord(input);
+            try {
+                Coord.validCoord(c);
+                listener.onWorkerInitialized(this, c.x, c.y);
+                break;
+            }
+            catch (InvalidCoordinatesException e) {
+                outputStream.println("The format is incorrect.");
+            }
+        }
+
+        /*outputStream.println("Where do you want to place the second worker?");
         input  = s.nextLine();
-        listener.onSecondWorkerPositioned(input);
+        listener.onSecondWorkerPositioned(input);*/
     }
 
     public void chooseGod(){
-        outputStream.print("Chose a god between these: ");
+        outputStream.print("Choose a god from the list: ");
         // TODO: get the viable gods, print them and validate the input
         String input = s.nextLine();
 
-        listener.onGodChosen(input);
+        listener.onGodChosen(this, input);
     }
 
     public String getNickname() {
@@ -132,41 +147,43 @@ public class View implements ModelEventListener, EventSource {
     // have a bunch of if statements?
     @Override
     public void onTurnChanged(String nickname) {
+        if (!setupDone) {
+            if (god == null) {
+                chooseGod();
+            }
+            else {
+                initializeWorkersPosition();
+            }
+            return;
+        }
         // if it's my turn to play with basic rules
         if(this.nickname.equals(nickname)){
             outputStream.println("Where do you want to move?");
             // the input should be like "A1"
             String input = s.nextLine();
             input = input.toUpperCase();
-            Coord c = convertStringToCoord(input);
+            Coord c = Coord.convertStringToCoord(input);
             while (!Coord.validCoord(c)){
                 outputStream.println("Your input is invalid, please try again.");
                 // the input should be like "A1"
                 input = s.nextLine();
                 input = input.toUpperCase();
-                c = convertStringToCoord(input);
+                c = Coord.convertStringToCoord(input);
             }
-            listener.onPlayerChoseMove(c);
+            listener.onPlayerChoseMove(this, c);
 
             outputStream.println("Where do you want to build?");
             input = s.nextLine();
-            c = convertStringToCoord(input);
+            c = Coord.convertStringToCoord(input);
             while (!Coord.validCoord(c)){
                 outputStream.println("Your input is invalid, please try again.");
                 // the input should be like "A1"
                 input = s.nextLine();
                 input = input.toUpperCase();
-                c = convertStringToCoord(input);
+                c = Coord.convertStringToCoord(input);
             }
-            listener.onPlayerChoseBuild(c);
+            listener.onPlayerChoseBuild(this, c);
         }
-    }
-
-    private Coord convertStringToCoord(String input){
-        int x = (int) input.charAt(0) - 65;
-        int y = (int) input.charAt(1) - 1;
-
-        return new Coord(x, y);
     }
 
     @Override

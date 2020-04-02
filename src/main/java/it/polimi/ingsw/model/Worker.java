@@ -6,6 +6,7 @@ public class Worker {
     private Coord position;
     private Player player;
 
+    // Serve davvero che un worker sappia chi e' il suo player?
     public Worker(Player p){
         this.player = p;
         this.position.x = -1;
