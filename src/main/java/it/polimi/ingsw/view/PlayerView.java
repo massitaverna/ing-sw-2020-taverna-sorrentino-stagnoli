@@ -9,7 +9,7 @@ import it.polimi.ingsw.listeners.Listener;
 import java.io.PrintStream;
 import java.util.*;
 
-public class View implements ModelEventListener, EventSource {
+public class PlayerView implements ModelEventListener, EventSource {
 
     private Scanner s;
     private PrintStream outputStream;
@@ -24,7 +24,7 @@ public class View implements ModelEventListener, EventSource {
     private String god;
     private boolean setupDone;
 
-    public View(GameModel model){
+    public PlayerView(GameModel model){
         s = new Scanner(System.in);
         outputStream = new PrintStream(System.out);
         this.model = model;
@@ -143,10 +143,15 @@ public class View implements ModelEventListener, EventSource {
             outputStream.println("Waiting for " + (totalNumber-currentNumber) + " more player/s");
     }
 
+    @Override
+    public void onMyTurn() {
+
+    }
+
     // Should we divide this method based on the phase of the game (setup or play) o should I
     // have a bunch of if statements?
     @Override
-    public void onTurnChanged(String nickname) {
+    public void onTurnChanged(String nickname)  throws InvalidCoordinatesException{
         if (!setupDone) {
             if (god == null) {
                 chooseGod();

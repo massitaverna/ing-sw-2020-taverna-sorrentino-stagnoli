@@ -17,10 +17,10 @@ public class ChallengerView implements ModelEventListener, EventSource {
 
 
     // Delego a una view generica i metodi comuni a tutti i player
-    private View view;
+    private PlayerView view;
 
     public ChallengerView(GameModel model){
-        this.view = new View(model);
+        this.view = new PlayerView(model);
         this.s = new Scanner(System.in);
         this.outputStream = new PrintWriter(System.out);
     }
@@ -106,6 +106,16 @@ public class ChallengerView implements ModelEventListener, EventSource {
     @Override
     public void onPlayerAddedListener(String nickname) {
         view.onPlayerAddedListener(nickname);
+    }
+
+    @Override
+    public void onMyTurn() {
+
+    }
+
+    @Override
+    public String getNickname() {
+        return null;
     }
 
     //@Override
