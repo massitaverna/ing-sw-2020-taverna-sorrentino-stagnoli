@@ -2,7 +2,8 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.listeners.ChallengerViewEventListener;
 import it.polimi.ingsw.listeners.EventSource;
-import it.polimi.ingsw.listeners.ViewEventListener;
+import it.polimi.ingsw.listeners.PlayerViewEventListener;
+import it.polimi.ingsw.listeners.PlayerViewEventListener;
 import it.polimi.ingsw.model.Color;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.GameModel;
@@ -11,7 +12,7 @@ import it.polimi.ingsw.view.ChallengerView;
 
 import java.util.List;
 
-public class RealController implements ViewEventListener, ChallengerViewEventListener {
+public class RealController implements PlayerViewEventListener, ChallengerViewEventListener {
     private GameModel model;
     private Setup setup;
 

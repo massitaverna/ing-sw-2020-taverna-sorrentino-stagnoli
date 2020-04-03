@@ -9,8 +9,7 @@ public class Worker {
     // Serve davvero che un worker sappia chi e' il suo player?
     public Worker(Player p){
         this.player = p;
-        this.position.x = -1;
-        this.position.y = -1;
+        this.position = null;
     }
 
     /*public void place(Coord c){

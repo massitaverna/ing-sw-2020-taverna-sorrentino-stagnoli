@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.exceptions.InvalidCoordinatesException;
+import it.polimi.ingsw.listeners.PlayerViewEventListener;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.listeners.ModelEventListener;
 import it.polimi.ingsw.listeners.ViewEventListener;
@@ -17,7 +18,7 @@ public class PlayerView implements ModelEventListener, EventSource {
 
     // stare in ascolto su queste variabile per controllare che sia stato creato il player
     private String nickname;
-    private ViewEventListener listener;
+    private PlayerViewEventListener listener;
 
 
     private GameModel model;

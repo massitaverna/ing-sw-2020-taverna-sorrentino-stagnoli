@@ -6,7 +6,7 @@ import it.polimi.ingsw.model.god.God;
 import it.polimi.ingsw.model.god.GodCreator;
 import it.polimi.ingsw.view.ChallengerView;
 import it.polimi.ingsw.view.MassiProvaCoseView;
-import it.polimi.ingsw.view.View;
+import it.polimi.ingsw.view.PlayerView;
 
 import java.util.*;
 
