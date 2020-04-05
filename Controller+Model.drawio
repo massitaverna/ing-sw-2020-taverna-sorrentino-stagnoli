@@ -1,4 +1,4 @@
-<mxfile host="www.draw.io" modified="2020-04-05T17:48:31.279Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36" etag="B50UIo2QFzrPpBgEa2gx" version="12.9.7" type="github">
+<mxfile host="www.draw.io" modified="2020-04-05T17:56:01.545Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36" etag="6bkH-3LoJGbCdxMzpTKR" version="12.9.7" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
     <mxGraphModel dx="2062" dy="1164" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -114,15 +114,6 @@
         </mxCell>
         <mxCell id="GLF211CV2YBHSNNz2mQ8-36" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="GLF211CV2YBHSNNz2mQ8-1" target="GLF211CV2YBHSNNz2mQ8-29" edge="1">
           <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="GLF211CV2YBHSNNz2mQ8-1" value="Board" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
-          <mxGeometry x="1420" y="110" width="300" height="190" as="geometry" />
-        </mxCell>
-        <mxCell id="GLF211CV2YBHSNNz2mQ8-3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="GLF211CV2YBHSNNz2mQ8-1" vertex="1">
-          <mxGeometry y="26" width="300" height="8" as="geometry" />
-        </mxCell>
-        <mxCell id="GLF211CV2YBHSNNz2mQ8-4" value="+ getSpace(Coord c) : Space&#xa;+ addWorker(Worker w) : void&#xa;+ getAllWorkers() : List&lt;Worker&gt;&#xa;+ getWorkerByPosition(Coord pos) : Worker&#xa;+ getUnoccupiedSpaces() : List&lt;Coord&gt;&#xa;+ workerMove(Worker w, Coord newPos) : void&#xa;+ workerBuild(Worker w, Coord buildPos) : void&#xa;+ getMovableSpaceAround(Coord c) : List&lt;Coord&gt;&#xa;+ getBuildableSpaceAround(Coord c) : List&lt;Coord&gt;&#xa;+ initializeWorker(Worker w, Coord pos) : void&#xa;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="GLF211CV2YBHSNNz2mQ8-1" vertex="1">
-          <mxGeometry y="34" width="300" height="156" as="geometry" />
         </mxCell>
         <mxCell id="GLF211CV2YBHSNNz2mQ8-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="GLF211CV2YBHSNNz2mQ8-16" target="GLF211CV2YBHSNNz2mQ8-6" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -276,6 +267,15 @@
         </mxCell>
         <mxCell id="GLF211CV2YBHSNNz2mQ8-52" value="In questo package andranno aggiunte le classi dedicate&lt;br&gt;alla connessione" style="shape=note;whiteSpace=wrap;html=1;size=14;verticalAlign=top;align=left;spacingTop=-6;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
           <mxGeometry x="650" y="620" width="330" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="GLF211CV2YBHSNNz2mQ8-1" value="Board" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+          <mxGeometry x="1420" y="105" width="300" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="GLF211CV2YBHSNNz2mQ8-3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" parent="GLF211CV2YBHSNNz2mQ8-1" vertex="1">
+          <mxGeometry y="26" width="300" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="GLF211CV2YBHSNNz2mQ8-4" value="+ getSpace(Coord c) : Space&#xa;+ addWorker(Worker w) : void&#xa;+ getAllWorkers() : List&lt;Worker&gt;&#xa;+ getWorkerByPosition(Coord pos) : Worker&#xa;+ getUnoccupiedSpaces() : List&lt;Coord&gt;&#xa;+ workerMove(Worker w, Coord newPos) : void&#xa;+ workerBuild(Worker w, Coord buildPos) : void&#xa;+ getMovableSpaceAround(Coord c) : List&lt;Coord&gt;&#xa;+ getBuildableSpaceAround(Coord c) : List&lt;Coord&gt;&#xa;+ initializeWorker(Worker w, Coord pos) : void&#xa;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="GLF211CV2YBHSNNz2mQ8-1" vertex="1">
+          <mxGeometry y="34" width="300" height="156" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
