@@ -129,7 +129,7 @@ public class Setup {
     }
 
     public void onColorChosen(EventSource source, Color color) {
-        String nickname = ((View) source).getNickname();
+        String nickname = ((PlayerView) source).getNickname();
         try {
             Player player = model.getPlayerByNickname(nickname);
             setPlayerColor(player, color);
@@ -159,7 +159,7 @@ public class Setup {
         God chosenGod = gods.stream().filter(god -> god.getName().equals(godName))
                 .findFirst().orElse(null);
 
-        String nickname = ((View) source).getNickname();
+        String nickname = ((PlayerView) source).getNickname();
         Player player;
         try {
             player = model.getPlayerByNickname(nickname);
@@ -197,7 +197,7 @@ public class Setup {
     public void onWorkerInitialized(EventSource source, int x, int y) {
         //TODO: check that the player has not initialized both workers yet
         Coord coord = new Coord(x, y);
-        String nickname = ((View) source).getNickname();
+        String nickname = ((PlayerView) source).getNickname();
         Player player;
         try {
             player = model.getPlayerByNickname(nickname);

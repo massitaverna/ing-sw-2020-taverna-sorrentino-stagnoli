@@ -94,18 +94,18 @@ public class ChallengerView implements ModelEventListener, EventSource {
 //    }
 
     @Override
-    public void onGameReadyListener() {
-        view.onGameReadyListener();
+    public void onGameReady() {
+        view.onGameReady();
     }
 
     @Override
-    public void onGodsChosenListener() {
-        view.onGodsChosenListener();
+    public void onGodsChosen() {
+        view.onGodsChosen();
     }
 
     @Override
-    public void onPlayerAddedListener(String nickname) {
-        view.onPlayerAddedListener(nickname);
+    public void onPlayerAdded(String nickname) {
+        view.onPlayerAdded(nickname);
     }
 
     @Override

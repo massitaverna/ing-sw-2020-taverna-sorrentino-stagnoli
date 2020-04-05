@@ -71,7 +71,7 @@ public class PlayerView implements ModelEventListener, EventSource {
         outputStream.println("Choose a worker to move (1, 2): ");
         String input = s.nextLine();
 
-        listener.onWorkerToMoveChosen(this, input);
+        listener.onWorkerChosen(this, input);
     }
 
     public void initializeWorkersPosition(){
@@ -123,19 +123,19 @@ public class PlayerView implements ModelEventListener, EventSource {
 //    }
 
     @Override
-    public void onGameReadyListener() {
+    public void onGameReady() {
         outputStream.println("Set up is done, you are good to go!");
 
         model.getBoardView();
     }
 
     @Override
-    public void onGodsChosenListener() {
+    public void onGodsChosen() {
 
     }
 
     @Override
-    public void onPlayerAddedListener(String nickname) {
+    public void onPlayerAdded(String nickname) {
         outputStream.println(nickname + "has joined the game.");
         int currentNumber = model.getQueueState();
         int totalNumber = model.getNumPlayers();

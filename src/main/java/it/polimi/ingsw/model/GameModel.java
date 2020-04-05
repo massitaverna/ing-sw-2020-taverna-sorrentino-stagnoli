@@ -157,17 +157,17 @@ public class GameModel implements EventSource {
         return currentPlayer;
     }
 
-    public void setPlayerWorkerChose(Coord workerPos) throws Exception{
+    public void setWorkerChoice(Coord workerPos) throws Exception{
         Worker selected = this.board.getWorkerByPosition(workerPos);
         //TODO: Check that in workerPos there is a worker that belongs to currentPlayer
         this.currentWorker = selected;
     }
 
-    public void setPlayerMoveChose(Coord m) throws Exception{
+    public void setMove(Coord m) throws Exception{
         this.board.workerMove(currentWorker, m);
     }
 
-    public void setPlayerBuildChose(Coord b) throws Exception{
+    public void setBuild(Coord b) throws Exception{
         this.board.workerBuild(currentWorker, b);
     }
 

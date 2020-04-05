@@ -32,7 +32,7 @@ public class RealController implements PlayerViewEventListener, ChallengerViewEv
     }
 
     @Override
-    public void onWorkerToMoveChosen(EventSource source, String workerID) {
+    public void onWorkerChosen(EventSource source, String workerID) {
 
     }
 
