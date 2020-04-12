@@ -1,10 +1,9 @@
 package it.polimi.ingsw.model;
 
-import com.sun.java.swing.action.AboutAction;
-import it.polimi.ingsw.exceptions.IllegalWorkerActionException;
-import it.polimi.ingsw.exceptions.InvalidCoordinatesException;
-import it.polimi.ingsw.exceptions.SpaceFullException;
-import it.polimi.ingsw.exceptions.SpaceOccupiedException;
+import it.polimi.ingsw.exceptions.model.IllegalWorkerActionException;
+import it.polimi.ingsw.exceptions.model.InvalidCoordinatesException;
+import it.polimi.ingsw.exceptions.model.SpaceFullException;
+import it.polimi.ingsw.exceptions.model.SpaceOccupiedException;
 import org.junit.Assert;
 import org.junit.Test;
 

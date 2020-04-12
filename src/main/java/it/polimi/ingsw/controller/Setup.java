@@ -1,12 +1,9 @@
 //mod
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.god.God;
 import it.polimi.ingsw.model.god.GodCreator;
-import it.polimi.ingsw.view.ChallengerView;
-import it.polimi.ingsw.view.MassiProvaCoseView;
 import it.polimi.ingsw.view.PlayerView;
 
 import java.util.*;
