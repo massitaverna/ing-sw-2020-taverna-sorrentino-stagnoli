@@ -1,4 +1,4 @@
-package it.polimi.ingsw.exceptions;
+package it.polimi.ingsw.exceptions.model;
 
 public class InvalidCoordinatesException extends Exception {
     public InvalidCoordinatesException(String msg){

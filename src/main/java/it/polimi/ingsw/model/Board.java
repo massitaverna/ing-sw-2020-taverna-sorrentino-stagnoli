@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.exceptions.*;
+import it.polimi.ingsw.exceptions.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class Board {
         return (Worker[])this.workers.toArray();
     }
 
-    public Worker getWorkerByPosition(Coord pos) throws WorkerNotFoundException{
+    public Worker getWorkerByPosition(Coord pos) throws WorkerNotFoundException {
         for(Worker w: this.workers){
             if(w.getPosition().equals(pos)){
                 return w;
@@ -36,6 +36,20 @@ public class Board {
         }
         throw new WorkerNotFoundException("There is no worker in the selected position.");
    }
+
+    public void initializeWorker(Worker worker, Coord coord) throws IllegalArgumentException,
+            IllegalStateException {
+        //TODO: Check worker Belongs to the game
+
+        Space dest = board[coord.x][coord.y];
+        if (dest.isOccupied()) {
+            throw new IllegalArgumentException("Tried to initialize worker on an occupied space.");
+        }
+        if (worker.getPosition() != null) {
+            throw new IllegalStateException("Tried to initialize worker when he is already placed in board.");
+        }
+        worker.setPosition(coord);
+    }
 
     public List<Coord> getUnoccupiedSpaces(){
 
@@ -80,6 +94,12 @@ public class Board {
         else{
             throw new SpaceFullException("Space is DOME.");
         }
+
+        //TODO : Check for Winning
+    }
+
+    public void workerForceMove(){
+
     }
 
     public void workerBuild(Worker w, Coord buildPos) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException{
@@ -153,18 +173,6 @@ public class Board {
         }
 
         return result;
-    }
-
-    public void initializeWorker(Worker worker, Coord coord) throws IllegalArgumentException,
-            IllegalStateException {
-        Space dest = board[coord.x][coord.y];
-        if (dest.isOccupied()) {
-            throw new IllegalArgumentException("Tried to initialize worker on an occupied space.");
-        }
-        if (worker.getPosition() != null) {
-            throw new IllegalStateException("Tried to initialize worker when he is already placed in board.");
-        }
-        worker.setPosition(coord);
     }
 
     @Override

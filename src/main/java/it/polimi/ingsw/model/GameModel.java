@@ -1,14 +1,13 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.listeners.EventSource;
-import it.polimi.ingsw.listeners.Listener;
+import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 import it.polimi.ingsw.listeners.ModelEventListener;
 import it.polimi.ingsw.model.god.God;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameModel implements EventSource {
+public class GameModel {
 
     private int numPlayers;
     private List<Player> queue;
@@ -17,15 +16,11 @@ public class GameModel implements EventSource {
     private Board board;
     private Player currentPlayer;
     private Worker currentWorker;
-
-/*    //messi per poter eseguire i test (in realtà non sono necessari, il controller controlla che le mosse siano lecite,
-    // oppure i client non possono fare mosse illecite perchè gli viene detto cosa possono fare e non possono fare altrimenti)
-    //giusto????
-    private Coord moveChose;
-    private Coord buildChose;
-    private Worker workerChose;*/
+    private Coord currentMoveChose;
+    private Coord currentBuildChose;
 
     private List<ModelEventListener> modelListeners = new ArrayList<>();
+
     /*per sollevare un evento (esempio) :
         for(ModelEventListener l: modelListeners){
             l.onAllPlayersArrived();
@@ -43,6 +38,8 @@ public class GameModel implements EventSource {
         this.godsList = null;
         this.currentPlayer = null;
         this.currentWorker = null;
+        this.currentMoveChose = null;
+        this.currentBuildChose = null;
     }
 
     //SETUP FUNCTIONS//
@@ -68,11 +65,11 @@ public class GameModel implements EventSource {
         this.board.addWorker(player.getWorker(0));
         this.board.addWorker(player.getWorker(1));
 
-        if(allPlayersArrived()) {
+        /*if(allPlayersArrived()) {
             for (ModelEventListener listener : modelListeners) {
                 listener.onAllPlayersArrived();
             }
-        }
+        }*/
     }
 
     public void setGods(List<God> list){
@@ -83,11 +80,12 @@ public class GameModel implements EventSource {
         return godsList;
     }
 
-    public void setPlayerColor(Player p, Color c) throws IllegalStateException {
+    public void setPlayerColor(Player p, Color c) throws IllegalArgumentException {
         //TODO: Check that player p is part of the game
         //If color has been choose by another player, throw exception
         if(!this.colors.contains(c))
-            throw new IllegalStateException("Chosen color is not available any longer.");
+            throw new IllegalArgumentException("Chosen color is not available any longer.");
+
         p.setWorkerColor(c);
         this.colors.remove(c);
     }
@@ -98,13 +96,22 @@ public class GameModel implements EventSource {
         if(!this.godsList.contains(g))
             throw new IllegalArgumentException("Chosen god has been previously chosen by another player " +
                     "or has never been selected by Challenger.");
+
         p.setGod(g);
         this.godsList.remove(g);
     }
 
-    public void setStartPlayer(Player startPlayer) throws IllegalArgumentException {
+    public void setStartPlayer(String nickname) throws IllegalArgumentException {
 
-        if(!queue.contains(startPlayer))
+        Player startPlayer = null;
+        for(Player p: this.queue){
+            if(p.getNickname().equals(nickname)){
+                startPlayer = p;
+            }
+        }
+
+        //Check that player p is part of the game
+        if(startPlayer == null)
             throw new IllegalArgumentException("Chosen player is not in the game.");
 
         boolean ordered = false;
@@ -122,53 +129,22 @@ public class GameModel implements EventSource {
         board.initializeWorker(w, c);
     }
 
-    public void startSetup() {
-        getListenerByNickname(currentPlayer.getNickname()).onMyGodsSelection();
-    }
-    public void askForGodChoice() {
-        getListenerByNickname(currentPlayer.getNickname()).onMyGodChoice();
-    }
     //GAME FUNCTIONS//
-
-
-    /*public Worker setPlayerWorkerChose(Player p, Worker w) {
-        return null;
-    }*/
-
-    public Player getPlayerByNickname(String nick) throws IllegalArgumentException {
-        // @Nico: cosi' e' piu' bellina :)
-        Player res = queue.stream().filter(p -> p.getNickname().equals(nick)).findFirst().orElse(null);
-
-        /*Player res = null;
-        for(Player p: this.queue){
-            if(p.getNickname().compareTo(nick) == 0){
-                res = p;
-            }
-        }*/
-
-        if (res != null) {
-            return res;
-        } else {
-            throw new IllegalArgumentException("There is no player with the provided name.");
-        }
-    }
-
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
 
-    public void setWorkerChoice(Coord workerPos) throws Exception{
+    public void setWorkerChoice(Coord workerPos) throws WorkerNotFoundException {
         Worker selected = this.board.getWorkerByPosition(workerPos);
-        //TODO: Check that in workerPos there is a worker that belongs to currentPlayer
         this.currentWorker = selected;
     }
 
-    public void setMove(Coord m) throws Exception{
-        this.board.workerMove(currentWorker, m);
+    public void setMove(Coord m){
+        this.currentMoveChose = m;
     }
 
-    public void setBuild(Coord b) throws Exception{
-        this.board.workerBuild(currentWorker, b);
+    public void setBuild(Coord b){
+        this.currentBuildChose = b;
     }
 
     public void setWin(Player p){
@@ -184,15 +160,9 @@ public class GameModel implements EventSource {
         currentPlayer = this.queue.get(0);
     }
 
+    //INTERROGAZIONI DALLE VIEW
     public Board getBoard(){
         return this.board;
-    }
-
-
-    //INTERROGAZIONI DALLE VIEW
-    public void getBoardView(){
-        // using a CLI
-        board.toString();
     }
 
     public ArrayList<Worker> getAllWorkers(){
@@ -209,7 +179,11 @@ public class GameModel implements EventSource {
     }
 
     public List<Color> getAvailableColors(){
-        return colors;
+        return this.colors;
+    }
+
+    public List<God> getAvailableGods(){
+        return this.godsList;
     }
 
     public List<String> requestPlayersNicknames() {
@@ -220,16 +194,9 @@ public class GameModel implements EventSource {
         return res;
     }
 
-    @Override
-    public void addListener(Listener listener) {
-        if (!(listener instanceof ModelEventListener)) {
-            throw new IllegalArgumentException("Tried to register a non-ModelEventListener to Model");
-        }
-        modelListeners.add((ModelEventListener) listener);
-    }
-    private ModelEventListener getListenerByNickname(String nickname) {
+    /*private ModelEventListener getListenerByNickname(String nickname) {
         return modelListeners.stream()
                 .filter(listener -> listener.getNickname().equals(nickname)).
                 findFirst().orElse(null);
-    }
+    }*/
 }

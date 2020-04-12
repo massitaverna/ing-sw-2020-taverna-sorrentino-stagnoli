@@ -34,6 +34,8 @@ public class Player {
 
     // prende come parametro il numero del lavoratore (1 o 2) e
     // restituisce il lavoratore corrispondente
+    //utilizzato solo per inserirli nella board, in seguito verrano scelti
+    //dalla board tramite le loro coordinate
     public Worker getWorker(int num){
         return workersList.get(num-1);
     }

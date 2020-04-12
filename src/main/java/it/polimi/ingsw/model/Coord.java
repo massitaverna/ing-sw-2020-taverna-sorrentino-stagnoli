@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.exceptions.InvalidCoordinatesException;
+import it.polimi.ingsw.exceptions.model.InvalidCoordinatesException;
 
 public class Coord {
     public int x;

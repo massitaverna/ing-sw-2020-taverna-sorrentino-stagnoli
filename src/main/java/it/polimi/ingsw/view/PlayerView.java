@@ -1,12 +1,11 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.exceptions.InvalidCoordinatesException;
+import it.polimi.ingsw.exceptions.model.InvalidCoordinatesException;
 import it.polimi.ingsw.listeners.PlayerViewEventListener;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.listeners.ModelEventListener;
 import it.polimi.ingsw.listeners.ViewEventListener;
-import it.polimi.ingsw.listeners.EventSource;
-import it.polimi.ingsw.listeners.Listener;
+
 import java.io.PrintStream;
 import java.util.*;
 
