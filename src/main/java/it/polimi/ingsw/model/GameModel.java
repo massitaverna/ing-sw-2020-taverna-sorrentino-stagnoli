@@ -1,14 +1,15 @@
-//mod
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
+import it.polimi.ingsw.listeners.EventSource;
+import it.polimi.ingsw.listeners.Listener;
 import it.polimi.ingsw.listeners.ModelEventListener;
 import it.polimi.ingsw.model.god.God;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameModel {
+public class GameModel implements EventSource {
 
     private int numPlayers;
     private List<Player> queue;
@@ -102,17 +103,9 @@ public class GameModel {
         this.godsList.remove(g);
     }
 
-    public void setStartPlayer(String nickname) throws IllegalArgumentException {
+    public void setStartPlayer(Player startPlayer) throws IllegalArgumentException {
 
-        Player startPlayer = null;
-        for(Player p: this.queue){
-            if(p.getNickname().equals(nickname)){
-                startPlayer = p;
-            }
-        }
-
-        //Check that player p is part of the game
-        if(startPlayer == null)
+        if(!queue.contains(startPlayer))
             throw new IllegalArgumentException("Chosen player is not in the game.");
 
         boolean ordered = false;
@@ -131,12 +124,26 @@ public class GameModel {
     }
 
     //GAME FUNCTIONS//
+
+
+    public Player getPlayerByNickname(String nick) throws IllegalArgumentException {
+
+        Player res = queue.stream().filter(p -> p.getNickname().equals(nick)).findFirst().orElse(null);
+
+        if (res != null) {
+            return res;
+        } else {
+            throw new IllegalArgumentException("There is no player with the provided name.");
+        }
+    }
+
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
 
     public void setWorkerChoice(Coord workerPos) throws WorkerNotFoundException {
         Worker selected = this.board.getWorkerByPosition(workerPos);
+        //TODO: Check that in workerPos there is a worker that belongs to currentPlayer
         this.currentWorker = selected;
     }
 
@@ -195,9 +202,16 @@ public class GameModel {
         return res;
     }
 
-    /*private ModelEventListener getListenerByNickname(String nickname) {
+    @Override
+    public void addListener(Listener listener) {
+        if (!(listener instanceof ModelEventListener)) {
+            throw new IllegalArgumentException("Tried to register a non-ModelEventListener to Model");
+        }
+        modelListeners.add((ModelEventListener) listener);
+    }
+    private ModelEventListener getListenerByNickname(String nickname) {
         return modelListeners.stream()
                 .filter(listener -> listener.getNickname().equals(nickname)).
                 findFirst().orElse(null);
-    }*/
+    }
 }

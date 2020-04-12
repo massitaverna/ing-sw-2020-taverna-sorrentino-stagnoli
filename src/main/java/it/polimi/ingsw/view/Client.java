@@ -1,4 +1,3 @@
-//mod
 package it.polimi.ingsw.view;
 
 import java.io.IOException;

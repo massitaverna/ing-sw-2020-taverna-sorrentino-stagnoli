@@ -1,12 +1,11 @@
-//mod
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.exceptions.model.InvalidCoordinatesException;
 import it.polimi.ingsw.listeners.PlayerViewEventListener;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.listeners.ModelEventListener;
-import it.polimi.ingsw.listeners.ViewEventListener;
-
+import it.polimi.ingsw.listeners.EventSource;
+import it.polimi.ingsw.listeners.Listener;
 import java.io.PrintStream;
 import java.util.*;
 
@@ -194,9 +193,9 @@ public class PlayerView implements ModelEventListener, EventSource {
 
     @Override
     public void addListener(Listener listener) {
-        if (!(listener instanceof ViewEventListener)) {
+        if (!(listener instanceof PlayerViewEventListener)) {
             throw new IllegalArgumentException("Tried to register a non-ViewEventListener to View.");
         }
-        this.listener = (ViewEventListener) listener;
+        this.listener = (PlayerViewEventListener) listener;
     }
 }

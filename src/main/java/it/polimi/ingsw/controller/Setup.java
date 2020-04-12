@@ -1,6 +1,6 @@
-//mod
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.god.God;
 import it.polimi.ingsw.model.god.GodCreator;
