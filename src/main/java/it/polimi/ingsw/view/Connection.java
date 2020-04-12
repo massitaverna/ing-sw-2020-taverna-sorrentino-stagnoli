@@ -1,3 +1,4 @@
+//mod
 package it.polimi.ingsw.view;
 
 import java.beans.PropertyChangeListener;

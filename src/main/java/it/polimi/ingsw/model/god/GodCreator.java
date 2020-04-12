@@ -1,3 +1,4 @@
+//mod
 package it.polimi.ingsw.model.god;
 
 import it.polimi.ingsw.model.god.God;
