@@ -131,7 +131,7 @@ public class Board {
         //TODO: Check coordinates c are valid
         if(Coord.validCoord(c));
 
-        List<Coord> result = new ArrayList<Coord>();
+        List<Coord> result = new ArrayList<>();
         for (int i = -1; i < 1; i++) {
             for (int j = -1; j < 1; j++) {
                 if (i==0 && j==0)

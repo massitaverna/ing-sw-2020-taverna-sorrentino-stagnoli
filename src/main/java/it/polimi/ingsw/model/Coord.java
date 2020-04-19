@@ -50,4 +50,9 @@ public class Coord {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ")" ;
+    }
 }
