@@ -29,7 +29,7 @@ public class Setup {
     public void addNewPlayer(Player p) {
         model.addNewPlayer(p); // The first player should be the Challenger
         if (model.allPlayersArrived()) {
-            model.startSetup();
+            //model.startSetup();
         }
     }
 
@@ -50,7 +50,7 @@ public class Setup {
         }*/
         model.setGods(gods);
         model.nextPlayer();
-        model.askForGodChoice();
+        //model.askForGodChoice();
         // currentPlayer viene settato a Challenger+1
         // l'ordine della queue non deve essere modificato fino a che non sono stati assegnati tutti i Gods
 
@@ -87,7 +87,7 @@ public class Setup {
 
         model.assignGodToPlayer(p, g); // Should throw IllegalArgumentException, but no warnings...
         model.nextPlayer();
-        model.askForGodChoice();
+        //model.askForGodChoice();
 
     }
 
