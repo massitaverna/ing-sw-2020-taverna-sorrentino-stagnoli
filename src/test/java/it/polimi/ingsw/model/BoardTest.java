@@ -9,6 +9,7 @@ import java.util.Random;
 
 public class BoardTest {
 
+    //Test getWorkerByPosition() returns the correct positions of the workers
     @Test ( expected = WorkerNotFoundException.class )
     public void getWorkerByPositionTest() throws WorkerNotFoundException {
         Board b = new Board();

@@ -120,7 +120,7 @@ public class Board {
         //not space occupied
         if ( !currentSpace.isOccupied() ) {
             //not space full
-            if ( !(newSpace.getHeight() == Level.DOME) ) {
+            if ( !(newSpace.isDome()) ) {
 
                 w.setPosition(newPos);
                 currentSpace.setUnoccupied();
@@ -164,7 +164,7 @@ public class Board {
         //not space occupied
         if(!this.board[buildPos.x][buildPos.y].isOccupied()) {
             //not space full
-            if (!(this.board[buildPos.x][buildPos.y].getHeight() == Level.DOME)) {
+            if (!(this.board[buildPos.x][buildPos.y].isDome())) {
                 this.board[buildPos.x][buildPos.y].levelUp();
             }
             else{
@@ -193,7 +193,7 @@ public class Board {
                 //if(space not occupied/dome && Rules.CheckSomething) ??
                 if(!this.board[c.x + i][c.y + j].isOccupied() &&
                         !this.board[c.x + i][c.y + j].isDome() &&
-                        (this.board[c.x + i][c.y + j].height.ordinal() - this.board[c.x][c.y].height.ordinal()
+                        (this.board[c.x + i][c.y + j].getHeight().ordinal() - this.board[c.x][c.y].getHeight().ordinal()
                                 <= maxDiff
                         )
                 ) {

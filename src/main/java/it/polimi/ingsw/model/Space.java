@@ -1,15 +1,12 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.exceptions.model.SpaceFullException;
+import it.polimi.ingsw.exceptions.model.SpaceOccupiedException;
+
 public class Space {
     private boolean occupied;
+    private boolean hasDome;
     private Level height;
-
-    public boolean isDome(){
-        if(height.equals(Level.DOME)){
-            return true;
-        }
-        return false;
-    }
 
     public void setOccupied(){
         occupied = true;
@@ -19,20 +16,37 @@ public class Space {
         occupied = false;
     }
 
+    public void setDome(){
+        hasDome = true;
+    }
+
     public boolean isOccupied(){
         return occupied;
+    }
+
+    public boolean isDome(){
+        return this.hasDome;
     }
 
     public Level getHeight(){
         return height;
     }
 
-    // TODO: eccezione se viene invocata su Space con cupola o player
-    public void levelUp() throws SpaceFullException {
-        if(this.height != Level.DOME) {
+    //eccezione se viene invocata su Space con cupola o player
+    public void levelUp() throws SpaceFullException, SpaceOccupiedException {
+        if(this.isOccupied()){
+            throw new SpaceOccupiedException("This space is occupied.");
+        }
+
+        if(this.height != Level.LVL3) {
             height = Level.values()[height.ordinal() + 1];
         }
         else
-            throw new SpaceFullException("This space is full (DOME).");
+            if(!this.hasDome){
+                this.hasDome = true;
+            }
+            else {
+                throw new SpaceFullException("This space is full (DOME).");
+            }
     }
 }
