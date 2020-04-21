@@ -24,13 +24,11 @@ public class PlayerView implements ModelEventListener, EventSource{
 
     private GameModel model;
     private String god;
-    private boolean setupDone;
 
     public PlayerView(GameModel model){
         this.model = model;
         this.s = new Scanner(System.in);
         this.outputStream = new PrintStream(System.out);
-        this.setupDone = false;
     }
 
     public String getNickname() {
@@ -160,6 +158,7 @@ public class PlayerView implements ModelEventListener, EventSource{
             if (correct){
                 try {
                     listener.onMyGodChoice(this, input);
+                    this.god = input;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -227,6 +226,9 @@ public class PlayerView implements ModelEventListener, EventSource{
     // perchè vorrebbe dire che il giocatore ha perso
     @Override
     public void onMyAction(List<Coord> movableSpaces, List<Coord> buildableSpaces) {
+
+        outputStream.println(model.getBoard());
+
         if(movableSpaces.isEmpty())
             this.askToBuild(buildableSpaces);
         if(buildableSpaces.isEmpty())

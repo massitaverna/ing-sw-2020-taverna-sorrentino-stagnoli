@@ -1,7 +1,9 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.listeners.*;
+import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.GameModel;
+import it.polimi.ingsw.model.Worker;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -65,33 +67,19 @@ public class ChallengerView implements ModelEventListener, EventSource {
         listener.onGodsChosen(this, gods);
     }
 
-    public void readNickname(){
-        view.readNickname();
-    }
-
-    public void choseWorkerToMove(){
-        view.chooseWorkerToMove();
-    }
-
-    public void initializeWorkersPosition(){
-        view.initializeWorkersPosition();
+    public void askForNickname(){
+        view.askForNickname();
     }
 
     @Override
     public void onAllPlayersArrived() {
         view.onAllPlayersArrived();
-        this.chooseGods();
     }
 
     @Override
     public void onBoardChanged() {
         view.onBoardChanged();
     }
-
-//    @Override
-//    public void onColorChosen() {
-//        view.onColorChosen();
-//    }
 
     @Override
     public void onGameReady() {
@@ -109,18 +97,34 @@ public class ChallengerView implements ModelEventListener, EventSource {
     }
 
     @Override
-    public void onMyTurn() {
-
+    public void onGodSelection() {
+        this.chooseGods();
+        view.onGodSelection();
     }
 
     @Override
-    public String getNickname() {
-        return null;
+    public void onStartPlayerSelection() {
+        this.chooseStartingPlayer();
+        view.onStartPlayerSelection();
     }
 
-    //@Override
-    public void onTurnChanged(String nick) {
-        view.onTurnChanged(nick);
+    @Override
+    public void onMyInitialization() {
+        view.onMyInitialization();
+    }
+
+    @Override
+    public void onMyTurn(List<Worker> selectableWorkers) {
+        view.onMyTurn(selectableWorkers);
+    }
+
+    @Override
+    public void onMyAction(List<Coord> movableSpaces, List<Coord> buildableSpaces) {
+        view.onMyAction(movableSpaces, buildableSpaces);
+    }
+
+    public String getNickname() {
+        return view.getNickname();
     }
 
     @Override
