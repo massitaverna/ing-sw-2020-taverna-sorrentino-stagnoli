@@ -11,9 +11,9 @@ public class Coord {
         this.y=y;
     }
 
-    public static boolean validCoord(Coord c) throws InvalidCoordinatesException {
+    public static boolean validCoord(Coord c) {
         if(c.x < 0 || c.x > 4 || c.y < 0 || c.y > 4) {
-            throw new InvalidCoordinatesException("Coordinates x & y must be between 0 and 4.");
+            return false;
         }
         else {
             return true;
@@ -21,8 +21,16 @@ public class Coord {
     }
 
     public boolean isNear(Coord c) throws InvalidCoordinatesException {
-        if(Coord.validCoord(this));
-        if(Coord.validCoord(c));
+        if( !Coord.validCoord(this) ){
+            throw new InvalidCoordinatesException("Mehtod isNear() has been called on invalid coordinates.");
+        }
+        if( !Coord.validCoord(c) ){
+            throw new InvalidCoordinatesException("Invalid coordinates given.");
+        }
+
+        //if it's the same coordinates, return false
+        if(this.x == c.x && this.y == c.y)
+            return false;
 
         int diffX = Math.abs(this.x - c.x);
         int diffY = Math.abs(this.y - c.y);
