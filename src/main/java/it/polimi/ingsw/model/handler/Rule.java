@@ -14,6 +14,7 @@ forceDestination != null ==> decision == GRANT
 
 package it.polimi.ingsw.model.handler;
 
+import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.model.Space;
 
@@ -24,8 +25,8 @@ public class Rule {
     private Purpose purpose;
     private ActionType actionType;
     private Decision decision;
-    private BiPredicate<Space, Space> condition;
-    private BiFunction<Space, Space, Space> forceSpaceFunction;
+    private BiPredicate<Coord, Coord> condition;
+    private BiFunction<Coord, Coord, Coord> forceSpaceFunction;
     private Level buildLevel;
 
     Purpose getPurpose() {
@@ -45,11 +46,11 @@ public class Rule {
     }
 
     //Used for MoveRules or for GenerationRules
-    BiPredicate<Space, Space> getCondition() {
+    BiPredicate<Coord, Coord> getCondition() {
         return condition;
     }
 
-    BiFunction<Space, Space, Space> getForceSpaceFunction() {
+    BiFunction<Coord, Coord, Coord> getForceSpaceFunction() {
         return forceSpaceFunction;
     }
 
@@ -57,6 +58,29 @@ public class Rule {
         return buildLevel;
     }
 
+    void setPurpose(Purpose purpose) {
+        this.purpose = purpose;
+    }
+
+    void setActionType(ActionType actionType) {
+        this.actionType = actionType;
+    }
+
+    void setDecision(Decision decision) {
+        this.decision = decision;
+    }
+
+    void setCondition(BiPredicate<Coord, Coord> condition) {
+        this.condition = condition;
+    }
+
+    void setForceSpaceFunction(BiFunction<Coord, Coord, Coord> f) {
+        this.forceSpaceFunction = f;
+    }
+
+    void setBuildLevel(Level buildLevel) {
+        this.buildLevel = buildLevel;
+    }
 
     @Override
     public String toString() {

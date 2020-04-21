@@ -1,10 +1,11 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.model.InvalidCoordinatesException;
+import sun.jvm.hotspot.oops.CompressedOops;
 
 public class Coord {
-    public int x;
-    public int y;
+    public final int x;
+    public final int y;
 
     public Coord(int x, int y){
         this.x=x;
@@ -28,18 +29,22 @@ public class Coord {
             throw new InvalidCoordinatesException("Invalid coordinates given.");
         }
 
-        //if it's the same coordinates, return false
+        //if it's the same coordinate, return false
         if(this.x == c.x && this.y == c.y)
             return false;
 
         int diffX = Math.abs(this.x - c.x);
         int diffY = Math.abs(this.y - c.y);
-        if(diffX > 1 || diffY > 1){
+        if (diffX > 1 || diffY > 1){
             return false;
         }
-        else{
+        else {
             return true;
         }
+    }
+
+    public Coord sum(Coord c) {
+        return new Coord(this.x + c.x, this.y + c.y);
     }
 
     public static Coord convertStringToCoord(String input){
@@ -51,7 +56,7 @@ public class Coord {
     }
 
     @Override
-    public boolean equals(Object obj){
+    public boolean equals(Object obj) {
         if(obj instanceof Coord){
             Coord other = (Coord)obj;
             return (this.x == other.x && this.y == other.y);

@@ -11,7 +11,7 @@ public interface ModelEventListener extends Listener {
     public void onGameReady();
     public void onGodsChosen();
     public void onPlayerAdded(String nickname);
-    /*  public String getNickname();*/
+    public String getNickname();
 
     public void onGodSelection();
     public void onStartPlayerSelection();
