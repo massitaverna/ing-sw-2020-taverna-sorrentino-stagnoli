@@ -39,7 +39,7 @@ public class PlayerView implements ModelEventListener, EventSource{
         outputStream.println("Choose a nickname: ");
         String input = s.nextLine();
 
-        while (!model.requestPlayersNicknames().contains(input)) {
+        while (model.requestPlayersNicknames().contains(input)) {
             outputStream.println("Nickname already taken, please choose another nickname: ");
             input = s.nextLine();
         }
@@ -100,14 +100,14 @@ public class PlayerView implements ModelEventListener, EventSource{
         this.listener = (PlayerViewEventListener) listener;
     }
 
-    @Override
-    public void onAllPlayersArrived() {
-        outputStream.println("All player are connected. The game is about to start...");
-    }
+//    @Override
+//    public void onAllPlayersArrived() {
+//        outputStream.println("All player are connected. The game is about to start...");
+//    }
 
     @Override
-    public void onBoardChanged() {
-        outputStream.println(model.getBoard());
+    public void onBoardChanged(Board board) {
+        outputStream.println(board);
     }
 
     @Override
@@ -117,8 +117,11 @@ public class PlayerView implements ModelEventListener, EventSource{
     }
 
     @Override
-    public void onGodsChosen() {
+    public void onGodsChosen(List<String> gods) {
         outputStream.println("Challenger has chosen the playable gods");
+        for (String s : gods){
+            outputStream.println("- " + s);
+        }
     }
 
     @Override
@@ -129,27 +132,27 @@ public class PlayerView implements ModelEventListener, EventSource{
     }
 
     @Override
-    public void onGodSelection() {
+    public void onGodSelection(List<String> gods) {
 
-        List<God> gods = model.getGods();
+
         boolean correct = false;
 
         while (!correct){
             outputStream.println("Choose a God, you can use \"[god_name] help\" to read the power of the God: ");
-            for (God g: gods) {
-                outputStream.println("- " + g.getName());
+            for (String g: gods) {
+                outputStream.println("- " + g);
             }
 
             String input = s.nextLine();
 
-            if (input.substring(input.length() - 4).toLowerCase().equals("help")){
-                // model needs to handle wrong deities names
-                String desc = model.getDescriptionByGodName(input.substring(0, input.length() - 5));
-                outputStream.println(desc);
-            }
+//            if (input.substring(input.length() - 4).toLowerCase().equals("help")){
+//                // model needs to handle wrong deities names
+//                String desc = model.getDescriptionByGodName(input.substring(0, input.length() - 5));
+//                outputStream.println(desc);
+//            } DA METTERE LATO CLIENT NON REMOTE VIEW
 
-            for(God g : gods){
-                if (input.toLowerCase().equals(g.getName().toLowerCase())){
+            for(String g : gods){
+                if (input.toLowerCase().equals(g.toLowerCase())){
                     correct = true;
                     break;
                 }
@@ -167,12 +170,18 @@ public class PlayerView implements ModelEventListener, EventSource{
     }
 
     @Override
-    public void onStartPlayerSelection() {
-        outputStream.println("Challenger has chosen the starting player");
+    public void onGodsSelection(List<String> gods, int numPlayers) {
+        // non dovrebbe mai arrivare al player normale
+        outputStream.println("Challenger is choosing the playable gods");
     }
 
     @Override
-    public void onMyInitialization() {
+    public void onStartPlayerSelection(List<String> players) {
+        outputStream.println("Challenger is choosing the starting player");
+    }
+
+    @Override
+    public void onMyInitialization(List<Coord> freeSpaces) {
         int i = 0;
         while (i<2) {
             if (i == 0)
@@ -181,14 +190,16 @@ public class PlayerView implements ModelEventListener, EventSource{
                 outputStream.println("Where do you want to place the second worker?");
             String input  = s.nextLine();
             Coord c = Coord.convertStringToCoord(input);
-            try {
-                Coord.validCoord(c);
-                listener.onMyInitializationChoice(this, c);
-                i++;
-            }
-            catch (Exception e) {
-                outputStream.println("Something went wrong.");
-                e.printStackTrace();
+
+            for (Coord space : freeSpaces){
+                if (c.equals(space)){
+                    try{
+                        listener.onMyInitializationChoice(this, c);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    i++;
+                }
             }
         }
     }

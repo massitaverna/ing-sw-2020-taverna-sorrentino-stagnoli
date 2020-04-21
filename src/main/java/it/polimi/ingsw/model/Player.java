@@ -1,6 +1,7 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.god.God;
+import it.polimi.ingsw.model.handler.RequestHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ public class Player {
     private String nickname;
     private God god;
     private boolean hasWon;
-    /*private Collection<Rule> rules;*/
+    private RequestHandler handler;
     private List<Worker> workersList;
     private Color workerColor;
 

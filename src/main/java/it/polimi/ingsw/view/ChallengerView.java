@@ -1,6 +1,7 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.listeners.*;
+import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.Worker;
@@ -38,47 +39,18 @@ public class ChallengerView implements ModelEventListener, EventSource {
         listener.onNumberOfPlayersChosen(this, n+1);
     }
 
-    public void chooseStartingPlayer(){
-        outputStream.println("Who do you want to be the starting player? ");
-
-        List<String> players = this.model.requestPlayersNicknames();
-        for(String name: players){
-            outputStream.println(name);
-        }
-
-        String choose = s.next();
-        while(!players.contains(choose)){
-            outputStream.println("Player name may be incorrect, please try again.");
-            choose = s.next();
-        }
-
-        listener.onStartPlayerChosen(this, choose);
-    }
-
-    public void chooseGods(){
-        System.out.println("The challenger chooses the gods: ");
-
-        int numPlayers = this.model.getQueueState();
-        List<String> gods = new ArrayList<>();
-        for (int i = 0; i < numPlayers; i++) {
-            gods.add(s.next());
-        }
-
-        listener.onGodsChosen(this, gods);
-    }
-
     public void askForNickname(){
         view.askForNickname();
     }
 
-    @Override
-    public void onAllPlayersArrived() {
-        view.onAllPlayersArrived();
-    }
+//    @Override
+//    public void onAllPlayersArrived() {
+//        view.onAllPlayersArrived();
+//    }
 
     @Override
-    public void onBoardChanged() {
-        view.onBoardChanged();
+    public void onBoardChanged(Board board) {
+        view.onBoardChanged(board);
     }
 
     @Override
@@ -87,8 +59,8 @@ public class ChallengerView implements ModelEventListener, EventSource {
     }
 
     @Override
-    public void onGodsChosen() {
-        view.onGodsChosen();
+    public void onGodsChosen(List<String> gods) {
+        view.onGodsChosen(gods);
     }
 
     @Override
@@ -97,20 +69,62 @@ public class ChallengerView implements ModelEventListener, EventSource {
     }
 
     @Override
-    public void onGodSelection() {
-        this.chooseGods();
-        view.onGodSelection();
+    public void onGodSelection(List<String> gods) {
+        view.onGodSelection(gods);
     }
 
     @Override
-    public void onStartPlayerSelection() {
-        this.chooseStartingPlayer();
-        view.onStartPlayerSelection();
+    public void onGodsSelection(List<String> gods, int numPlayers) {
+        outputStream.println("Choose the gods to use in this game: ");
+        boolean valid = false;
+        List<String> choices = new ArrayList<>();
+
+        while (!valid){
+            String input = s.nextLine();
+
+            if(gods.contains(input)){
+                choices.add(input);
+                if(choices.size() == numPlayers){
+                    listener.onGodsChosen(this, choices);
+                    valid = true;
+                } else
+                    outputStream.println("Choose another god: ");
+            } else
+                outputStream.println("Invalid input.");
+        }
     }
 
     @Override
-    public void onMyInitialization() {
-        view.onMyInitialization();
+    public void onStartPlayerSelection(List<String> players) {
+        outputStream.println("Choose the starting player: ");
+
+        for (int i = 0; i<players.size(); i++) {
+            outputStream.println( (i+1) + players.get(i));
+        }
+
+        boolean valid = false;
+
+        while (!valid){
+            String input = s.nextLine();
+
+            if (input.equals("1") || input.toLowerCase().equals(players.get(0).toLowerCase())){
+                valid = true;
+                listener.onStartPlayerChosen(this, players.get(0));
+            } if (input.equals("2") || input.toLowerCase().equals(players.get(1).toLowerCase())){
+                valid = true;
+                listener.onStartPlayerChosen(this, players.get(1));
+            } if (input.equals("3") || input.toLowerCase().equals(players.get(2).toLowerCase())){
+                valid = true;
+                listener.onStartPlayerChosen(this, players.get(2));
+            } else
+                outputStream.println("Invalid nickname");
+        }
+
+    }
+
+    @Override
+    public void onMyInitialization(List<Coord> freeSpaces) {
+        view.onMyInitialization(freeSpaces);
     }
 
     @Override

@@ -46,6 +46,21 @@ public class RequestHandlerCreator {
             return result;
         }
 
+        if (god.equals("Artemis")) {
+            List<Rule> result = new ArrayList<>();
+            Rule r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.MOVE);
+            r.setDecision(Decision.GRANT);
+            BiPredicate<Coord, Coord> condition = (before, after) ->
+                    ;
+            r.setCondition(condition);
+            result.add(r);
+            godRules.put("Artemis", result);
+
+            return result;
+        }
+
         if (god.equals("Minotaur")) {
             List<Rule> result = new ArrayList<>();
             Rule r = new Rule();
