@@ -12,6 +12,11 @@ public class Board {
 
     public Board(){
         this.board = new Space[5][5];
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                this.board[i][j] = new Space();
+            }
+        }
         this.workers = new ArrayList<>();
     }
 
