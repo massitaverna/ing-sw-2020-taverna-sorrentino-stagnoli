@@ -8,6 +8,7 @@ import it.polimi.ingsw.model.god.God;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class GameModel implements EventSource {
 
@@ -21,7 +22,7 @@ public class GameModel implements EventSource {
     private Coord currentMoveChose;
     private Coord currentBuildChose;
 
-    private List<ModelEventListener> modelListeners = new ArrayList<>();
+    private List<ModelEventListener> modelListeners;
 
     /*per sollevare un evento (esempio) :
         for(ModelEventListener l: modelListeners){
@@ -42,6 +43,7 @@ public class GameModel implements EventSource {
         this.currentWorker = null;
         this.currentMoveChose = null;
         this.currentBuildChose = null;
+        this.modelListeners = new ArrayList<>();
     }
 
     //SETUP FUNCTIONS//
@@ -189,7 +191,7 @@ public class GameModel implements EventSource {
 
     //INTERROGAZIONI DALLE VIEW
     public Board getBoard(){
-        return this.board;
+        return this.board.clone();
     }
 
     public ArrayList<Worker> getAllWorkers(){
@@ -231,7 +233,7 @@ public class GameModel implements EventSource {
 
     private ModelEventListener getListenerByNickname(String nickname) {
         return modelListeners.stream()
-                .filter(listener -> listener.getNickname().equals(nickname)).
-                findFirst().orElse(null);
+                .filter(listener -> listener.getNickname().equals(nickname))
+                .findFirst().orElse(null);
     }
 }
