@@ -6,10 +6,12 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.listeners.ModelEventListener;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.Listener;
+import it.polimi.ingsw.model.god.God;
+
 import java.io.PrintStream;
 import java.util.*;
 
-public class PlayerView implements ModelEventListener, EventSource {
+public class PlayerView implements ModelEventListener, EventSource{
 
     private Scanner s;
     private PrintStream outputStream;
@@ -25,169 +27,70 @@ public class PlayerView implements ModelEventListener, EventSource {
     private boolean setupDone;
 
     public PlayerView(GameModel model){
-        s = new Scanner(System.in);
-        outputStream = new PrintStream(System.out);
         this.model = model;
-        setupDone = false;
-    }
-
-    // chiamato dopo aver aperto una connessione
-    public void createPlayer() {
-        this.readNickname();
-        this.getColor();
-    }
-
-    public void readNickname() {
-        outputStream.println("Choose a nickname: ");
-        String input = s.nextLine();
-
-        while (!model.requestPlayersNicknames().contains(input)){
-            outputStream.println("Nickname already taken, please choose another nickname: ");
-            input = s.nextLine();
-        }
-
-        this.nickname = input;
-
-        listener.onNicknameChosen(this, input);
-    }
-
-    public void getColor(){
-        outputStream.println("Choose your color (RED, BLUE, YELLOW):");
-        String input = s.nextLine();
-        Color c = Color.valueOf(input);
-
-        while (!model.getAvailableColors().contains(c)){
-            outputStream.println("Color already taken, please choose a new one: ");
-            input = s.nextLine();
-            c = Color.valueOf(input);
-        }
-
-        listener.onColorChosen(this, c);
-    }
-
-    // viene chiamata solo se entrambi i worker sono spostabili o sempre?
-    public void chooseWorkerToMove(){
-        outputStream.println("Choose a worker to move (1, 2): ");
-        String input = s.nextLine();
-
-        listener.onWorkerChosen(this, input);
-    }
-
-    public void initializeWorkersPosition(){
-        outputStream.println("Where do you want to place the first worker?");
-        while (true) {
-            String input  = s.nextLine();
-            Coord c = Coord.convertStringToCoord(input);
-            try {
-                Coord.validCoord(c);
-                listener.onWorkerInitialized(this, c.x, c.y);
-                break;
-            }
-            catch (InvalidCoordinatesException e) {
-                outputStream.println("The format is incorrect.");
-            }
-        }
-
-        /*outputStream.println("Where do you want to place the second worker?");
-        input  = s.nextLine();
-        listener.onSecondWorkerPositioned(input);*/
-    }
-
-    public void chooseGod(){
-        outputStream.print("Choose a god from the list: ");
-        // TODO: get the viable gods, print them and validate the input
-        String input = s.nextLine();
-
-        listener.onGodChosen(this, input);
+        this.s = new Scanner(System.in);
+        this.outputStream = new PrintStream(System.out);
+        this.setupDone = false;
     }
 
     public String getNickname() {
         return nickname;
     }
 
-    @Override
-    public void onAllPlayersArrived() {
-        outputStream.println("All player are connected. The game is about to start...");
-    }
+    public void askForNickname() {
+        outputStream.println("Choose a nickname: ");
+        String input = s.nextLine();
 
-    @Override
-    public void onBoardChanged() {
-        model.getBoardView();
-    }
-
-//    @Override
-//    public void onColorChosen() {
-//        // Shouldn't the controller have this method? When a Player chooses his/her color
-//        // the controller sees it and update the Player in the model
-//    }
-
-    @Override
-    public void onGameReady() {
-        outputStream.println("Set up is done, you are good to go!");
-
-        model.getBoardView();
-    }
-
-    @Override
-    public void onGodsChosen() {
-
-    }
-
-    @Override
-    public void onPlayerAdded(String nickname) {
-        outputStream.println(nickname + "has joined the game.");
-        int currentNumber = model.getQueueState();
-        int totalNumber = model.getNumPlayers();
-
-        if (totalNumber != currentNumber)
-            outputStream.println("Waiting for " + (totalNumber-currentNumber) + " more player/s");
-    }
-
-    @Override
-    public void onMyTurn() {
-
-    }
-
-    // Should we divide this method based on the phase of the game (setup or play) o should I
-    // have a bunch of if statements?
-    @Override
-    public void onTurnChanged(String nickname)  throws InvalidCoordinatesException{
-        if (!setupDone) {
-            if (god == null) {
-                chooseGod();
-            }
-            else {
-                initializeWorkersPosition();
-            }
-            return;
-        }
-        // if it's my turn to play with basic rules
-        if(this.nickname.equals(nickname)){
-            outputStream.println("Where do you want to move?");
-            // the input should be like "A1"
-            String input = s.nextLine();
-            input = input.toUpperCase();
-            Coord c = Coord.convertStringToCoord(input);
-            while (!Coord.validCoord(c)){
-                outputStream.println("Your input is invalid, please try again.");
-                // the input should be like "A1"
-                input = s.nextLine();
-                input = input.toUpperCase();
-                c = Coord.convertStringToCoord(input);
-            }
-            listener.onPlayerChoseMove(this, c);
-
-            outputStream.println("Where do you want to build?");
+        while (!model.requestPlayersNicknames().contains(input)) {
+            outputStream.println("Nickname already taken, please choose another nickname: ");
             input = s.nextLine();
-            c = Coord.convertStringToCoord(input);
-            while (!Coord.validCoord(c)){
-                outputStream.println("Your input is invalid, please try again.");
-                // the input should be like "A1"
-                input = s.nextLine();
-                input = input.toUpperCase();
-                c = Coord.convertStringToCoord(input);
+        }
+
+        this.nickname = input;
+        listener.onNicknameChosen(this, input);
+    }
+
+    private void askToBuild(List<Coord> buildableSpaces){
+        outputStream.println("Where do you want to build? ");
+        boolean valid = false;
+
+        while (!valid){
+            String input = s.nextLine();
+            Coord c = Coord.convertStringToCoord(input);
+
+            for ( Coord possibleCoord: buildableSpaces) {
+                if (possibleCoord.equals(c)){
+                    valid = true;
+                    break;
+                }
             }
-            listener.onPlayerChoseBuild(this, c);
+
+            if(valid)
+                listener.onBuildChosen(this, c);
+            else
+                outputStream.println("Please enter a valid coordinate");
+        }
+    }
+
+    private void askToMove(List<Coord> movableSpaces){
+        outputStream.println("Where do you want to build? ");
+        boolean valid = false;
+
+        while (!valid){
+            String input = s.nextLine();
+            Coord c = Coord.convertStringToCoord(input);
+
+            for ( Coord possibleCoord: movableSpaces) {
+                if (possibleCoord.equals(c)){
+                    valid = true;
+                    break;
+                }
+            }
+
+            if(valid)
+                listener.onMoveChosen(this, c);
+            else
+                outputStream.println("Please enter a valid coordinate");
         }
     }
 
@@ -197,5 +100,155 @@ public class PlayerView implements ModelEventListener, EventSource {
             throw new IllegalArgumentException("Tried to register a non-ViewEventListener to View.");
         }
         this.listener = (PlayerViewEventListener) listener;
+    }
+
+    @Override
+    public void onAllPlayersArrived() {
+        outputStream.println("All player are connected. The game is about to start...");
+    }
+
+    @Override
+    public void onBoardChanged() {
+        outputStream.println(model.getBoard());
+    }
+
+    @Override
+    public void onGameReady() {
+        outputStream.println("Set up phase is done!");
+        outputStream.println(model.getBoard());
+    }
+
+    @Override
+    public void onGodsChosen() {
+        outputStream.println("Challenger has chosen the playable gods");
+    }
+
+    @Override
+    public void onPlayerAdded(String nickname) {
+        int numTot = model.getNumPlayers();
+        int numCurr = model.getQueueState();
+        outputStream.println(nickname + "has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
+    }
+
+    @Override
+    public void onGodSelection() {
+
+        List<God> gods = model.getGods();
+        boolean correct = false;
+
+        while (!correct){
+            outputStream.println("Choose a God, you can use \"[god_name] help\" to read the power of the God: ");
+            for (God g: gods) {
+                outputStream.println("- " + g.getName());
+            }
+
+            String input = s.nextLine();
+
+            if (input.substring(input.length() - 4).toLowerCase().equals("help")){
+                // model needs to handle wrong deities names
+                String desc = model.getDescriptionByGodName(input.substring(0, input.length() - 5));
+                outputStream.println(desc);
+            }
+
+            for(God g : gods){
+                if (input.toLowerCase().equals(g.getName().toLowerCase())){
+                    correct = true;
+                    break;
+                }
+            }
+
+            if (correct){
+                try {
+                    listener.onMyGodChoice(this, input);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onStartPlayerSelection() {
+        outputStream.println("Challenger has chosen the starting player");
+    }
+
+    @Override
+    public void onMyInitialization() {
+        int i = 0;
+        while (i<2) {
+            if (i == 0)
+                outputStream.println("Where do you want to place the first worker?");
+            if (i == 1)
+                outputStream.println("Where do you want to place the second worker?");
+            String input  = s.nextLine();
+            Coord c = Coord.convertStringToCoord(input);
+            try {
+                Coord.validCoord(c);
+                listener.onMyInitializationChoice(this, c);
+                i++;
+            }
+            catch (Exception e) {
+                outputStream.println("Something went wrong.");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onMyTurn(List<Worker> selectableWorkers) {
+
+        outputStream.println(model.getBoard());
+        boolean correct = false;
+
+        while (!correct){
+            outputStream.println("Please select the worker to use in this turn, using its position: ");
+            String input = s.nextLine();
+            Coord c = Coord.convertStringToCoord(input);
+
+            for(Worker w : selectableWorkers){
+                if (w.getPosition().equals(c)){
+                    correct = true;
+                    break;
+                }
+            }
+
+            if (correct){
+                try{
+                    listener.onWorkerChosen(this, c);
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+
+    // non gestisco il caso in cui entrambe le liste sono vuote perchè non dovrebbe mai succedere
+    // perchè vorrebbe dire che il giocatore ha perso
+    @Override
+    public void onMyAction(List<Coord> movableSpaces, List<Coord> buildableSpaces) {
+        if(movableSpaces.isEmpty())
+            this.askToBuild(buildableSpaces);
+        if(buildableSpaces.isEmpty())
+            this.askToMove(movableSpaces);
+        else {
+            outputStream.println("Which action would you like to perform? \n 1. Move\n 2. Build");
+            String input = s.nextLine();
+            boolean valid = false;
+
+            while (!valid){
+                if (input.equals("1") || input.toLowerCase().equals("move")){
+                    valid = true;
+                    this.askToMove(movableSpaces);
+                }
+                if (input.equals("2") || input.toLowerCase().equals("build")){
+                    valid = true;
+                    this.askToBuild(buildableSpaces);
+                }
+                else {
+                    outputStream.println("Please enter a valid action");
+                }
+            }
+        }
     }
 }

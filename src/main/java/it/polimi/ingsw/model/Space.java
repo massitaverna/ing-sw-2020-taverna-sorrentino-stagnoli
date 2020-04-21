@@ -2,7 +2,7 @@ package it.polimi.ingsw.model;
 
 public class Space {
     private boolean occupied;
-    Level height;
+    private Level height;
 
     public boolean isDome(){
         if(height.equals(Level.DOME)){

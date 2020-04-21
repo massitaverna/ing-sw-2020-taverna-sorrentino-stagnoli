@@ -178,7 +178,85 @@ public class Board {
     @Override
     public String toString() {
 
-        //TODO: redefine this method
-        return super.toString();
+        String numLine =            "       1         2         3         4         5     \n";
+        String horizontalBorder =   "  +---------+---------+---------+---------+---------+\n";
+        String topSpaceLine =       "  |         |         |         |         |         |\n";
+
+        String stdColor = (char) 27 + "[39m";
+
+        String boardString = numLine + horizontalBorder;
+        String workerLine;
+        String lvl3Line;
+        String lvl2Line;
+        String lvl1Line;
+
+        for (int i = 0; i < 5; i++) {
+
+            workerLine = "  |";
+            lvl3Line = (char) 65+i + " |";
+            lvl2Line = "  |";
+            lvl1Line = "  |";
+
+            for (int j = 0; j < 5; j++) {
+                if (board[i][j].isOccupied()) {
+                    try {
+                        Worker workerInSpace = this.getWorkerByPosition(new Coord(i ,j));
+                        String colredWorker = "";
+                        switch (workerInSpace.getColor()) {
+                            case RED:
+                                colredWorker = (char) 27 + "[31mW";
+                                break;
+                            case BLUE:
+                                colredWorker = (char) 27 + "[34mW";
+                                break;
+                            case YELLOW:
+                                colredWorker = (char) 27 + "[33mW";
+                                break;
+                        }
+                        workerLine = workerLine + "    "+ colredWorker + stdColor + "    |";
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                else if (board[i][j].isDome())
+                    workerLine = workerLine + "    ^    |";  // a space cannot be occupied by a worker and be a dome at the same time
+                else
+                    workerLine = workerLine + "         |";
+
+                switch (board[i][j].getHeight()) {
+                    case LVL3:
+                        lvl3Line = lvl3Line + "   ***   |";
+                        lvl2Line = lvl2Line + "  *****  |";
+                        lvl1Line = lvl1Line + " ******* |";
+                        break;
+
+                    case LVL2:
+                        lvl3Line = lvl3Line + "         |";
+                        lvl2Line = lvl2Line + "  *****  |";
+                        lvl1Line = lvl1Line + " ******* |";
+                        break;
+
+                    case LVL1:
+                        lvl3Line = lvl3Line + "         |";
+                        lvl2Line = lvl2Line + "         |";
+                        lvl1Line = lvl1Line + " ******* |";
+                        break;
+
+                    case GROUND:
+                        lvl1Line = lvl1Line + "         |";
+                        lvl2Line = lvl2Line + "         |";
+                        lvl3Line = lvl3Line + "         |";
+                        break;
+                }
+            }
+
+            workerLine = workerLine + "\n";
+            lvl3Line = lvl3Line + "\n";
+            lvl2Line = lvl2Line + "\n";
+            lvl1Line = lvl1Line + "\n";
+
+            boardString = boardString  + topSpaceLine + workerLine + lvl3Line + lvl2Line + lvl1Line + horizontalBorder;
+        }
+        return boardString;
     }
 }

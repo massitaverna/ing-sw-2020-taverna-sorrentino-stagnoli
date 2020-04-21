@@ -209,6 +209,7 @@ public class GameModel implements EventSource {
         }
         modelListeners.add((ModelEventListener) listener);
     }
+
     private ModelEventListener getListenerByNickname(String nickname) {
         return modelListeners.stream()
                 .filter(listener -> listener.getNickname().equals(nickname)).
