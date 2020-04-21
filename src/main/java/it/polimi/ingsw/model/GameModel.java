@@ -83,7 +83,11 @@ public class GameModel implements EventSource {
     }
 
     public void setPlayerColor(Player p, Color c) throws IllegalArgumentException {
-        //TODO: Check that player p is part of the game
+        //Check that player p is part of the game
+        if( !(this.queue.contains(p))){
+            throw new IllegalArgumentException("Given Player is not part of the game");
+        }
+
         //If color has been choose by another player, throw exception
         if(!this.colors.contains(c))
             throw new IllegalArgumentException("Chosen color is not available any longer.");
@@ -93,7 +97,11 @@ public class GameModel implements EventSource {
     }
 
     public void assignGodToPlayer(Player p, God g) throws IllegalArgumentException {
-        //TODO: Check that player p is part of the game
+        //Check that player p is part of the game
+        if( !(this.queue.contains(p))){
+            throw new IllegalArgumentException("Given Player is not part of the game");
+        }
+
         //If god has been choose by another player, throw exception
         if(!this.godsList.contains(g))
             throw new IllegalArgumentException("Chosen god has been previously chosen by another player " +
@@ -141,9 +149,14 @@ public class GameModel implements EventSource {
         return currentPlayer;
     }
 
-    public void setWorkerChoice(Coord workerPos) throws WorkerNotFoundException {
+    public void setWorkerChoice(Coord workerPos) throws WorkerNotFoundException, IllegalArgumentException {
         Worker selected = this.board.getWorkerByPosition(workerPos);
-        //TODO: Check that in workerPos there is a worker that belongs to currentPlayer
+
+        //Check that worker in workerPos there is a worker that belongs to currentPlayer
+        if( !(selected.getPlayerNickname().equals(currentPlayer.getNickname())) ) {
+            throw new IllegalArgumentException("Selected worker does not belong to the current player");
+        }
+
         this.currentWorker = selected;
     }
 
@@ -155,17 +168,23 @@ public class GameModel implements EventSource {
         this.currentBuildChose = b;
     }
 
-    public void setWin(Player p){
-        //TODO: Check that player p is part of the game
+    public void setWin(Player p) throws IllegalArgumentException {
+        //Check that player p is part of the game
+        if( !(this.queue.contains(p)) ){
+            throw new IllegalArgumentException("Given Player is not part of the game");
+        }
+
         p.win();
         //TODO: End of the Game
     }
 
     public void nextPlayer(){
-        //TODO: Check the game is ready
-        this.queue.remove(currentPlayer);
-        this.queue.add(currentPlayer);
-        currentPlayer = this.queue.get(0);
+        //Check the game is ready
+        if( this.allPlayersArrived() ) {
+            this.queue.remove(currentPlayer);
+            this.queue.add(currentPlayer);
+            currentPlayer = this.queue.get(0);
+        }
     }
 
     //INTERROGAZIONI DALLE VIEW

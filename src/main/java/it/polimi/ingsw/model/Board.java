@@ -16,11 +16,22 @@ public class Board {
     }
 
     public Space getSpace(Coord c){
-        //TODO: Check coordinates c are valid
-        return board[c.x][c.y];
+
+        //Check coordinates c are valid
+        if (Coord.validCoord(c)) {
+            return board[c.x][c.y];
+        }
+
+        return null;
     }
 
-    public void addWorker(Worker w){
+    public void addWorker(Worker w) throws IllegalStateException {
+
+        //if worker is already present, throw exception
+        if(this.workers.contains(w)){
+            throw new IllegalStateException("thw worker has already been added.");
+        }
+
         this.workers.add(w);
     }
 
@@ -29,6 +40,12 @@ public class Board {
     }
 
     public Worker getWorkerByPosition(Coord pos) throws WorkerNotFoundException {
+
+        //Check coordinates pos are valid
+        if (!Coord.validCoord(pos)) {
+            throw new WorkerNotFoundException("Worker not found: Invalid coordinates given.");
+        }
+
         for(Worker w: this.workers){
             if(w.getPosition().equals(pos)){
                 return w;
@@ -37,20 +54,30 @@ public class Board {
         throw new WorkerNotFoundException("There is no worker in the selected position.");
    }
 
-    public void initializeWorker(Worker worker, Coord coord) throws IllegalArgumentException,
-            IllegalStateException {
-        //TODO: Check worker Belongs to the game
+    public void initializeWorker(Worker worker, Coord coord) throws IllegalArgumentException, IllegalStateException {
+
+        //Check worker Belongs to the game
+        if(!this.workers.contains(worker)){
+            throw new IllegalArgumentException("The worker " + worker.toString() + " is not part of the game.");
+        }
+
+        //Check coordinates are valid
+        if (!Coord.validCoord(coord)) {
+            throw new IllegalArgumentException("Invalid Coordinates");
+        }
 
         Space dest = board[coord.x][coord.y];
         if (dest.isOccupied()) {
-            throw new IllegalArgumentException("Tried to initialize worker on an occupied space.");
+            throw new IllegalStateException("Tried to initialize worker on an occupied space.");
         }
         if (worker.getPosition() != null) {
             throw new IllegalStateException("Tried to initialize worker when he is already placed in board.");
         }
         worker.setPosition(coord);
+        dest.setOccupied();
     }
 
+    //ONLY FOR INITIALIZATION PHASE !!!!!!
     public List<Coord> getUnoccupiedSpaces(){
 
         List<Coord> unoccupiedSpaces = new ArrayList<>();
@@ -67,69 +94,95 @@ public class Board {
     }
 
     public void workerMove(Worker w, Coord newPos) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException {
-        //TODO: Check newPos is valid
-        if(Coord.validCoord(newPos));
+        //Check newPos is valid
+        if(!Coord.validCoord(newPos)){
+            throw new InvalidCoordinatesException("Invalid coordinates.");
+        }
 
-        //TODO: Check that worker w is in the list of workers
+        //Check that worker w is in the list of workers
+        if(!this.workers.contains(w)){
+            throw new IllegalWorkerActionException("The worker " + w.toString() + " is not part of the game.");
+        }
 
-        //TODO: Check that worker w is near newPos
+        if(w.getPosition() == null){
+            throw new IllegalWorkerActionException("The worker is not initialized.");
+        }
+
+        //Check that worker w is near newPos
         if(!(w.getPosition().isNear(newPos))){
-            throw new IllegalWorkerActionException("Cannot move here from that position");
+            throw new IllegalWorkerActionException("Cannot move here from that position.");
         }
 
         Space currentSpace, newSpace;
         currentSpace = this.board[w.getPosition().x][w.getPosition().y];
         newSpace = this.board[newPos.x][newPos.y];
 
-        if (!currentSpace.isOccupied()) {
-            if (!(newSpace.getHeight() == Level.DOME)) {
+        //not space occupied
+        if ( !currentSpace.isOccupied() ) {
+            //not space full
+            if ( !(newSpace.isDome()) ) {
+
                 w.setPosition(newPos);
                 currentSpace.setUnoccupied();
                 newSpace.setOccupied();
             }
             else {
-                throw new SpaceOccupiedException("Space occupied by another worker.");
+                throw new SpaceFullException("Space is DOME.");
             }
         }
         else{
-            throw new SpaceFullException("Space is DOME.");
+            throw new SpaceOccupiedException("Space occupied by another worker.");
         }
 
         //TODO : Check for Winning
     }
 
-    public void workerForceMove(){
+    public void workerForceMove(Worker w, Coord newPos){
 
     }
 
     public void workerBuild(Worker w, Coord buildPos) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException{
-        //TODO: Check buildPos is valid
-        if(Coord.validCoord(buildPos));
+        //Check buildPos is valid
+        if(!Coord.validCoord(buildPos)){
+            throw new InvalidCoordinatesException("Invalid coordinates.");
+        }
 
-        //TODO: Check that worker w in is the list of workers
+        //Check that worker w in is the list of workers
+        if(!this.workers.contains(w)){
+            throw new IllegalWorkerActionException("The worker " + w.toString() + " is not part of the game.");
+        }
 
-        //TODO: Check that worker w is near newPos
+        if(w.getPosition() == null){
+            throw new IllegalWorkerActionException("The worker is not initialized.");
+        }
+
+        //Check that worker w is near newPos
         if(!(w.getPosition().isNear(buildPos))){
             throw new IllegalWorkerActionException("Cannot build here from that position");
         }
 
+        //not space occupied
         if(!this.board[buildPos.x][buildPos.y].isOccupied()) {
-            if (!(this.board[buildPos.x][buildPos.y].getHeight() == Level.DOME)) {
+            //not space full
+            if (!(this.board[buildPos.x][buildPos.y].isDome())) {
                 this.board[buildPos.x][buildPos.y].levelUp();
             }
             else{
-                throw new SpaceOccupiedException("Space occupied by another worker.");
+                throw new SpaceFullException("Space is DOME.");
             }
         }
         else{
-            throw new SpaceFullException("Space is DOME.");
+            throw new SpaceOccupiedException("Space occupied by another worker.");
         }
     }
 
     //potrebbero essere messe nel controller, perchè qua in mezzo ci andrà anche la logica degli effetti delle divinità
     public /*Map<Coord, Space>*/ List<Coord> getMovableSpacesAround(Coord c, int maxDiff) throws InvalidCoordinatesException{
-        //TODO: Check coordinates c are valid
-        if(Coord.validCoord(c));
+
+        //Check coordinates c are valid
+        if(!Coord.validCoord(c)){
+            throw new InvalidCoordinatesException("Invalid coordinates.");
+        }
 
         List<Coord> result = new ArrayList<>();
         for (int i = -1; i < 1; i++) {
@@ -140,7 +193,7 @@ public class Board {
                 //if(space not occupied/dome && Rules.CheckSomething) ??
                 if(!this.board[c.x + i][c.y + j].isOccupied() &&
                         !this.board[c.x + i][c.y + j].isDome() &&
-                        (this.board[c.x + i][c.y + j].height.ordinal() - this.board[c.x][c.y].height.ordinal()
+                        (this.board[c.x + i][c.y + j].getHeight().ordinal() - this.board[c.x][c.y].getHeight().ordinal()
                                 <= maxDiff
                         )
                 ) {
@@ -154,8 +207,11 @@ public class Board {
     }
 
     public /*Map<Coord, Space>*/  List<Coord> getBuildableSpacesAround(Coord c) throws InvalidCoordinatesException{
-        //TODO: Check coordinates c are valid
-        if(Coord.validCoord(c));
+
+        //Check coordinates c are valid
+        if(!Coord.validCoord(c)){
+            throw new InvalidCoordinatesException("Invalid coordinates.");
+        }
 
         List<Coord> result = new ArrayList<>();
         for (int i = -1; i < 1; i++) {
