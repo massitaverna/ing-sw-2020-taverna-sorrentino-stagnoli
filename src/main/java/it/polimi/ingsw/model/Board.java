@@ -5,12 +5,14 @@ import it.polimi.ingsw.exceptions.model.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Board {
+public class Board implements Cloneable {
 
+    private static final int BOARD_SIZE = 5;
     private Space[][] board;
     private List<Worker> workers;
 
     public Board(){
+        this.board = new Space[BOARD_SIZE][BOARD_SIZE];
         this.board = new Space[5][5];
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
@@ -24,7 +26,7 @@ public class Board {
 
         //Check coordinates c are valid
         if (Coord.validCoord(c)) {
-            return board[c.x][c.y];
+            return board[c.x][c.y].clone();
         }
 
         return null;
@@ -319,5 +321,20 @@ public class Board {
             boardString = boardString  + topSpaceLine + workerLine + lvl3Line + lvl2Line + lvl1Line + horizontalBorder;
         }
         return boardString;
+    }
+
+    @Override
+    public Board clone() {
+        Space[][] board = new Space[BOARD_SIZE][BOARD_SIZE];
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                board[i][j] = getSpace(new Coord(i,j));
+            }
+        }
+        Board result = new Board();
+        result.board = board;
+        // List<Worker> not cloned, but set to null
+
+        return result;
     }
 }

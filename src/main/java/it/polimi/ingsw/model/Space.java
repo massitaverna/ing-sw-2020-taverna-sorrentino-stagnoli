@@ -3,10 +3,17 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.exceptions.model.SpaceFullException;
 import it.polimi.ingsw.exceptions.model.SpaceOccupiedException;
 
-public class Space {
+public class Space implements Cloneable {
     private boolean occupied;
     private boolean hasDome;
     private Level height;
+
+    public Space() {
+        occupied = false;
+        hasDome = false;
+        height = Level.GROUND;
+    }
+
 
     public void setOccupied(){
         occupied = true;
@@ -48,5 +55,15 @@ public class Space {
             else {
                 throw new SpaceFullException("This space is full (DOME).");
             }
+    }
+
+    @Override
+    public Space clone() {
+        Space result = new Space();
+        result.occupied = occupied;
+        result.hasDome = hasDome;
+        result.height = height;
+
+        return result;
     }
 }

@@ -8,22 +8,21 @@ rules.size() > 0
 package it.polimi.ingsw.model.handler;
 
 import it.polimi.ingsw.exceptions.UndeterminedSpaceException;
-import it.polimi.ingsw.model.Space;
+import it.polimi.ingsw.model.Coord;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
-class ConcreteHandler extends BaseHandler {
+class ConcreteHandler implements RuleHandler {
 
-    private List<Rule> rules;
+    private List<Rule> permanentRules;
+    private List<Rule> temporaryRules;
 
-    public ConcreteHandler(List<Rule> rules) {
-        this.rules = rules;
+    public ConcreteHandler(List<Rule> permanentRules) {
+        this.permanentRules = permanentRules;
     }
-    public ConcreteHandler(List<Rule> rules, RuleHandler next) {
-        super(next);
-        this.rules = rules;
-    }
+
 
     //---------------------------------------------------------------------------------------
 
@@ -33,7 +32,7 @@ class ConcreteHandler extends BaseHandler {
 
         //Do your work
 
-        Space current = vc.getCurrentSpace();
+        Coord current = vc.getCurrentPosition();
 
         /*
         //FOR-LOOP WAY
@@ -57,6 +56,8 @@ class ConcreteHandler extends BaseHandler {
          */
 
         // STREAM WAY
+        List<Rule> rules = new ArrayList<>(temporaryRules);
+        rules.addAll(permanentRules);
         rules.stream()
                 .filter(r -> r.getPurpose() == Purpose.VALIDATION)
                 .forEach(r ->
@@ -71,18 +72,18 @@ class ConcreteHandler extends BaseHandler {
                         )
                 );
 
+        // GENERATE
 
-        //Pass responsibility
+        temporaryRules = null;
+
+
+        //Check if validation is completed
         if (!vc.allSpacesValidated()) {
-            super.handleValidationRequest(vc);
+            String exceptionalMessage = "Cannot determine validity of the followings:\n";
+            exceptionalMessage += vc.getNotValidatedSpaces().toString();
+
+            throw new UndeterminedSpaceException(exceptionalMessage);
         }
 
-    }
-    public void handle() throws Exception {
-        // Do standard checks
-
-        // If (cannot resolve decidability) {
-            super.handle();
-        // }
     }
 }
