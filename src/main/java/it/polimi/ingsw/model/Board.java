@@ -57,7 +57,7 @@ public class Board implements Cloneable {
 
     public void initializeWorker(Worker worker, Coord coord) throws IllegalArgumentException, IllegalStateException {
 
-        //Check worker Belongs to the game
+        //Check worker belongs to the game
         if(!this.workers.contains(worker)){
             throw new IllegalArgumentException("The worker " + worker.toString() + " is not part of the game.");
         }
@@ -79,12 +79,12 @@ public class Board implements Cloneable {
     }
 
     //ONLY FOR INITIALIZATION PHASE !!!!!!
-    public List<Coord> getUnoccupiedSpaces(){
+    public List<Coord> getUnoccupiedSpaces() {
 
         List<Coord> unoccupiedSpaces = new ArrayList<>();
 
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
                 if(!board[i][j].isOccupied()){
                     unoccupiedSpaces.add(new Coord(i, j));
                 }
@@ -109,10 +109,12 @@ public class Board implements Cloneable {
             throw new IllegalWorkerActionException("The worker is not initialized.");
         }
 
+        /*
         //Check that worker w is near newPos
         if(!(w.getPosition().isNear(newPos))){
             throw new IllegalWorkerActionException("Cannot move here from that position.");
         }
+        */
 
         Space currentSpace, newSpace;
         currentSpace = this.board[w.getPosition().x][w.getPosition().y];

@@ -66,12 +66,10 @@ public class RequestHandlerCreator {
             r.setActionType(ActionType.MOVE);
             r.setDecision(Decision.GRANT);
             BiPredicate<Coord, Coord> condition = (before, after) ->
-                    ;
+                    ...; // To implement
             r.setCondition(condition);
             result.add(r);
             godRules.put("Artemis", result);
-
-            return result;
         }
 
         if (god.equals("Minotaur")) {

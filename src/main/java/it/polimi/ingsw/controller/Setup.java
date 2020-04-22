@@ -2,8 +2,8 @@ package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.model.god.God;
-import it.polimi.ingsw.model.god.GodCreator;
+import it.polimi.ingsw.model.God;
+import it.polimi.ingsw.model.GodSelectionState;
 import it.polimi.ingsw.view.PlayerView;
 
 import java.util.*;
@@ -29,11 +29,14 @@ public class Setup {
     public void addNewPlayer(Player p) {
         model.addNewPlayer(p); // The first player should be the Challenger
         if (model.allPlayersArrived()) {
-            //model.startSetup();
+            model.changeState(new GodSelectionState(model));
+            model.nextStep();
         }
     }
 
+    /*
     public void setPlayerColor(Player p, Color c) {
+
         try {
             model.setPlayerColor(p, c);
         }
@@ -42,14 +45,15 @@ public class Setup {
         }
         // Handle re-asking for color
     }
+    */
 
-    public void setGods(List<God> gods) { // invoked by Challenger
+    public void setGods(List<String> gods) { // invoked by Challenger
         /*if (!(invoker.equals(model.getChallenger()))) {
             throw new IllegalAccessException("Player is invoking " +
                     "challenger's methods, but he is not challenger.");
         }*/
         model.setGods(gods);
-        model.nextPlayer();
+        model.nextStep();
         //model.askForGodChoice();
         // currentPlayer viene settato a Challenger+1
         // l'ordine della queue non deve essere modificato fino a che non sono stati assegnati tutti i Gods
@@ -62,6 +66,7 @@ public class Setup {
                     "challenger's methods, but he is not challenger.");
         }*/
         model.setStartPlayer(p);
+        model.nextStep();
         // Deve ordinare la lista dei player nel model
     }
 
@@ -85,9 +90,13 @@ public class Setup {
                     "player or has never been selected by Challenger.");
         }
 
-        model.assignGodToPlayer(p, g); // Should throw IllegalArgumentException, but no warnings...
-        model.nextPlayer();
-        //model.askForGodChoice();
+        model.assignGodToPlayer(p, g);
+
+        if (model.getAvailableGods().isEmpty()) {
+            model.changeState(new WorkersInitState(model));
+        }
+        model.nextStep();
+
 
     }
 
@@ -110,7 +119,12 @@ public class Setup {
         // 1. every player has no null in his workersList and
         // 2. every worker has always NotNull coordinates after initialization
         model.initializeWorker(toBeInitialized, place);
-        // Deve aggiornare il currentPlayer se sono stati settati 2 lavoratori
+
+        if (model.hasNewTurnBegun()) {
+            model.changeState(new BeginState(model));
+        }
+
+        model.nextStep();
     }
 
 
@@ -126,6 +140,7 @@ public class Setup {
         addNewPlayer(new Player(nickname));
     }
 
+    /*
     public void onColorChosen(EventSource source, Color color) {
         String nickname = ((PlayerView) source).getNickname();
         try {
@@ -137,23 +152,19 @@ public class Setup {
             System.out.println("View's and Model's nicknames mismatch.");
         }
     }
+     */
 
     public void onNumberOfPlayersChosen(EventSource source, int num) {
         setNumPlayers(num);
     }
 
     public void onGodsChosen(EventSource source, List<String> godsNames) {
-        List<God> gods = new ArrayList<God>();
-        for (String s : godsNames) {
-            God god = new GodCreator().createGod(s);
-            gods.add(god);
-        }
-        setGods(gods);
+        setGods(godsNames);
     }
 
     public void onGodChosen(EventSource source, String godName) {
         //TODO: check that the player has not chosen his god yet
-        List<God> gods = model.getGods();
+        List<God> gods = model.getAvailableGods();
         God chosenGod = gods.stream().filter(god -> god.getName().equals(godName))
                 .findFirst().orElse(null);
 
@@ -192,9 +203,8 @@ public class Setup {
         }
     }
 
-    public void onWorkerInitialized(EventSource source, int x, int y) {
+    public void onWorkerInitialized(EventSource source, Coord coord) {
         //TODO: check that the player has not initialized both workers yet
-        Coord coord = new Coord(x, y);
         String nickname = ((PlayerView) source).getNickname();
         Player player;
         try {

@@ -1,6 +1,5 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.god.God;
 import it.polimi.ingsw.model.handler.RequestHandler;
 
 import java.util.ArrayList;
@@ -14,6 +13,7 @@ public class Player {
     private RequestHandler handler;
     private List<Worker> workersList;
     private Color workerColor;
+    private boolean isStartPlayer;
 
     public Player(String nickname){
         this.nickname = nickname;
@@ -21,6 +21,7 @@ public class Player {
         this.workersList = new ArrayList<Worker>();
         this.workersList.add(new Worker(this));
         this.workersList.add(new Worker(this));
+        this.isStartPlayer = false;
         /*this.rules = new Collection<Rule>();*/
         this.hasWon = false;
     }
@@ -59,6 +60,13 @@ public class Player {
         return this.workerColor;
     }
 
+    public boolean isStartPlayer() {
+        return isStartPlayer;
+    }
+
+    void setAsStartPlayer() {
+        isStartPlayer = true;
+    }
     public void win(){
         hasWon = true;
     }

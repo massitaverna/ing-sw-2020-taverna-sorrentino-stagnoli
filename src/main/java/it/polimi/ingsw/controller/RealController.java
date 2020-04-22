@@ -1,5 +1,7 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.exceptions.controller.IllegalWorkerChoiceException;
+import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 import it.polimi.ingsw.listeners.ChallengerViewEventListener;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.PlayerViewEventListener;
@@ -21,20 +23,24 @@ public class RealController implements PlayerViewEventListener, ChallengerViewEv
         setup = new Setup(this.model);
     }
 
+
+
+
     @Override
-    public void onPlayerChoseBuild(EventSource source, Coord position) {
+    public void onWorkerChosen(EventSource source, Coord workerPos) throws IllegalWorkerChoiceException, WorkerNotFoundException {
 
     }
 
     @Override
-    public void onPlayerChoseMove(EventSource source, Coord position) {
+    public void onMoveChosen(EventSource source, Coord moveChoice) {
 
     }
 
     @Override
-    public void onWorkerChosen(EventSource source, String workerID) {
+    public void onBuildChosen(EventSource source, Coord buildChoice) {
 
     }
+
 
     // --------------------------------------------------------------------------------
     /*
@@ -47,10 +53,6 @@ public class RealController implements PlayerViewEventListener, ChallengerViewEv
         setup.onNicknameChosen(source, nickname);
     }
 
-    @Override
-    public void onColorChosen(EventSource source, Color color) {
-        setup.onColorChosen(source, color);
-    }
 
     @Override
     public void onNumberOfPlayersChosen(EventSource source, int num) {
@@ -63,7 +65,7 @@ public class RealController implements PlayerViewEventListener, ChallengerViewEv
     }
 
     @Override
-    public void onGodChosen(EventSource source, String god) {
+    public void onMyGodChoice(EventSource source, String god) {
         setup.onGodChosen(source, god);
     }
 
@@ -73,8 +75,8 @@ public class RealController implements PlayerViewEventListener, ChallengerViewEv
     }
 
     @Override
-    public void onWorkerInitialized(EventSource source, int x, int y) {
-        setup.onWorkerInitialized(source, x, y);
+    public void onWorkerInitialization(EventSource source, Coord choice) {
+        setup.onWorkerInitialized(source, choice);
     }
 
 }

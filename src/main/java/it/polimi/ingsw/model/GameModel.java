@@ -4,18 +4,19 @@ import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.Listener;
 import it.polimi.ingsw.listeners.ModelEventListener;
-import it.polimi.ingsw.model.god.God;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GameModel implements EventSource {
 
+    private ModelState state;
     private int numPlayers;
     private List<Player> queue;
     private List<God> godsList;
     private List<Color> colors;
+    private boolean newTurnBegun;
     private Board board;
     private Player currentPlayer;
     private Worker currentWorker;
@@ -30,22 +31,44 @@ public class GameModel implements EventSource {
         }*/
 
 
-    public GameModel(int numPlayers){
-        this.numPlayers = numPlayers;
+    public GameModel() {
+        this.state = new LobbyState(this);
         this.queue = new ArrayList<>();
         this.colors = new ArrayList<>();
         this.colors.add(Color.YELLOW);
         this.colors.add(Color.RED);
         this.colors.add(Color.BLUE);
+        this.newTurnBegun = false;
         this.board = new Board();
-        this.godsList = null;
+        this.godsList = new ArrayList<>();
         this.currentPlayer = null;
         this.currentWorker = null;
         this.currentMoveChose = null;
         this.currentBuildChose = null;
         this.modelListeners = new ArrayList<>();
+        loadAvailableGods();
+
     }
 
+    public void changeState(ModelState state) {
+        this.state = state;
+    }
+
+    public void nextStep() {
+        state.nextStep();
+    }
+
+    //INIT FUNCTIONS//
+    private void loadAvailableGods() {
+        //Read from files all available gods
+
+        // Alternative way, just to test:
+        godsList.add(new God("Apollo", "Very powerful"));
+        godsList.add(new God("Athena", "So powerful"));
+        godsList.add(new God("Artemis", "Incredibly powerful"));
+        godsList.add(new God("Prometheus", "Weak"));
+
+    }
     //SETUP FUNCTIONS//
 
     public void setNumPlayers(int numPlayers) {
@@ -76,13 +99,25 @@ public class GameModel implements EventSource {
         }*/
     }
 
-    public void setGods(List<God> list){
-        this.godsList = list;
+    public List<God> getAvailableGods() {
+        return new ArrayList<>(godsList);
     }
 
-    public List<God> getGods() {
-        return godsList;
+    public List<String> getPlayersNicknames() {
+        return queue.stream()
+                .map(Player::getNickname)
+                .collect(Collectors.toList());
     }
+
+    public void setGods(List<String> gods) {
+        this.godsList =
+                godsList.stream()
+                .filter(god -> gods.contains(god.getName()))
+                .collect(Collectors.toList());
+
+        nextPlayer();
+    }
+
 
     public void setPlayerColor(Player p, Color c) throws IllegalArgumentException {
         //Check that player p is part of the game
@@ -101,16 +136,17 @@ public class GameModel implements EventSource {
     public void assignGodToPlayer(Player p, God g) throws IllegalArgumentException {
         //Check that player p is part of the game
         if( !(this.queue.contains(p))){
-            throw new IllegalArgumentException("Given Player is not part of the game");
+            throw new IllegalArgumentException("Given Player is not part of the game.");
         }
 
-        //If god has been choose by another player, throw exception
+        //If god has been chosen by another player, throw exception
         if(!this.godsList.contains(g))
             throw new IllegalArgumentException("Chosen god has been previously chosen by another player " +
                     "or has never been selected by Challenger.");
 
         p.setGod(g);
         this.godsList.remove(g);
+        nextPlayer();
     }
 
     public void setStartPlayer(Player startPlayer) throws IllegalArgumentException {
@@ -127,10 +163,22 @@ public class GameModel implements EventSource {
         }
 
         currentPlayer = startPlayer;
+        currentPlayer.setAsStartPlayer();
     }
 
     public void initializeWorker(Worker w, Coord c) {
+        if (!currentPlayer.getWorkersList().contains(w)) {
+            throw new IllegalStateException("Tried to initialize a worker not " +
+                    "belonging to current player.");
+        }
+
         board.initializeWorker(w, c);
+
+        if (currentPlayer.getWorkersList().stream()
+                .noneMatch(worker -> worker == null)
+        ) {
+            nextPlayer();
+        }
     }
 
     //GAME FUNCTIONS//
@@ -180,13 +228,17 @@ public class GameModel implements EventSource {
         //TODO: End of the Game
     }
 
-    public void nextPlayer(){
+    public void nextPlayer() {
         //Check the game is ready
         if( this.allPlayersArrived() ) {
             this.queue.remove(currentPlayer);
             this.queue.add(currentPlayer);
             currentPlayer = this.queue.get(0);
         }
+    }
+
+    public boolean hasNewTurnBegun() {
+        return currentPlayer.isStartPlayer();
     }
 
     //INTERROGAZIONI DALLE VIEW
@@ -211,17 +263,7 @@ public class GameModel implements EventSource {
         return this.colors;
     }
 
-    public List<God> getAvailableGods(){
-        return this.godsList;
-    }
 
-    public List<String> requestPlayersNicknames() {
-        List<String> res = new ArrayList<>();
-        for(Player p: this.queue){
-            res.add(p.getNickname());
-        }
-        return res;
-    }
 
     @Override
     public void addListener(Listener listener) {
@@ -231,9 +273,10 @@ public class GameModel implements EventSource {
         modelListeners.add((ModelEventListener) listener);
     }
 
-    private ModelEventListener getListenerByNickname(String nickname) {
+    ModelEventListener getListenerByNickname(String nickname) {
         return modelListeners.stream()
                 .filter(listener -> listener.getNickname().equals(nickname))
                 .findFirst().orElse(null);
     }
 }
+

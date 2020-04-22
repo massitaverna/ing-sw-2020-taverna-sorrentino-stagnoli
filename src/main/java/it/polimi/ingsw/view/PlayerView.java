@@ -1,17 +1,15 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.exceptions.model.InvalidCoordinatesException;
 import it.polimi.ingsw.listeners.PlayerViewEventListener;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.listeners.ModelEventListener;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.Listener;
-import it.polimi.ingsw.model.god.God;
 
 import java.io.PrintStream;
 import java.util.*;
 
-public class PlayerView implements ModelEventListener, EventSource{
+public class PlayerView implements ModelEventListener, EventSource {
 
     private Scanner s;
     private PrintStream outputStream;
@@ -39,7 +37,7 @@ public class PlayerView implements ModelEventListener, EventSource{
         outputStream.println("Choose a nickname: ");
         String input = s.nextLine();
 
-        while (model.requestPlayersNicknames().contains(input)) {
+        while (model.getPlayersNicknames().contains(input)) {
             outputStream.println("Nickname already taken, please choose another nickname: ");
             input = s.nextLine();
         }
@@ -194,7 +192,7 @@ public class PlayerView implements ModelEventListener, EventSource{
             for (Coord space : freeSpaces){
                 if (c.equals(space)){
                     try{
-                        listener.onMyInitializationChoice(this, c);
+                        listener.onWorkerInitialization(this, c);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

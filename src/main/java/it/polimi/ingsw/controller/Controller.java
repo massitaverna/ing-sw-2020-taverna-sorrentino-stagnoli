@@ -7,7 +7,7 @@ import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 import it.polimi.ingsw.listeners.ChallengerViewEventListener;
 import it.polimi.ingsw.listeners.PlayerViewEventListener;
 import it.polimi.ingsw.model.*;
-import it.polimi.ingsw.model.god.God;
+import it.polimi.ingsw.model.God;
 
 import java.util.List;
 

@@ -20,4 +20,6 @@ public interface ModelEventListener extends Listener {
 
     public void onMyTurn(List<Worker> selectableWorkers);
     public void onMyAction(List<Coord> movableSpaces, List<Coord> buildableSpaces);
+
+    public String getNickname();
 }
