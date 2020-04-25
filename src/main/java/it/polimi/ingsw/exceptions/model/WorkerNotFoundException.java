@@ -1,6 +1,8 @@
 package it.polimi.ingsw.exceptions.model;
 
-public class WorkerNotFoundException extends Exception {
+import java.util.NoSuchElementException;
+
+public class WorkerNotFoundException extends NoSuchElementException {
     public WorkerNotFoundException(String msg){
         super(msg);
     }

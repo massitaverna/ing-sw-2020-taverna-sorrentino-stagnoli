@@ -120,7 +120,7 @@ public class Setup {
         // 2. every worker has always NotNull coordinates after initialization
         model.initializeWorker(toBeInitialized, place);
 
-        if (model.hasNewTurnBegun()) {
+        if (model.hasNewCycleBegun()) {
             model.changeState(new BeginState(model));
         }
 

@@ -10,7 +10,6 @@ public class Player {
     private String nickname;
     private God god;
     private boolean hasWon;
-    private RequestHandler handler;
     private List<Worker> workersList;
     private Color workerColor;
     private boolean isStartPlayer;

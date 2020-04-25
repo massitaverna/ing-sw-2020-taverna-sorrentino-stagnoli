@@ -13,10 +13,15 @@ import java.util.function.BiPredicate;
 public class RequestHandlerCreator {
 
     private final String god;
+    private static List<Rule> standardRules = new ArrayList<>();
     private static Map<String, List<Rule>> godRules = new HashMap<>();
     private Board board;
 
     public RequestHandlerCreator(Board board) {
+
+        //TODO: da sistemare: non posso passare qui la board, serve la board
+        // a tempo di valutazione del BiPredicate.
+        // Idea: BiPredicate<Pair<Coord, Space>, Pair<Coord, Space>>
         this.god = null;
         this.board = board;
     }
@@ -25,6 +30,23 @@ public class RequestHandlerCreator {
         this.board = board;
     }
 
+
+    public RequestHandler createHandler() {
+        List<Rule> rules = new ArrayList<>();
+        rules.addAll(getGodRules());
+        rules.addAll(getStandardRules());
+
+        RuleHandler ruleHandler = new ConcreteHandler(rules);
+        RequestHandler requestHandler = new HandlerAdapter(ruleHandler);
+
+        return requestHandler;
+    }
+    private static List<Rule> getStandardRules() {
+        if (standardRules.isEmpty()) {
+            initStandardRules();
+        }
+        return standardRules;
+    }
 
     private List<Rule> getGodRules() {
 
@@ -35,6 +57,10 @@ public class RequestHandlerCreator {
         return godRules.get(god);
     }
 
+
+    private static void initStandardRules() {
+        //To be implemented
+    }
 
     private void initGodRules() {
 
@@ -65,8 +91,7 @@ public class RequestHandlerCreator {
             r.setPurpose(Purpose.VALIDATION);
             r.setActionType(ActionType.MOVE);
             r.setDecision(Decision.GRANT);
-            BiPredicate<Coord, Coord> condition = (before, after) ->
-                    ...; // To implement
+            BiPredicate<Coord, Coord> condition = null; //(before, after) -> ...; // To be implemented
             r.setCondition(condition);
             result.add(r);
             godRules.put("Artemis", result);

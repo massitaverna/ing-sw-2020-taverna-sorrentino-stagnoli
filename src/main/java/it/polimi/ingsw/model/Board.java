@@ -100,11 +100,23 @@ public class Board implements Cloneable {
         return unoccupiedSpaces;
     }
 
+    public List<Coord> getAllCoord() {
+        List<Coord> result = new ArrayList<>();
+
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
+                result.add(new Coord(i, j));
+            }
+        }
+        return result;
+    }
+
     public void workerMove(Worker w, Coord newPos) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException {
         //Check newPos is valid
         if(!Coord.validCoord(newPos)){
             throw new InvalidCoordinatesException("Invalid coordinates.");
         }
+
 
         //Check that worker w is in the list of workers
         if(!this.workers.contains(w)){
@@ -127,7 +139,7 @@ public class Board implements Cloneable {
         newSpace = this.board[newPos.x][newPos.y];
 
         //not space occupied
-        if ( !currentSpace.isOccupied() ) {
+        if ( !newSpace.isOccupied() ) {
             //not space full
             if ( !(newSpace.isDome()) ) {
 
@@ -146,11 +158,18 @@ public class Board implements Cloneable {
         //TODO : Check for Winning
     }
 
+    public void workerMove(Coord src, Coord dest) throws
+            IllegalWorkerActionException, SpaceOccupiedException, SpaceFullException {
+
+        Worker w = getWorkerByPosition(src);
+        workerMove(w, dest);
+    }
+
     public void workerForceMove(Worker w, Coord newPos){
 
     }
 
-    public void workerBuild(Worker w, Coord buildPos) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException{
+    public void workerBuild(Worker w, Coord buildPos, Level level) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException{
         //Check buildPos is valid
         if(!Coord.validCoord(buildPos)){
             throw new InvalidCoordinatesException("Invalid coordinates.");
@@ -165,12 +184,17 @@ public class Board implements Cloneable {
             throw new IllegalWorkerActionException("The worker is not initialized.");
         }
 
+        this.board[buildPos.x][buildPos.y].setLevel(level);
+
+        /*
         //Check that worker w is near newPos
         if(!(w.getPosition().isNear(buildPos))){
             throw new IllegalWorkerActionException("Cannot build here from that position");
         }
+         */
 
         //not space occupied
+        /*
         if(!this.board[buildPos.x][buildPos.y].isOccupied()) {
             //not space full
             if (!(this.board[buildPos.x][buildPos.y].isDome())) {
@@ -183,6 +207,7 @@ public class Board implements Cloneable {
         else{
             throw new SpaceOccupiedException("Space occupied by another worker.");
         }
+        */
     }
 
     //potrebbero essere messe nel controller, perchè qua in mezzo ci andrà anche la logica degli effetti delle divinità

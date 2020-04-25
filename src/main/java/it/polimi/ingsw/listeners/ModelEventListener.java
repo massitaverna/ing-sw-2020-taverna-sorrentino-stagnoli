@@ -2,9 +2,11 @@ package it.polimi.ingsw.listeners;
 
 import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
+import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.model.Worker;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ModelEventListener extends Listener {
 //    public void onAllPlayersArrived();
@@ -19,7 +21,7 @@ public interface ModelEventListener extends Listener {
     public void onMyInitialization(List<Coord> freeSpaces);
 
     public void onMyTurn(List<Worker> selectableWorkers);
-    public void onMyAction(List<Coord> movableSpaces, List<Coord> buildableSpaces);
+    public void onMyAction(List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces);
 
     public String getNickname();
 }

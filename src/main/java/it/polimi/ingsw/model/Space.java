@@ -23,11 +23,11 @@ public class Space implements Cloneable {
         occupied = false;
     }
 
-    public void setDome(){
+    private void setDome(){
         hasDome = true;
     }
 
-    public boolean isOccupied(){
+    public boolean isOccupied() {
         return occupied;
     }
 
@@ -39,6 +39,16 @@ public class Space implements Cloneable {
         return height;
     }
 
+    public void setLevel(Level level) {
+        if (level != Level.DOME) {
+            height = level;
+        } else {
+            setDome();
+            setOccupied();
+        }
+    }
+
+
     //eccezione se viene invocata su Space con cupola o player
     public void levelUp() throws SpaceFullException, SpaceOccupiedException {
         if(this.isOccupied()){
@@ -48,13 +58,13 @@ public class Space implements Cloneable {
         if(this.height != Level.LVL3) {
             height = Level.values()[height.ordinal() + 1];
         }
-        else
-            if(!this.hasDome){
+        else {
+            if (!this.hasDome) {
                 this.hasDome = true;
-            }
-            else {
+            } else {
                 throw new SpaceFullException("This space is full (DOME).");
             }
+        }
     }
 
     @Override

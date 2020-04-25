@@ -8,6 +8,6 @@ public class PlayerTurnState extends ModelState {
 
     @Override
     public void nextStep() {
-
+        model.nextAction();
     }
 }

@@ -11,7 +11,7 @@ public class Client {
     private String ip;
     private int port;
     private boolean myTurn;
-    private View myView;
+    private PlayerView myView;
 
     public Client(String ip, int port){
         this.ip = ip;

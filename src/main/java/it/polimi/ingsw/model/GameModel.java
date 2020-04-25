@@ -1,12 +1,19 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.exceptions.model.IllegalWorkerActionException;
+import it.polimi.ingsw.exceptions.model.SpaceFullException;
+import it.polimi.ingsw.exceptions.model.SpaceOccupiedException;
 import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.Listener;
 import it.polimi.ingsw.listeners.ModelEventListener;
+import it.polimi.ingsw.model.handler.RequestHandler;
+import it.polimi.ingsw.model.handler.RequestHandlerCreator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GameModel implements EventSource {
@@ -16,12 +23,11 @@ public class GameModel implements EventSource {
     private List<Player> queue;
     private List<God> godsList;
     private List<Color> colors;
-    private boolean newTurnBegun;
     private Board board;
     private Player currentPlayer;
     private Worker currentWorker;
-    private Coord currentMoveChose;
-    private Coord currentBuildChose;
+    private Turn turn;
+    private Map<Player, RequestHandler> handlers;
 
     private List<ModelEventListener> modelListeners;
 
@@ -38,13 +44,12 @@ public class GameModel implements EventSource {
         this.colors.add(Color.YELLOW);
         this.colors.add(Color.RED);
         this.colors.add(Color.BLUE);
-        this.newTurnBegun = false;
         this.board = new Board();
         this.godsList = new ArrayList<>();
         this.currentPlayer = null;
         this.currentWorker = null;
-        this.currentMoveChose = null;
-        this.currentBuildChose = null;
+        this.turn = new Turn();
+        this.handlers = new HashMap<>();
         this.modelListeners = new ArrayList<>();
         loadAvailableGods();
 
@@ -175,13 +180,22 @@ public class GameModel implements EventSource {
         board.initializeWorker(w, c);
 
         if (currentPlayer.getWorkersList().stream()
-                .noneMatch(worker -> worker == null)
+                .noneMatch(worker -> worker.getPosition() == null)
         ) {
             nextPlayer();
         }
     }
 
     //GAME FUNCTIONS//
+
+    void initRequestHandlers() {
+        queue.forEach(p ->
+                handlers.put(p,
+                        new RequestHandlerCreator(p.getGod().getName(), getBoard())
+                                .createHandler()
+                )
+        );
+    }
 
 
     public Player getPlayerByNickname(String nick) throws IllegalArgumentException {
@@ -210,12 +224,25 @@ public class GameModel implements EventSource {
         this.currentWorker = selected;
     }
 
-    public void setMove(Coord m){
-        this.currentMoveChose = m;
+    public void setMove(Coord moveChoice) {
+        if (!turn.movableSpaces.contains(moveChoice)) {
+            notifyAction();
+            return;
+        }
+
+        board.getSpace(currentWorker.getPosition()).setUnoccupied();
+        if (turn.forces.containsKey(moveChoice)) {
+            Coord forceDest = turn.forces.get(moveChoice);
+            board.workerMove(moveChoice, forceDest);
+        }
+
+        board.workerMove(currentWorker, moveChoice);
+
+
     }
 
-    public void setBuild(Coord b){
-        this.currentBuildChose = b;
+    public void setBuild(Coord buildChoice, Level level) {
+        board.workerBuild(currentWorker, buildChoice, level);
     }
 
     public void setWin(Player p) throws IllegalArgumentException {
@@ -237,8 +264,28 @@ public class GameModel implements EventSource {
         }
     }
 
-    public boolean hasNewTurnBegun() {
+    public boolean hasNewCycleBegun() {
         return currentPlayer.isStartPlayer();
+    }
+
+    void nextAction() {
+        // Mettere qui la generate? O alla fine di setMove e setBuild?
+        // Se la metto qui, le prime regole inizializzate al BeginState
+        // devono essere di generate.
+        // Inoltre, alla generate va passato l'ActionType. Come lo recupero da qui?
+        // Meglio mettere la generate() nella setMove() e setBuild().
+        RequestHandler currHandler = handlers.get(currentPlayer);
+        Coord currentPosition = currentWorker.getPosition();
+        List<Coord> allCoord = board.getAllCoord();
+        currHandler.getValidSpaces(currentPosition, allCoord,
+                turn.movableSpaces, turn.buildableSpaces, turn.forces);
+        notifyAction();
+
+    }
+
+    private void notifyAction() {
+        ModelEventListener listener = getListenerByNickname(currentPlayer.getNickname());
+        listener.onMyAction(turn.movableSpaces, turn.buildableSpaces);
     }
 
     //INTERROGAZIONI DALLE VIEW

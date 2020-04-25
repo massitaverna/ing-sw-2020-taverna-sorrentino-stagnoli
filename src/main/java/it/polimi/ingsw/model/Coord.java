@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.model.InvalidCoordinatesException;
-import sun.jvm.hotspot.oops.CompressedOops;
 
 public class Coord {
     public final int x;

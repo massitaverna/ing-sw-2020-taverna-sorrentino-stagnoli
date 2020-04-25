@@ -16,11 +16,10 @@ import java.util.List;
 
 class ConcreteHandler implements RuleHandler {
 
-    private List<Rule> permanentRules;
-    private List<Rule> temporaryRules;
+    private List<Rule> rules;
 
-    public ConcreteHandler(List<Rule> permanentRules) {
-        this.permanentRules = permanentRules;
+    public ConcreteHandler(List<Rule> rules) {
+        this.rules = rules;
     }
 
 
@@ -56,8 +55,6 @@ class ConcreteHandler implements RuleHandler {
          */
 
         // STREAM WAY
-        List<Rule> rules = new ArrayList<>(temporaryRules);
-        rules.addAll(permanentRules);
         rules.stream()
                 .filter(r -> r.getPurpose() == Purpose.VALIDATION)
                 .forEach(r ->
@@ -71,10 +68,6 @@ class ConcreteHandler implements RuleHandler {
                                 r.getBuildLevel())
                         )
                 );
-
-        // GENERATE
-
-        temporaryRules = null;
 
 
         //Check if validation is completed

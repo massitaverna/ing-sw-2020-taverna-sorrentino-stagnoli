@@ -5,7 +5,7 @@ import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.view.PlayerView;
 
 public class App {
-    public static void main() {
+    public static void main(String[] args) {
         GameModel model = new GameModel();
         RealController controller = new RealController(model);
         //Wrong!!! views can't take model as constructor parameters...
