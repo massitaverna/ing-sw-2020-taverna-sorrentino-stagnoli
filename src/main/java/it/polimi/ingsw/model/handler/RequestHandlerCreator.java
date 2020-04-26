@@ -95,7 +95,7 @@ public class RequestHandlerCreator {
             r.setCondition(condition);
             result.add(r);
             godRules.put("Artemis", result);
-        }*/
+        }
 
         if (god.equals("Atlas")) {
             List<Rule> result = new ArrayList<>();

@@ -3,9 +3,7 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.exceptions.model.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Board implements Cloneable {
 
@@ -23,13 +21,13 @@ public class Board implements Cloneable {
         this.workers = new ArrayList<>();
     }
 
-    public Space getSpace(Coord c) throws InvalidCoordinatesException{
+    public Space getSpace(Coord c) throws InvalidCoordinatesException {
 
         //Check coordinates c are valid
         if (Coord.validCoord(c)) {
             return board[c.x][c.y].clone();
-        }else{
-            throw new InvalidCoordinatesException("invalid coordinates.");
+        } else {
+            throw new InvalidCoordinatesException("Invalid coordinates.");
         }
     }
 
