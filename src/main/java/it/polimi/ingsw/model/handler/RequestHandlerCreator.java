@@ -60,6 +60,55 @@ public class RequestHandlerCreator {
 
     private static void initStandardRules() {
         //To be implemented
+        Rule r = new Rule();
+        r.setPurpose(Purpose.VALIDATION);
+        r.setDecision(Decision.GRANT);
+        r.setActionType(ActionType.MOVE);
+        BiPredicate<Coord, Coord> condition = (before, after) ->
+        before.isNear(after) && !board.getSpace(after).isOccupied();
+        r.setCondition(condition);
+        standardRules.add(r);
+
+        r = new Rule();
+        r.setPurpose(Purpose.VALIDATION);
+        r.setDecision(Decision.DENY);
+        r.setActionType(ActionType.MOVE);
+        BiPredicate<Coord, Coord> condition2 = (before, after) ->
+                !before.isNear(after) || board.getSpace(after).isOccupied();
+        r.setCondition(condition2);
+        standardRules.add(r);
+
+        r = new Rule();
+        r.setPurpose(Purpose.VALIDATION);
+        r.setDecision(Decision.DENY);
+        r.setActionType(ActionType.BUILD);
+        BiPredicate<Coord, Coord> condition3 = (before, after) -> true;
+        r.setCondition(condition3);
+        standardRules.add(r);
+
+        r = new Rule();
+        r.setPurpose(Purpose.GENERATION);
+        r.setActionType(ActionType.MOVE);
+        BiPredicate<Coord, Coord> condition4 = (before, after) -> true;
+        r.setCondition(condition4);
+
+        List<Rule> generatedRules = new ArrayList<>();
+        Rule g = new Rule();
+        g.setPurpose(Purpose.VALIDATION);
+        g.setDecision(Decision.GRANT);
+        g.setActionType(ActionType.BUILD);
+        BiPredicate<Coord, Coord> condition5 = (before, after) ->
+                before.isNear(after) && !board.getSpace(after).isOccupied();
+        g.setCondition(condition5);
+        generatedRules.add(g);
+
+        //Other generated rules...
+
+        r.setGeneratedRules(generatedRules);
+        standardRules.add(r);
+
+
+        standardRules.add(r);
     }
 
     private void initGodRules() {

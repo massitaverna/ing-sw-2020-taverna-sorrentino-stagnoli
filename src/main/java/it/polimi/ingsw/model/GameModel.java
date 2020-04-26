@@ -231,6 +231,7 @@ public class GameModel implements EventSource {
             return;
         }
 
+        //TODO: Implementare moveWithForce() nella Board
         board.getSpace(currentWorker.getPosition()).setUnoccupied();
         if (turn.getForcesCopy().containsKey(moveChoice)) {
             Coord forceDest = turn.getForcesCopy().get(moveChoice);
@@ -274,11 +275,7 @@ public class GameModel implements EventSource {
     }
 
     void nextAction() {
-        // Mettere qui la generate? O alla fine di setMove e setBuild?
-        // Se la metto qui, le prime regole inizializzate al BeginState
-        // devono essere di generate.
-        // Inoltre, alla generate va passato l'ActionType. Come lo recupero da qui?
-        // Meglio mettere la generate() nella setMove() e setBuild().
+
         RequestHandler currHandler = handlers.get(currentPlayer);
         Coord currentPosition = currentWorker.getPosition();
         List<Coord> allCoord = board.getAllCoord();
