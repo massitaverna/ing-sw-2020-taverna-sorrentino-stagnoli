@@ -9,5 +9,6 @@ public class BeginState extends ModelState {
     @Override
     public void nextStep() {
         model.initRequestHandlers();
+        model.changeState(new PlayerTurnState(model));
     }
 }

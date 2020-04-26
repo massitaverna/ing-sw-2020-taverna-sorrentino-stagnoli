@@ -12,6 +12,6 @@ public interface RequestHandler {
                                List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces,
                                Map<Coord, Coord> forces);
 
-    public void generate();
+    public void generate(Coord after, ActionType at);
 
 }

@@ -7,6 +7,7 @@ import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.Listener;
 import it.polimi.ingsw.listeners.ModelEventListener;
+import it.polimi.ingsw.model.handler.ActionType;
 import it.polimi.ingsw.model.handler.RequestHandler;
 import it.polimi.ingsw.model.handler.RequestHandlerCreator;
 
@@ -225,24 +226,28 @@ public class GameModel implements EventSource {
     }
 
     public void setMove(Coord moveChoice) {
-        if (!turn.movableSpaces.contains(moveChoice)) {
+        if (!turn.getMovableSpacesCopy().contains(moveChoice)) {
             notifyAction();
             return;
         }
 
         board.getSpace(currentWorker.getPosition()).setUnoccupied();
-        if (turn.forces.containsKey(moveChoice)) {
-            Coord forceDest = turn.forces.get(moveChoice);
+        if (turn.getForcesCopy().containsKey(moveChoice)) {
+            Coord forceDest = turn.getForcesCopy().get(moveChoice);
             board.workerMove(moveChoice, forceDest);
         }
 
         board.workerMove(currentWorker, moveChoice);
+
+        handlers.get(currentPlayer).generate(moveChoice, ActionType.MOVE);
 
 
     }
 
     public void setBuild(Coord buildChoice, Level level) {
         board.workerBuild(currentWorker, buildChoice, level);
+
+        handlers.get(currentPlayer).generate(buildChoice, ActionType.BUILD);
     }
 
     public void setWin(Player p) throws IllegalArgumentException {
@@ -278,14 +283,15 @@ public class GameModel implements EventSource {
         Coord currentPosition = currentWorker.getPosition();
         List<Coord> allCoord = board.getAllCoord();
         currHandler.getValidSpaces(currentPosition, allCoord,
-                turn.movableSpaces, turn.buildableSpaces, turn.forces);
+                turn.getMovableSpacesReference(), turn.getBuildableSpacesReference(),
+                turn.getForcesReference());
         notifyAction();
 
     }
 
     private void notifyAction() {
         ModelEventListener listener = getListenerByNickname(currentPlayer.getNickname());
-        listener.onMyAction(turn.movableSpaces, turn.buildableSpaces);
+        listener.onMyAction(turn.getMovableSpacesCopy(), turn.getBuildableSpacesCopy());
     }
 
     //INTERROGAZIONI DALLE VIEW

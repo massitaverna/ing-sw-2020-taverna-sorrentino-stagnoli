@@ -1,13 +1,13 @@
 /*
 Rep:
 
-purpose == VALIDATION <==> actionType != null
-condition == null <==> actionType==BUILD
-conditionsOnLevels == null <==> actionType!=BUILD
-validationType == null <==> purpose != VALIDATION
+actionType != null
+condition != null
+decision == null <==> purpose != VALIDATION
 actionType==BUILD <==> buildLevel != null
 forceDestination != null ==> actionType == MOVE
 forceDestination != null ==> decision == GRANT
+generatedRules == null <==> purpose != GENERATION
  */
 
 
@@ -18,6 +18,8 @@ import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.model.Space;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
@@ -28,6 +30,7 @@ public class Rule {
     private BiPredicate<Coord, Coord> condition;
     private BiFunction<Coord, Coord, Coord> forceSpaceFunction;
     private Level buildLevel;
+    private List<Rule> generatedRules;
 
     Purpose getPurpose() {
         return this.purpose;
@@ -58,6 +61,10 @@ public class Rule {
         return buildLevel;
     }
 
+    List<Rule> getGeneratedRules() {
+        return new ArrayList<>(generatedRules);
+    }
+
     void setPurpose(Purpose purpose) {
         this.purpose = purpose;
     }
@@ -80,6 +87,10 @@ public class Rule {
 
     void setBuildLevel(Level buildLevel) {
         this.buildLevel = buildLevel;
+    }
+
+    void setGeneratedRules(List<Rule> generatedRules) {
+        this.generatedRules = new ArrayList<>(generatedRules);
     }
 
     @Override

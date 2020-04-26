@@ -9,6 +9,7 @@ import java.util.Map;
 class HandlerAdapter implements RequestHandler {
 
     RuleHandler ruleHandler;
+    Coord before;
 
     HandlerAdapter(RuleHandler ruleHandler) {
         this.ruleHandler = ruleHandler;
@@ -27,10 +28,13 @@ class HandlerAdapter implements RequestHandler {
         movableSpaces.addAll(validationContainer.getMovableSpaces());
         buildableSpaces.putAll(validationContainer.getBuildableSpaces());
         forces.putAll(validationContainer.getForces());
+
+        before = validationContainer.getCurrentPosition();
     }
 
     @Override
-    public void generate() {
+    public void generate(Coord after, ActionType at) {
 
+        ruleHandler.generate(before, after, at);
     }
 }

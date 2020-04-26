@@ -10,8 +10,9 @@ package it.polimi.ingsw.model.handler;
 import it.polimi.ingsw.exceptions.UndeterminedSpaceException;
 import it.polimi.ingsw.model.Coord;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 class ConcreteHandler implements RuleHandler {
@@ -77,6 +78,17 @@ class ConcreteHandler implements RuleHandler {
 
             throw new UndeterminedSpaceException(exceptionalMessage);
         }
+
+    }
+
+    public void generate(Coord before, Coord after, ActionType at) {
+        rules = rules.stream()
+                .filter(r -> r.getPurpose()==Purpose.GENERATION)
+                .filter(r -> r.getActionType() == at)
+                .filter(r -> r.getCondition().test(before, after))
+                .map(r -> r.getGeneratedRules())
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
 
     }
 }
