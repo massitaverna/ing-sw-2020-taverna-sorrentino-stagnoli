@@ -18,7 +18,7 @@ public interface PlayerViewEventListener extends Listener {
      */
 
     // Da riscrivere con gli EventSource, vedi sopra
-    public void onMyGodChoice(EventSource source, String god) throws IllegalPlayerException;
+    public void onGodChosen(EventSource source, String god) throws IllegalPlayerException;
     public void onWorkerInitialization(EventSource source, Coord choice) throws WorkerNotFoundException, IllegalWorkerChoiceException;
     public void onNicknameChosen(EventSource source, String nickname);
     public void onWorkerChosen(EventSource source, Coord workerPos) throws IllegalWorkerChoiceException, WorkerNotFoundException;

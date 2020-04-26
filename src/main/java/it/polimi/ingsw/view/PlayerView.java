@@ -158,7 +158,7 @@ public class PlayerView implements ModelEventListener, EventSource {
 
             if (correct){
                 try {
-                    listener.onMyGodChoice(this, input);
+                    listener.onGodChosen(this, input);
                     this.god = input;
                 } catch (Exception e) {
                     e.printStackTrace();

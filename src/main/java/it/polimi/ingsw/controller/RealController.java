@@ -5,18 +5,14 @@ import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 import it.polimi.ingsw.listeners.ChallengerViewEventListener;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.PlayerViewEventListener;
-import it.polimi.ingsw.listeners.PlayerViewEventListener;
-import it.polimi.ingsw.model.Color;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.GameModel;
-import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.view.ChallengerView;
 
 import java.util.List;
 
 public class RealController implements PlayerViewEventListener, ChallengerViewEventListener {
     private GameModel model;
-    private Setup setup;
+    private final Setup setup;
 
     public RealController(GameModel model) {
         this.model = model;
@@ -65,7 +61,7 @@ public class RealController implements PlayerViewEventListener, ChallengerViewEv
     }
 
     @Override
-    public void onMyGodChoice(EventSource source, String god) {
+    public void onGodChosen(EventSource source, String god) {
         setup.onGodChosen(source, god);
     }
 
@@ -76,7 +72,7 @@ public class RealController implements PlayerViewEventListener, ChallengerViewEv
 
     @Override
     public void onWorkerInitialization(EventSource source, Coord choice) {
-        setup.onWorkerInitialized(source, choice);
+        setup.onWorkerInitialization(source, choice);
     }
 
 }

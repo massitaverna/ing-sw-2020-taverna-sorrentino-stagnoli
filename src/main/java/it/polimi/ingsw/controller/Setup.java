@@ -203,7 +203,7 @@ public class Setup {
         }
     }
 
-    public void onWorkerInitialized(EventSource source, Coord coord) {
+    public void onWorkerInitialization(EventSource source, Coord coord) {
         //TODO: check that the player has not initialized both workers yet
         String nickname = ((PlayerView) source).getNickname();
         Player player;
@@ -228,13 +228,4 @@ public class Setup {
         }
     }
 
-
-//Setup scheme:
-        //  caso2: aggiungo player/s
-        //  caso3: sono tutti collegati -> setUp()
-
-        //  setUp():
-        //      caso 3a: riceve le divinità scelte e lo startPlayer
-        //               le setta nel model
-        //      caso 3b: for(Player p : queue) ricevi le scelte dei player
 }
