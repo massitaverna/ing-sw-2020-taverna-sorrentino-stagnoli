@@ -7,8 +7,11 @@ import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.Listener;
 import it.polimi.ingsw.listeners.ModelEventListener;
+
 import it.polimi.ingsw.model.handler.RequestHandler;
 import it.polimi.ingsw.model.handler.RequestHandlerCreator;
+import it.polimi.ingsw.model.state.LobbyState;
+import it.polimi.ingsw.model.state.ModelState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -320,7 +323,7 @@ public class GameModel implements EventSource {
         modelListeners.add((ModelEventListener) listener);
     }
 
-    ModelEventListener getListenerByNickname(String nickname) {
+    public ModelEventListener getListenerByNickname(String nickname) {
         return modelListeners.stream()
                 .filter(listener -> listener.getNickname().equals(nickname))
                 .findFirst().orElse(null);

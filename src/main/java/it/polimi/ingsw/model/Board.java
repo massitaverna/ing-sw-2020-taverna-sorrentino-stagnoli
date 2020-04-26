@@ -3,7 +3,9 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.exceptions.model.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Board implements Cloneable {
 
@@ -13,23 +15,22 @@ public class Board implements Cloneable {
 
     public Board(){
         this.board = new Space[BOARD_SIZE][BOARD_SIZE];
-        this.board = new Space[5][5];
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
                 this.board[i][j] = new Space();
             }
         }
         this.workers = new ArrayList<>();
     }
 
-    public Space getSpace(Coord c){
+    public Space getSpace(Coord c) throws InvalidCoordinatesException{
 
         //Check coordinates c are valid
         if (Coord.validCoord(c)) {
             return board[c.x][c.y].clone();
+        }else{
+            throw new InvalidCoordinatesException("invalid coordinates.");
         }
-
-        return null;
     }
 
     public void addWorker(Worker w) throws IllegalStateException {
@@ -258,6 +259,28 @@ public class Board implements Cloneable {
                         !this.board[c.x + i][c.y + j].isDome() ) {
 
                     result.add(new Coord(c.x + i, c.y + j));
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public List<Coord> getSpacesAround(Coord c) throws InvalidCoordinatesException{
+        //Check coordinates c are valid
+        if(!Coord.validCoord(c)){
+            throw new InvalidCoordinatesException("Invalid coordinates.");
+        }
+
+        List<Coord> result = new ArrayList<>();
+        for (int i = -1; i < 1; i++) {
+            for (int j = -1; j < 1; j++) {
+                if (i==0 && j==0)
+                    continue;
+
+                Coord nextCoord = new Coord(c.x + i, c.y + j);
+                if(Coord.validCoord(nextCoord)){
+                    result.add(nextCoord);
                 }
             }
         }

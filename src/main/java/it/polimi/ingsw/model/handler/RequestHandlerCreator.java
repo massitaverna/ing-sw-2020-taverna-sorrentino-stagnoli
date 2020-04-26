@@ -95,6 +95,45 @@ public class RequestHandlerCreator {
             r.setCondition(condition);
             result.add(r);
             godRules.put("Artemis", result);
+        }*/
+
+        if (god.equals("Atlas")) {
+            List<Rule> result = new ArrayList<>();
+            Rule r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.BUILD);
+            r.setDecision(Decision.GRANT);
+            BiPredicate<Coord, Coord> condition = (before, after) ->
+                    !board.getSpace(after).isOccupied() && before.isNear(after);
+            r.setCondition(condition);
+            result.add(r);
+            godRules.put("Atlas", result);
+        }
+
+        /*if (god.equals("Demeter")) {
+            List<Rule> result = new ArrayList<>();
+            Rule r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.BUILD);
+            r.setDecision(Decision.GRANT);
+            BiPredicate<Coord, Coord> condition = (before, after) ->
+                    !board.getSpace(after).isOccupied() && before.isNear(after);
+            r.setCondition(condition);
+            result.add(r);
+            godRules.put("Demeter", result);
+        }*/
+
+        if (god.equals("Hephastus")) {
+            List<Rule> result = new ArrayList<>();
+            Rule r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.BUILD);
+            r.setDecision(Decision.GRANT);
+            BiPredicate<Coord, Coord> condition = (before, after) ->
+                    !board.getSpace(after).isOccupied() && before.isNear(after);
+            r.setCondition(condition);
+            result.add(r);
+            godRules.put("Hephastus", result);
         }
 
         if (god.equals("Minotaur")) {
@@ -112,7 +151,7 @@ public class RequestHandlerCreator {
             r.setCondition(condition);
             // va settata la forzatura
             result.add(r);
-            godRules.put("Apollo", result);
+            godRules.put("Minotaur", result);
         }
     }
 }
