@@ -13,7 +13,7 @@ public interface ModelEventListener extends Listener {
     public void onBoardChanged(Board board);
     public void onGameReady();
     public void onGodsChosen(List<String> gods);
-    public void onPlayerAdded(String nickname);
+    public void onPlayerAdded(String nickname, int numCurr, int numTot);
 
     public void onGodSelection(List<String> gods);
     public void onGodsSelection(List<String> gods, int numPlayers);
@@ -21,7 +21,7 @@ public interface ModelEventListener extends Listener {
     public void onMyInitialization(List<Coord> freeSpaces);
 
     public void onMyTurn(List<Worker> selectableWorkers);
-    public void onMyAction(List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces);
+    public void onMyAction(List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces, boolean canEndTurn);
 
     public String getNickname();
 }
