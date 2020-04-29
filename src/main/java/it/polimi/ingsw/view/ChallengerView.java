@@ -1,19 +1,16 @@
 package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.listeners.*;
-import it.polimi.ingsw.model.Board;
-import it.polimi.ingsw.model.Coord;
-import it.polimi.ingsw.model.GameModel;
-import it.polimi.ingsw.model.Worker;
+import it.polimi.ingsw.model.*;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ChallengerView implements ModelEventListener, EventSource {
 
-    private GameModel model;
     private Scanner s;
     private PrintWriter outputStream;
     private ChallengerViewEventListener listener;
@@ -22,8 +19,8 @@ public class ChallengerView implements ModelEventListener, EventSource {
     // Delego a una view generica i metodi comuni a tutti i player
     private PlayerView view;
 
-    public ChallengerView(GameModel model){
-        this.view = new PlayerView(model);
+    public ChallengerView(){
+        this.view = new PlayerView();
         this.s = new Scanner(System.in);
         this.outputStream = new PrintWriter(System.out);
     }
@@ -39,8 +36,8 @@ public class ChallengerView implements ModelEventListener, EventSource {
         listener.onNumberOfPlayersChosen(this, n+1);
     }
 
-    public void askForNickname(){
-        view.askForNickname();
+    public void askForNickname(List<String> nicknamesInGame){
+        view.askForNickname(nicknamesInGame);
     }
 
 //    @Override
@@ -64,8 +61,8 @@ public class ChallengerView implements ModelEventListener, EventSource {
     }
 
     @Override
-    public void onPlayerAdded(String nickname) {
-        view.onPlayerAdded(nickname);
+    public void onPlayerAdded(String nickname, int numCurr, int numTot) {
+        view.onPlayerAdded(nickname, numCurr, numTot);
     }
 
     @Override
@@ -133,8 +130,8 @@ public class ChallengerView implements ModelEventListener, EventSource {
     }
 
     @Override
-    public void onMyAction(List<Coord> movableSpaces, List<Coord> buildableSpaces) {
-        view.onMyAction(movableSpaces, buildableSpaces);
+    public void onMyAction(List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces, boolean canEndTurn) {
+        view.onMyAction(movableSpaces, buildableSpaces, canEndTurn);
     }
 
     public String getNickname() {

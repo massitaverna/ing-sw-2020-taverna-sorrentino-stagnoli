@@ -74,12 +74,8 @@ public class PlayerView implements ModelEventListener, EventSource {
             String input = s.nextLine();
             Coord c = Coord.convertStringToCoord(input);
 
-            for ( Coord possibleCoord: movableSpaces) {
-                if (possibleCoord.equals(c)){
-                    valid = true;
-                    break;
-                }
-            }
+            if (movableSpaces.contains(c))
+                valid = true;
 
             if(valid)
                 listener.onMoveChosen(this, c);
