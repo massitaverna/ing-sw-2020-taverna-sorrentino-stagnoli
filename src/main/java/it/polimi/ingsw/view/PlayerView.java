@@ -18,13 +18,11 @@ public class PlayerView implements ModelEventListener, EventSource {
     // stare in ascolto su queste variabile per controllare che sia stato creato il player
     private String nickname;
     private PlayerViewEventListener listener;
-
-
-    private GameModel model;
     private String god;
 
-    public PlayerView(GameModel model){
-        this.model = model;
+
+    public PlayerView(){
+
         this.s = new Scanner(System.in);
         this.outputStream = new PrintStream(System.out);
     }
@@ -33,11 +31,11 @@ public class PlayerView implements ModelEventListener, EventSource {
         return nickname;
     }
 
-    public void askForNickname() {
+    public void askForNickname(List<String> nicknamesInGame) {
         outputStream.println("Choose a nickname: ");
         String input = s.nextLine();
 
-        while (model.getPlayersNicknames().contains(input)) {
+        while (nicknamesInGame.contains(input)) {
             outputStream.println("Nickname already taken, please choose another nickname: ");
             input = s.nextLine();
         }
@@ -46,7 +44,7 @@ public class PlayerView implements ModelEventListener, EventSource {
         listener.onNicknameChosen(this, input);
     }
 
-    private void askToBuild(List<Coord> buildableSpaces){
+    private void askToBuild(Map<Level, List<Coord>> buildableSpaces){
         outputStream.println("Where do you want to build? ");
         boolean valid = false;
 
@@ -54,8 +52,8 @@ public class PlayerView implements ModelEventListener, EventSource {
             String input = s.nextLine();
             Coord c = Coord.convertStringToCoord(input);
 
-            for ( Coord possibleCoord: buildableSpaces) {
-                if (possibleCoord.equals(c)){
+            for (List<Coord> list : buildableSpaces.values()){
+                if (list.contains(c)) {
                     valid = true;
                     break;
                 }
@@ -76,12 +74,8 @@ public class PlayerView implements ModelEventListener, EventSource {
             String input = s.nextLine();
             Coord c = Coord.convertStringToCoord(input);
 
-            for ( Coord possibleCoord: movableSpaces) {
-                if (possibleCoord.equals(c)){
-                    valid = true;
-                    break;
-                }
-            }
+            if (movableSpaces.contains(c))
+                valid = true;
 
             if(valid)
                 listener.onMoveChosen(this, c);
@@ -111,7 +105,6 @@ public class PlayerView implements ModelEventListener, EventSource {
     @Override
     public void onGameReady() {
         outputStream.println("Set up phase is done!");
-        outputStream.println(model.getBoard());
     }
 
     @Override
@@ -123,9 +116,7 @@ public class PlayerView implements ModelEventListener, EventSource {
     }
 
     @Override
-    public void onPlayerAdded(String nickname) {
-        int numTot = model.getNumPlayers();
-        int numCurr = model.getQueueState();
+    public void onPlayerAdded(String nickname, int numCurr, int numTot) {
         outputStream.println(nickname + "has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
     }
 
@@ -205,7 +196,6 @@ public class PlayerView implements ModelEventListener, EventSource {
     @Override
     public void onMyTurn(List<Worker> selectableWorkers) {
 
-        outputStream.println(model.getBoard());
         boolean correct = false;
 
         while (!correct){
@@ -230,36 +220,69 @@ public class PlayerView implements ModelEventListener, EventSource {
         }
     }
 
-
-    // non gestisco il caso in cui entrambe le liste sono vuote perchè non dovrebbe mai succedere
-    // perchè vorrebbe dire che il giocatore ha perso
     @Override
-    public void onMyAction(List<Coord> movableSpaces, List<Coord> buildableSpaces) {
+    public void onMyAction(List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces, boolean canEndTurn) {
 
-        outputStream.println(model.getBoard());
+        String selectable = "\u001B[97m";
+        String nonSelectable = "\u001B[90m";
+        String reset = "\u001B[0m";
+        boolean[] valid = new boolean[3];
+        boolean correctInput = false;
+        boolean isBuild = false;
 
-        if(movableSpaces.isEmpty())
-            this.askToBuild(buildableSpaces);
-        if(buildableSpaces.isEmpty())
-            this.askToMove(movableSpaces);
+        // Menu
+
+        outputStream.println("What would you like to do?");
+
+        if (movableSpaces.isEmpty())
+            outputStream.println(nonSelectable + "1. Move" + reset);
         else {
-            outputStream.println("Which action would you like to perform? \n 1. Move\n 2. Build");
-            String input = s.nextLine();
-            boolean valid = false;
+            outputStream.println(selectable + "1. Move" + reset);
+            valid[0] = true;
+        }
 
-            while (!valid){
-                if (input.equals("1") || input.toLowerCase().equals("move")){
-                    valid = true;
-                    this.askToMove(movableSpaces);
-                }
-                if (input.equals("2") || input.toLowerCase().equals("build")){
-                    valid = true;
-                    this.askToBuild(buildableSpaces);
-                }
-                else {
-                    outputStream.println("Please enter a valid action");
-                }
+        for (List<Coord> list : buildableSpaces.values()){
+            if (!list.isEmpty()) {
+                isBuild = true;
+                break;
             }
         }
+
+        if (!isBuild)
+            outputStream.println(nonSelectable + "2. Build" + reset);
+        else {
+            outputStream.println(selectable + "2. Build" + reset);
+            valid[1] = true;
+        }
+
+        if (!canEndTurn)
+            outputStream.println(nonSelectable + "3. End" + reset);
+        else {
+            outputStream.println(selectable + "3. End" + reset);
+            valid[2] = true;
+        }
+
+        String input;
+
+        while (!correctInput){
+            input = s.nextLine();
+
+            if ((input.toLowerCase().equals("move") || input.equals("1")) && valid[0]) {
+                correctInput = true;
+                this.askToMove(movableSpaces);
+            }
+            if ((input.toLowerCase().equals("build") || input.equals("2")) && valid[1]) {
+                correctInput = true;
+                this.askToBuild(buildableSpaces);
+            }
+            if ((input.toLowerCase().equals("end") || input.equals("3")) && valid[2]) {
+                correctInput = true;
+                listener.skipAction(this);
+            } else
+                outputStream.println("Please enter a valid action");
+
+        }
+
+        //End Menu
     }
 }

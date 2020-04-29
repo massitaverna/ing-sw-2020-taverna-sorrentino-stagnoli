@@ -23,4 +23,5 @@ public interface PlayerViewEventListener extends Listener {
     public void onWorkerChosen(EventSource source, Coord workerPos) throws IllegalWorkerChoiceException, WorkerNotFoundException;
     public void onMoveChosen(EventSource source, Coord moveChoice);
     public void onBuildChosen(EventSource source, Coord buildChoice);
+    public void skipAction(EventSource source);
 }
