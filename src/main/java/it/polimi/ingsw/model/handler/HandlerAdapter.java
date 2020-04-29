@@ -1,5 +1,6 @@
 package it.polimi.ingsw.model.handler;
 
+import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.Level;
 
@@ -9,18 +10,18 @@ import java.util.Map;
 class HandlerAdapter implements RequestHandler {
 
     RuleHandler ruleHandler;
-    Coord before;
+    private ValidationContainer validationContainer;
 
     HandlerAdapter(RuleHandler ruleHandler) {
         this.ruleHandler = ruleHandler;
     }
 
     @Override
-    public void getValidSpaces(Coord current, List<Coord> allSpaces,
+    public void getValidSpaces(Coord current, Board board,
                                List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces,
                                Map<Coord, Coord> forces) {
 
-        ValidationContainer validationContainer = new ValidationContainer(current, allSpaces);
+        validationContainer = new ValidationContainer(current, board);
 
         ruleHandler.handleValidationRequest(validationContainer);
 
@@ -29,12 +30,10 @@ class HandlerAdapter implements RequestHandler {
         buildableSpaces.putAll(validationContainer.getBuildableSpaces());
         forces.putAll(validationContainer.getForces());
 
-        before = validationContainer.getCurrentPosition();
     }
 
     @Override
     public void generate(Coord after, ActionType at) {
-
-        ruleHandler.generate(before, after, at);
+        ruleHandler.generate(validationContainer.getCurrentPosition(), after, at);
     }
 }

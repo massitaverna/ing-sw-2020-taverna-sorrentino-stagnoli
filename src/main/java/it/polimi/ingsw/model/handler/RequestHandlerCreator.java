@@ -2,7 +2,8 @@ package it.polimi.ingsw.model.handler;
 
 import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
-import it.polimi.ingsw.model.Space;
+import it.polimi.ingsw.model.Level;
+import it.polimi.ingsw.model.Pair;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,21 +14,14 @@ import java.util.function.BiPredicate;
 public class RequestHandlerCreator {
 
     private final String god;
-    private static List<Rule> standardRules = new ArrayList<>();
-    private static Map<String, List<Rule>> godRules = new HashMap<>();
-    private Board board;
+    private static final List<Rule> standardRules = new ArrayList<>();
+    private static final Map<String, List<Rule>> godRules = new HashMap<>();
 
-    public RequestHandlerCreator(Board board) {
-
-        //TODO: da sistemare: non posso passare qui la board, serve la board
-        // a tempo di valutazione del BiPredicate.
-        // Idea: BiPredicate<Pair<Coord, Space>, Pair<Coord, Space>>
+    public RequestHandlerCreator() {
         this.god = null;
-        this.board = board;
     }
-    public RequestHandlerCreator(String god, Board board) {
+    public RequestHandlerCreator(String god) {
         this.god = god;
-        this.board = board;
     }
 
 
@@ -45,7 +39,7 @@ public class RequestHandlerCreator {
         if (standardRules.isEmpty()) {
             initStandardRules();
         }
-        return standardRules;
+        return new ArrayList<>(standardRules);
     }
 
     private List<Rule> getGodRules() {
@@ -54,18 +48,23 @@ public class RequestHandlerCreator {
             initGodRules();
         }
 
-        return godRules.get(god);
+        return new ArrayList<>(godRules.get(god));
     }
 
 
+
+    // Coord before --> cPair.get(0)
+    // Coord after --> cPair.get(1)
+
     private static void initStandardRules() {
-        //To be implemented
         Rule r = new Rule();
         r.setPurpose(Purpose.VALIDATION);
         r.setDecision(Decision.GRANT);
         r.setActionType(ActionType.MOVE);
-        BiPredicate<Coord, Coord> condition = (before, after) ->
-        before.isNear(after) && !board.getSpace(after).isOccupied();
+        BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
+        cPair.get(0).isNear(cPair.get(1)) && !board.getSpace(cPair.get(1)).isOccupied() &&
+                board.getSpace(cPair.get(1)).getHeight().ordinal() -
+                        board.getSpace(cPair.get(0)).getHeight().ordinal() <= 1;
         r.setCondition(condition);
         standardRules.add(r);
 
@@ -73,90 +72,109 @@ public class RequestHandlerCreator {
         r.setPurpose(Purpose.VALIDATION);
         r.setDecision(Decision.DENY);
         r.setActionType(ActionType.MOVE);
-        BiPredicate<Coord, Coord> condition2 = (before, after) ->
-                !before.isNear(after) || board.getSpace(after).isOccupied();
-        r.setCondition(condition2);
+        condition = (cPair, board) ->
+                !cPair.get(0).isNear(cPair.get(1)) || board.getSpace(cPair.get(1)).isOccupied() ||
+                        board.getSpace(cPair.get(1)).getHeight().ordinal() - board.getSpace(cPair.get(0)).getHeight().ordinal() > 1;
+        r.setCondition(condition);
         standardRules.add(r);
 
         r = new Rule();
         r.setPurpose(Purpose.VALIDATION);
         r.setDecision(Decision.DENY);
         r.setActionType(ActionType.BUILD);
-        BiPredicate<Coord, Coord> condition3 = (before, after) -> true;
-        r.setCondition(condition3);
+        condition = (cPair, board) -> true;
+        r.setCondition(condition);
         standardRules.add(r);
 
         r = new Rule();
         r.setPurpose(Purpose.GENERATION);
         r.setActionType(ActionType.MOVE);
-        BiPredicate<Coord, Coord> condition4 = (before, after) -> true;
-        r.setCondition(condition4);
+        condition = (cPair, board) -> true;
+        r.setCondition(condition);
+        standardRules.add(r);
 
         List<Rule> generatedRules = new ArrayList<>();
-        Rule g = new Rule();
-        g.setPurpose(Purpose.VALIDATION);
-        g.setDecision(Decision.GRANT);
-        g.setActionType(ActionType.BUILD);
-        BiPredicate<Coord, Coord> condition5 = (before, after) ->
-                before.isNear(after) && !board.getSpace(after).isOccupied();
-        g.setCondition(condition5);
-        generatedRules.add(g);
-
-        //Other generated rules...
-
         r.setGeneratedRules(generatedRules);
-        standardRules.add(r);
+
+        generatedRules.addAll(getStandardBuildUpRules());
+
+        r = new Rule();
+        r.setPurpose(Purpose.VALIDATION);
+        r.setDecision(Decision.DENY);
+        r.setActionType(ActionType.MOVE);
+        condition = (cPair, board) -> true;
+        r.setCondition(condition);
+        generatedRules.add(r);
+
+        r = new Rule();
+        r.setPurpose(Purpose.GENERATION);
+        r.setActionType(ActionType.BUILD);
+        condition = (cPair, board) -> true;
+        r.setCondition(condition);
+        generatedRules.add(r);
+
+        generatedRules = new ArrayList<>();
+        r.setGeneratedRules(generatedRules);
+
+        generatedRules.addAll(denyAll());
 
 
-        standardRules.add(r);
     }
 
     private void initGodRules() {
+        List<Rule> result = new ArrayList<>();
 
         if (god == null) {
             throw new IllegalStateException("Tried to get god's rules without specifying god's name " +
                     "at construction-time.");
         }
 
-        if (god.equals("Apollo")) {
-            List<Rule> result = new ArrayList<>();
+        if (god.equals("Apollo")) { //COMPLETE
             Rule r = new Rule();
             r.setPurpose(Purpose.VALIDATION);
             r.setActionType(ActionType.MOVE);
             r.setDecision(Decision.GRANT);
-            BiPredicate<Coord, Coord> condition = (before, after) ->
-                    board.getSpace(after).isOccupied() && before.isNear(after);
+            BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
+                    board.getSpace(cPair.get(1)).isOccupied() && cPair.get(0).isNear(cPair.get(1));
             r.setCondition(condition);
             BiFunction<Coord, Coord, Coord> forceSpaceFunction = (before, after) ->
                     before;
             r.setForceSpaceFunction(forceSpaceFunction);
             result.add(r);
-            godRules.put("Apollo", result);
         }
 
-        if (god.equals("Artemis")) {
-            List<Rule> result = new ArrayList<>();
+        if (god.equals("Artemis")) { //COMPLETE
             Rule r = new Rule();
-            r.setPurpose(Purpose.VALIDATION);
+            r.setPurpose(Purpose.GENERATION);
             r.setActionType(ActionType.MOVE);
-            r.setDecision(Decision.GRANT);
-            BiPredicate<Coord, Coord> condition = null; //(before, after) -> ...; // To be implemented
+            BiPredicate<Pair<Coord>, Board> condition = (cPair, board) -> true;
             r.setCondition(condition);
             result.add(r);
-            godRules.put("Artemis", result);
+
+            List<Rule> generatedRules = new ArrayList<>();
+            r.setGeneratedRules(generatedRules);
+            r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setDecision(Decision.DENY);
+            r.setActionType(ActionType.MOVE);
+            TriPredicate<Pair<Coord>, Pair<Coord>, Board> symbolicCondition = (oldPair, pair, board) ->
+                    oldPair.get(0).equals(pair.get(1));
+            r.setSymbolicCondition(symbolicCondition);
+            generatedRules.add(r);
+
+            generatedRules.add(standardRules.get(0));
+            generatedRules.add(standardRules.get(3));
         }
 
         if (god.equals("Atlas")) {
-            List<Rule> result = new ArrayList<>();
             Rule r = new Rule();
             r.setPurpose(Purpose.VALIDATION);
             r.setActionType(ActionType.BUILD);
             r.setDecision(Decision.GRANT);
-            BiPredicate<Coord, Coord> condition = (before, after) ->
-                    !board.getSpace(after).isOccupied() && before.isNear(after);
+            BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
+                    !board.getSpace(cPair.get(1)).isOccupied() && cPair.get(0).isNear(cPair.get(1));
             r.setCondition(condition);
             result.add(r);
-            godRules.put("Atlas", result);
         }
 
         /*if (god.equals("Demeter")) {
@@ -165,42 +183,111 @@ public class RequestHandlerCreator {
             r.setPurpose(Purpose.VALIDATION);
             r.setActionType(ActionType.BUILD);
             r.setDecision(Decision.GRANT);
-            BiPredicate<Coord, Coord> condition = (before, after) ->
-                    !board.getSpace(after).isOccupied() && before.isNear(after);
+            BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
+                    !board.getSpace(cPair.get(1)).isOccupied() && cPair.get(0).isNear(cPair.get(1));
             r.setCondition(condition);
             result.add(r);
             godRules.put("Demeter", result);
         }*/
 
-        if (god.equals("Hephastus")) {
-            List<Rule> result = new ArrayList<>();
+        if (god.equals("Hephaestus")) {
             Rule r = new Rule();
             r.setPurpose(Purpose.VALIDATION);
             r.setActionType(ActionType.BUILD);
             r.setDecision(Decision.GRANT);
-            BiPredicate<Coord, Coord> condition = (before, after) ->
-                    !board.getSpace(after).isOccupied() && before.isNear(after);
+            BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
+                    !board.getSpace(cPair.get(1)).isOccupied() && cPair.get(0).isNear(cPair.get(1));
             r.setCondition(condition);
             result.add(r);
-            godRules.put("Hephastus", result);
         }
 
-        if (god.equals("Minotaur")) {
-            List<Rule> result = new ArrayList<>();
+        if (god.equals("Minotaur")) { //COMPLETE
             Rule r = new Rule();
             r.setPurpose(Purpose.VALIDATION);
             r.setActionType(ActionType.MOVE);
             r.setDecision(Decision.GRANT);
             BiFunction<Coord, Coord, Coord> getDirection = (before, after) ->
-                    new Coord(after.x -before.x, after.y - before.y);
-            BiPredicate<Coord, Coord> condition = (before, after) ->
-                    board.getSpace(after).isOccupied() && before.isNear(after) &&
-                            Coord.validCoord(after.sum(getDirection.apply(before, after))) &&
-                            !board.getSpace(after.sum(getDirection.apply(before, after))).isOccupied();
+                    new Coord(after.x - before.x, after.y - before.y);
+            BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
+                    board.getSpace(cPair.get(1)).isOccupied() && cPair.get(0).isNear(cPair.get(1)) &&
+                            Coord.validCoord(cPair.get(1).sum(getDirection.apply(cPair.get(0), cPair.get(1)))) &&
+                            !board.getSpace(cPair.get(1).sum(getDirection.apply(cPair.get(0), cPair.get(1)))).isOccupied();
             r.setCondition(condition);
-            // va settata la forzatura
+            BiFunction<Coord, Coord, Coord> forceSpaceFunction = (before, after) ->
+                    after.sum(getDirection.apply(before, after));
+            r.setForceSpaceFunction(forceSpaceFunction);
             result.add(r);
-            godRules.put("Minotaur", result);
         }
+
+        godRules.put(god, result);
+    }
+
+
+    private static List<Rule> getStandardBuildUpRules() {
+        List<Rule> result = new ArrayList<>();
+
+        BiPredicate<Pair<Coord>, Board> conditionOnProximity = (cPair, board) ->
+                cPair.get(0).isNear((cPair.get(1)));
+        BiPredicate<Pair<Coord>, Board> conditionOnFreeSpace = (cPair, board) ->
+                !board.getSpace(cPair.get(1)).isOccupied();
+        BiPredicate<Pair<Coord>, Board> conditionOnLevelUp;
+
+        BiPredicate<Pair<Coord>, Board> condition;
+        Rule r;
+
+        for (Level level : Level.values()) {
+
+            if (level == Level.GROUND) {
+                continue;
+            }
+
+            r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.BUILD);
+            r.setDecision(Decision.GRANT);
+            r.setBuildLevel(level);
+            conditionOnLevelUp = (cPair, board) ->
+                    board.getSpace(cPair.get(1)).getHeight().ordinal() == level.ordinal() - 1;
+            condition =
+                    conditionOnProximity
+                            .and(conditionOnFreeSpace
+                                    .and(conditionOnLevelUp));
+            r.setCondition(condition);
+            result.add(r);
+
+            r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.BUILD);
+            r.setDecision(Decision.DENY);
+            r.setBuildLevel(level);
+            r.setCondition(condition.negate());
+
+        }
+
+        return result;
+    }
+
+    private static List<Rule> denyAll() {
+        List<Rule> result = new ArrayList<>();
+        Rule r;
+        BiPredicate<Pair<Coord>, Board> condition;
+
+        r = new Rule();
+        r.setPurpose(Purpose.VALIDATION);
+        r.setDecision(Decision.DENY);
+        r.setActionType(ActionType.MOVE);
+        condition = (cPair, board) -> true;
+        r.setCondition(condition);
+        result.add(r);
+
+        r = new Rule();
+        r.setPurpose(Purpose.VALIDATION);
+        r.setDecision(Decision.DENY);
+        r.setActionType(ActionType.BUILD);
+        condition = (cPair, board) -> true;
+        r.setCondition(condition);
+        result.add(r);
+
+        return result;
     }
 }

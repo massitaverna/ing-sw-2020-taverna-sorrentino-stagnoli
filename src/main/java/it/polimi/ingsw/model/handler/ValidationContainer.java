@@ -27,6 +27,7 @@ Every list is accessed with index = 2*actionType + decision (+ 2*level if level 
  */
 package it.polimi.ingsw.model.handler;
 
+import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.Level;
 
@@ -36,13 +37,15 @@ import java.util.stream.Collectors;
 
 class ValidationContainer {
     private Coord currentPosition;
-    private List<Coord> allSpaces;
+    private final Board board;
+    private final List<Coord> allSpaces;
     private List<List<Coord>> superList;
     private Map<Coord, Coord> forces;
 
-    public ValidationContainer(Coord currentPosition, List<Coord> allSpaces) {
-        this.allSpaces = allSpaces; // COPIA!!!
+    public ValidationContainer(Coord currentPosition, Board board) {
         this.currentPosition = currentPosition;
+        this.board = board;
+        this.allSpaces = board.getAllCoord();
         this.superList = new ArrayList<List<Coord>>();
         this.forces = new HashMap<Coord, Coord>();
         for (int i = 0; i < 12; i++) {
@@ -56,6 +59,10 @@ class ValidationContainer {
 
     public Coord getCurrentPosition() {
         return currentPosition;
+    }
+
+    public Board getBoard() {
+        return board;
     }
 
     public List<Coord> getAllSpaces() {
@@ -84,6 +91,7 @@ class ValidationContainer {
     public List<Coord> getMovableSpaces() {
         return new ArrayList<>(superList.get(0));
     }
+
     public Map<Level, List<Coord>> getBuildableSpaces() {
         Map<Level, List<Coord>> result = new HashMap<>();
 
@@ -102,7 +110,6 @@ class ValidationContainer {
     public Map<Coord, Coord> getForces() {
         return new HashMap<>(forces);
     }
-
 
     public boolean allSpacesValidated() {
         for (int i = 0; i < superList.size(); i += 2) {

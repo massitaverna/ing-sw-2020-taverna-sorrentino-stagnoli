@@ -8,7 +8,9 @@ rules.size() > 0
 package it.polimi.ingsw.model.handler;
 
 import it.polimi.ingsw.exceptions.UndeterminedSpaceException;
+import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
+import it.polimi.ingsw.model.Pair;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,6 +35,7 @@ class ConcreteHandler implements RuleHandler {
         //Do your work
 
         Coord current = vc.getCurrentPosition();
+        Board board = vc.getBoard();
 
         /*
         //FOR-LOOP WAY
@@ -60,7 +63,7 @@ class ConcreteHandler implements RuleHandler {
                 .filter(r -> r.getPurpose() == Purpose.VALIDATION)
                 .forEach(r ->
                         vc.getAllSpaces().stream()
-                        .filter(s -> r.getCondition().test(current, s))
+                        .filter(s -> r.getCondition().test(new Pair<>(current, s), board))
                         .forEach(s -> vc.validateSpace(
                                 s,
                                 r.getActionType(),
@@ -81,12 +84,15 @@ class ConcreteHandler implements RuleHandler {
 
     }
 
-    public void generate(Coord before, Coord after, ActionType at) {
+    public void generate(ValidationContainer vc, Coord after, ActionType at) {
+        Pair<Coord> pair = new Pair<>(vc.getCurrentPosition(), after);
+        Board board = vc.getBoard();
+
         rules = rules.stream()
                 .filter(r -> r.getPurpose()==Purpose.GENERATION)
                 .filter(r -> r.getActionType() == at)
-                .filter(r -> r.getCondition().test(before, after))
-                .map(r -> r.getGeneratedRules())
+                .filter(r -> r.getCondition().test(pair, board))
+                .map(r -> r.getGeneratedRules(pair))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
 

@@ -14,23 +14,23 @@ generatedRules == null <==> purpose != GENERATION
 
 package it.polimi.ingsw.model.handler;
 
-import it.polimi.ingsw.model.Coord;
-import it.polimi.ingsw.model.Level;
-import it.polimi.ingsw.model.Space;
+import it.polimi.ingsw.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 public class Rule {
     private Purpose purpose;
     private ActionType actionType;
     private Decision decision;
-    private BiPredicate<Coord, Coord> condition;
+    private BiPredicate<Pair<Coord>, Board> condition;
     private BiFunction<Coord, Coord, Coord> forceSpaceFunction;
     private Level buildLevel;
     private List<Rule> generatedRules;
+    private TriPredicate<Pair<Coord>, Pair<Coord>, Board> symbolicCondition;
 
     Purpose getPurpose() {
         return this.purpose;
@@ -48,8 +48,7 @@ public class Rule {
         return decision;
     }
 
-    //Used for MoveRules or for GenerationRules
-    BiPredicate<Coord, Coord> getCondition() {
+    BiPredicate<Pair<Coord>, Board> getCondition() {
         return condition;
     }
 
@@ -61,8 +60,15 @@ public class Rule {
         return buildLevel;
     }
 
-    List<Rule> getGeneratedRules() {
-        return new ArrayList<>(generatedRules);
+    List<Rule> getGeneratedRules(Pair<Coord> oldAction) {
+        List<Rule> result = new ArrayList<>();
+        for (Rule rule : generatedRules) {
+            if (rule.symbolicCondition != null) {
+                rule.condition = (cPair, board) -> symbolicCondition.test(oldAction, cPair, board);
+            }
+            result.add(rule);
+        }
+        return result;
     }
 
     void setPurpose(Purpose purpose) {
@@ -77,7 +83,7 @@ public class Rule {
         this.decision = decision;
     }
 
-    void setCondition(BiPredicate<Coord, Coord> condition) {
+    void setCondition(BiPredicate<Pair<Coord>, Board> condition) {
         this.condition = condition;
     }
 
@@ -93,6 +99,10 @@ public class Rule {
         this.generatedRules = new ArrayList<>(generatedRules);
     }
 
+    void setSymbolicCondition(TriPredicate<Pair<Coord>, Pair<Coord>, Board> symbolicCondition) {
+        this.symbolicCondition = symbolicCondition;
+    }
+
     @Override
     public String toString() {
         String result;
@@ -106,4 +116,5 @@ public class Rule {
         result = purpose.name() + result + "rule" + super.toString();
         return result;
     }
+
 }

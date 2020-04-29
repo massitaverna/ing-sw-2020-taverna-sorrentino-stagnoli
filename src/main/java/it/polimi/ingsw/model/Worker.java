@@ -1,8 +1,9 @@
 package it.polimi.ingsw.model;
 
+import com.sun.corba.se.spi.orbutil.threadpool.Work;
 import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 
-public class Worker {
+public class Worker implements Cloneable {
 
     private Color color;
     private Coord position;
@@ -38,5 +39,10 @@ public class Worker {
 
     public String getPlayerNickname(){
         return this.player.getNickname();
+    }
+
+    public Worker clone() {
+
+        return new Worker(new Player(player.getNickname()));
     }
 }

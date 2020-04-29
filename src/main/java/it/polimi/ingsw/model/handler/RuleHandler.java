@@ -4,5 +4,5 @@ import it.polimi.ingsw.model.Coord;
 
 interface RuleHandler {
     void handleValidationRequest(ValidationContainer vc);
-    void generate(Coord before, Coord after, ActionType at);
+    void generate(ValidationContainer vc, Coord after, ActionType at);
 }

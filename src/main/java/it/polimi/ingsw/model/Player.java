@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Player {
 
-    private String nickname;
+    private final String nickname;
     private God god;
     private boolean hasWon;
     private List<Worker> workersList;
@@ -17,7 +17,7 @@ public class Player {
     public Player(String nickname){
         this.nickname = nickname;
         this.workerColor = null;
-        this.workersList = new ArrayList<Worker>();
+        this.workersList = new ArrayList<>();
         this.workersList.add(new Worker(this));
         this.workersList.add(new Worker(this));
         this.isStartPlayer = false;
@@ -42,7 +42,11 @@ public class Player {
     }
 
     public List<Worker> getWorkersList() {
-        return workersList;
+        List<Worker> result = new ArrayList<>();
+        for (Worker w : workersList) {
+            result.add(w.clone());
+        }
+        return result;
     }
 
     public String getNickname() {

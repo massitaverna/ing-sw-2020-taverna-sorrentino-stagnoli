@@ -1,8 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.exceptions.model.IllegalWorkerActionException;
-import it.polimi.ingsw.exceptions.model.SpaceFullException;
-import it.polimi.ingsw.exceptions.model.SpaceOccupiedException;
+import it.polimi.ingsw.exceptions.model.IllegalWorkerChoiceException;
 import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.Listener;
@@ -192,7 +190,7 @@ public class GameModel implements EventSource {
     void initRequestHandlers() {
         queue.forEach(p ->
                 handlers.put(p,
-                        new RequestHandlerCreator(p.getGod().getName(), getBoard())
+                        new RequestHandlerCreator(p.getGod().getName())
                                 .createHandler()
                 )
         );
@@ -214,15 +212,15 @@ public class GameModel implements EventSource {
         return currentPlayer;
     }
 
-    public void setWorkerChoice(Coord workerPos) throws WorkerNotFoundException, IllegalArgumentException {
-        Worker selected = this.board.getWorkerByPosition(workerPos);
+    public void setWorkerChoice(Coord workerPos) {
+        Worker selected = board.getWorkerByPosition(workerPos);
 
-        //Check that worker in workerPos there is a worker that belongs to currentPlayer
+        //Check that the worker in workerPos belongs to currentPlayer
         if( !(selected.getPlayerNickname().equals(currentPlayer.getNickname())) ) {
-            throw new IllegalArgumentException("Selected worker does not belong to the current player");
+            throw new IllegalWorkerChoiceException("Selected worker does not belong to the current player");
         }
 
-        this.currentWorker = selected;
+        currentWorker = selected;
     }
 
     public void setMove(Coord moveChoice) {
@@ -246,9 +244,18 @@ public class GameModel implements EventSource {
     }
 
     public void setBuild(Coord buildChoice, Level level) {
+        if (!turn.getBuildableSpacesCopy().get(level).contains(buildChoice)) {
+            notifyAction();
+            return;
+        }
         board.workerBuild(currentWorker, buildChoice, level);
 
         handlers.get(currentPlayer).generate(buildChoice, ActionType.BUILD);
+    }
+
+    public void setEnd() {
+        // Logica di aggiornamento del currentPlayer
+        currentWorker = null;
     }
 
     public void setWin(Player p) throws IllegalArgumentException {
@@ -274,12 +281,15 @@ public class GameModel implements EventSource {
         return currentPlayer.isStartPlayer();
     }
 
+    public boolean hasNewTurnBegun() {
+        return currentWorker == null;
+    }
+
     void nextAction() {
 
         RequestHandler currHandler = handlers.get(currentPlayer);
         Coord currentPosition = currentWorker.getPosition();
-        List<Coord> allCoord = board.getAllCoord();
-        currHandler.getValidSpaces(currentPosition, allCoord,
+        currHandler.getValidSpaces(currentPosition, board.clone(),
                 turn.getMovableSpacesReference(), turn.getBuildableSpacesReference(),
                 turn.getForcesReference());
         notifyAction();

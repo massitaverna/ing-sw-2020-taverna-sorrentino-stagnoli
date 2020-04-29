@@ -18,3 +18,4 @@ controllare che ogni giocatore abbia God diversi ---------- MESSO
 controllare che non ci siano null nella workersList dei players
 controllare che, se si è dopo il setup, ogni worker abbia coordinate non nulle
 controllare che, se si è dopo il setup, ogni view abbia setupDone==true
+standardRules.length()==4

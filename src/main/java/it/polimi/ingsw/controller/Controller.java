@@ -1,7 +1,7 @@
 package it.polimi.ingsw.controller;
 
 import it.polimi.ingsw.exceptions.controller.IllegalPlayerException;
-import it.polimi.ingsw.exceptions.controller.IllegalWorkerChoiceException;
+import it.polimi.ingsw.exceptions.model.IllegalWorkerChoiceException;
 import it.polimi.ingsw.exceptions.controller.InvalidPlayerException;
 import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 import it.polimi.ingsw.listeners.ChallengerViewEventListener;

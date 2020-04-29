@@ -1,6 +1,6 @@
 package it.polimi.ingsw;
 
-import it.polimi.ingsw.controller.Controller;
+import it.polimi.ingsw.controller.RealController;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.view.Client;
 import it.polimi.ingsw.view.PlayerView;

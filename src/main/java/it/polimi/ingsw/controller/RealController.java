@@ -1,17 +1,17 @@
 package it.polimi.ingsw.controller;
 
-import it.polimi.ingsw.exceptions.controller.IllegalWorkerChoiceException;
-import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 import it.polimi.ingsw.listeners.ChallengerViewEventListener;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.PlayerViewEventListener;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.GameModel;
+import it.polimi.ingsw.model.Player;
+import it.polimi.ingsw.view.PlayerView;
 
 import java.util.List;
 
 public class RealController implements PlayerViewEventListener, ChallengerViewEventListener {
-    private GameModel model;
+    private final GameModel model;
     private final Setup setup;
 
     public RealController(GameModel model) {
@@ -23,19 +23,47 @@ public class RealController implements PlayerViewEventListener, ChallengerViewEv
 
 
     @Override
-    public void onWorkerChosen(EventSource source, Coord workerPos) throws IllegalWorkerChoiceException, WorkerNotFoundException {
+    public void onWorkerChosen(EventSource source, Coord workerPos) {
+        String nickname = ((PlayerView) source).getNickname();
 
+        if (!isCurrentPlayer(nickname)) {
+            throw new IllegalStateException("Player " + nickname + "tried to choose a " +
+                    "worker not in his turn.");
+        }
+
+        model.setWorkerChoice(workerPos);
+        model.nextStep();
     }
 
     @Override
     public void onMoveChosen(EventSource source, Coord moveChoice) {
+        String nickname = ((PlayerView) source).getNickname();
 
+        if (!isCurrentPlayer(nickname)) {
+            throw new IllegalStateException("Player " + nickname + "tried to move not in his turn.");
+        }
+
+        model.setMove(moveChoice);
+        model.nextStep();
     }
 
     @Override
     public void onBuildChosen(EventSource source, Coord buildChoice) {
+        String nickname = ((PlayerView) source).getNickname();
 
+        if (!isCurrentPlayer(nickname)) {
+            throw new IllegalStateException("Player " + nickname + "tried to build not in his turn.");
+        }
+
+        model.setBuild(buildChoice);
+        model.nextStep();
     }
+
+    private /*helper*/ boolean isCurrentPlayer(String nickname) {
+        Player currentPlayer = model.getCurrentPlayer();
+        return currentPlayer.getNickname().equals(nickname);
+    }
+
 
 
     // --------------------------------------------------------------------------------
