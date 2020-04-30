@@ -54,6 +54,7 @@ public class GameModel implements EventSource {
 
     }
 
+    //STATE FUNCTIONS//
     public void changeState(ModelState state) {
         this.state = state;
     }
@@ -73,8 +74,8 @@ public class GameModel implements EventSource {
         godsList.add(new God("Prometheus", "Weak"));
 
     }
-    //SETUP FUNCTIONS//
 
+    //SETUP FUNCTIONS//
     public void setNumPlayers(int numPlayers) {
         this.numPlayers = numPlayers;
     }
@@ -121,7 +122,6 @@ public class GameModel implements EventSource {
 
         nextPlayer();
     }
-
 
     public void setPlayerColor(Player p, Color c) throws IllegalArgumentException {
         //Check that player p is part of the game
@@ -170,6 +170,7 @@ public class GameModel implements EventSource {
         currentPlayer.setAsStartPlayer();
     }
 
+    //potrebbe ricevere (String Player, Coord C) anzichè il worker
     public void initializeWorker(Worker w, Coord c) {
         if (!currentPlayer.getWorkersList().contains(w)) {
             throw new IllegalStateException("Tried to initialize a worker not " +
@@ -186,7 +187,6 @@ public class GameModel implements EventSource {
     }
 
     //GAME FUNCTIONS//
-
     void initRequestHandlers() {
         queue.forEach(p ->
                 handlers.put(p,
@@ -195,7 +195,6 @@ public class GameModel implements EventSource {
                 )
         );
     }
-
 
     public Player getPlayerByNickname(String nick) throws IllegalArgumentException {
 
@@ -301,7 +300,7 @@ public class GameModel implements EventSource {
         listener.onMyAction(turn.getMovableSpacesCopy(), turn.getBuildableSpacesCopy());
     }
 
-    //INTERROGAZIONI DALLE VIEW
+    //INTERROGAZIONI DALLE VIEW   VANNO TOLTEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE !!!!!!!!!!!!!!!!!
     public Board getBoard(){
         return this.board.clone();
     }
@@ -322,8 +321,6 @@ public class GameModel implements EventSource {
     public List<Color> getAvailableColors(){
         return this.colors;
     }
-
-
 
     @Override
     public void addListener(Listener listener) {
