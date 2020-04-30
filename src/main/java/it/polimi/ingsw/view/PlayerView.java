@@ -46,24 +46,60 @@ public class PlayerView implements ModelEventListener, EventSource {
 
     private void askToBuild(Map<Level, List<Coord>> buildableSpaces){
         outputStream.println("Where do you want to build? ");
-        boolean valid = false;
+        boolean validCoord = false;
+        boolean validLevel = false;
+        int choice = 0;
+        List<Level> possibleLevels= new ArrayList<Level>();
 
-        while (!valid){
+        while (!validCoord){
             String input = s.nextLine();
             Coord c = Coord.convertStringToCoord(input);
 
             for (List<Coord> list : buildableSpaces.values()){
                 if (list.contains(c)) {
-                    valid = true;
-                    break;
+                    validCoord = true;
+                    choice++;
+                    possibleLevels.add(getKeyFromValue(buildableSpaces, list));
                 }
             }
 
-            if(valid)
-                listener.onBuildChosen(this, c);
+            if(validCoord){
+                if(choice == 1)
+                    listener.onBuildChosen(this, c, possibleLevels.get(0));
+                else{
+                    outputStream.println("What level would you like to build?");
+                    for (Level l : possibleLevels){
+                        outputStream.println("- " + l);
+                    }
+                    while (!validLevel){
+                        String inputLvl = s.nextLine();
+
+                        for (Level l : possibleLevels){
+                            if (l.equals(Level.valueOf(input.toUpperCase()))){
+                                validLevel = true;
+                                break;
+                            }
+                        }
+
+                        if(validLevel)
+                            listener.onBuildChosen(this, c, Level.valueOf(input.toUpperCase()));
+                        else
+                            outputStream.println("Please enter a valid level");
+                    }
+                }
+            }
             else
                 outputStream.println("Please enter a valid coordinate");
         }
+    }
+
+    private Level getKeyFromValue(Map<Level, List<Coord>> buildableSpaces, List<Coord> value){
+        for (Map.Entry<Level, List<Coord>> entry : buildableSpaces.entrySet()){
+            if (entry.getValue().equals(value))
+                return entry.getKey();
+        }
+        // non dovrebbe ritornare null mai
+        return null;
     }
 
     private void askToMove(List<Coord> movableSpaces){
@@ -223,9 +259,12 @@ public class PlayerView implements ModelEventListener, EventSource {
     @Override
     public void onMyAction(List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces, boolean canEndTurn) {
 
-        String selectable = "\u001B[97m";
-        String nonSelectable = "\u001B[90m";
-        String reset = "\u001B[0m";
+        // String colors
+        String selectable = "\u001B[97m"; // Bright white
+        String nonSelectable = "\u001B[90m"; // Grey
+        String reset = "\u001B[0m"; // Standard
+
+        //booleans for the menu
         boolean[] valid = new boolean[3];
         boolean correctInput = false;
         boolean isBuild = false;
