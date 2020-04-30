@@ -11,7 +11,7 @@ import it.polimi.ingsw.model.God;
 
 import java.util.List;
 
-public class Controller implements PlayerViewEventListener, ChallengerViewEventListener {
+public class Controller {
     private GameModel model;
     /*private Setup setup;*/
 
@@ -20,62 +20,7 @@ public class Controller implements PlayerViewEventListener, ChallengerViewEventL
         /*setup = new Setup(this.model);*/
     }
 
-        /*@Override
-    public void onPlayerChoseBuild(EventSource source, Coord position) {
 
-    }
-
-    @Override
-    public void onPlayerChoseMove(EventSource source, Coord position) {
-
-    }
-
-    @Override
-    public void onWorkerChosen(EventSource source, String workerID) {
-
-    }
-
-    // --------------------------------------------------------------------------------
-    *//*
-    SETUP SECTION
-        Here event handling is delegated to Setup class.
-    *//*
-
-    @Override
-    public void onNicknameChosen(EventSource source, String nickname) {
-        setup.onNicknameChosen(source, nickname);
-    }
-
-    @Override
-    public void onColorChosen(EventSource source, Color color) {
-        setup.onColorChosen(source, color);
-    }
-
-    @Override
-    public void onNumberOfPlayersChosen(EventSource source, int num) {
-        setup.onNumberOfPlayersChosen(source, num);
-    }
-
-    @Override
-    public void onGodsChosen(EventSource source, List<String> gods) {
-        setup.onGodsChosen(source, gods);
-    }
-
-    @Override
-    public void onGodChosen(EventSource source, String god) {
-        setup.onGodChosen(source, god);
-    }
-
-    @Override
-    public void onStartPlayerChosen(EventSource source, String startPlayerNickname) {
-        setup.onStartPlayerChosen(source, startPlayerNickname);
-    }
-
-    @Override
-    public void onWorkerInitialized(EventSource source, int x, int y) {
-        setup.onWorkerInitialized(source, x, y);
-    }
-*/
 
     //Controlla che il turno sia del player con questo nickname
 
@@ -88,7 +33,7 @@ public class Controller implements PlayerViewEventListener, ChallengerViewEventL
         }
         return true;
     }
-
+/*
     @Override
     public void onGodsChosen(List<God> gods) {
         this.model.setGods(gods);
@@ -173,4 +118,5 @@ public class Controller implements PlayerViewEventListener, ChallengerViewEventL
             this.model.setMove(buildChoice);
         }
     }
+ */
 }

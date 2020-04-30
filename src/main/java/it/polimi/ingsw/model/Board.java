@@ -31,7 +31,7 @@ public class Board implements Cloneable {
         }
     }
 
-    public void addWorker(Worker w) throws IllegalStateException {
+    void addWorker(Worker w) throws IllegalStateException {
 
         //if worker is already present, throw exception
         if(this.workers.contains(w)){
@@ -41,11 +41,11 @@ public class Board implements Cloneable {
         this.workers.add(w);
     }
 
-    public Worker[] getAllWorkers(){
+    Worker[] getAllWorkers(){
         return (Worker[])this.workers.toArray();
     }
 
-    public Worker getWorkerByPosition(Coord pos) throws WorkerNotFoundException {
+    Worker getWorkerByPosition(Coord pos) throws WorkerNotFoundException {
 
         //Check coordinates pos are valid
         if (!Coord.validCoord(pos)) {
@@ -60,7 +60,7 @@ public class Board implements Cloneable {
         throw new WorkerNotFoundException("There is no worker in the selected position.");
    }
 
-    public void initializeWorker(Worker worker, Coord coord) throws IllegalArgumentException, IllegalStateException {
+    void initializeWorker(Worker worker, Coord coord) throws IllegalArgumentException, IllegalStateException {
 
         //Check worker belongs to the game
         if(!this.workers.contains(worker)){
@@ -110,7 +110,7 @@ public class Board implements Cloneable {
         return result;
     }
 
-    public void workerMove(Worker w, Coord newPos) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException {
+    void workerMove(Worker w, Coord newPos) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException {
         //Check newPos is valid
         if(!Coord.validCoord(newPos)){
             throw new InvalidCoordinatesException("Invalid coordinates.");
@@ -157,14 +157,14 @@ public class Board implements Cloneable {
         boolean win = checkForWin(currentSpace, newSpace);
     }
 
-    public void workerMove(Coord src, Coord dest) throws
+    void workerMove(Coord src, Coord dest) throws
             IllegalWorkerActionException, SpaceOccupiedException, SpaceFullException {
 
         Worker w = getWorkerByPosition(src);
         workerMove(w, dest);
     }
 
-    public void workerForceMove(Worker w, Coord newPos, Coord forcePos){
+    void workerForceMove(Worker w, Coord newPos, Coord forcePos){
         if(!Coord.validCoord(newPos) || !Coord.validCoord(forcePos)){
             throw new InvalidCoordinatesException("Invalid coordinates.");
         }
@@ -217,7 +217,7 @@ public class Board implements Cloneable {
         return (afterSpace.getHeight() == Level.LVL3) && (beforeSpace.getHeight() == Level.LVL2);
     }
 
-    public void workerBuild(Worker w, Coord buildPos, Level level) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException{
+    void workerBuild(Worker w, Coord buildPos, Level level) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException{
         //Check buildPos is valid
         if(!Coord.validCoord(buildPos)){
             throw new InvalidCoordinatesException("Invalid coordinates.");

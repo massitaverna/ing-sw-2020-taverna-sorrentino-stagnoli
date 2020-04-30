@@ -64,6 +64,10 @@ public class RealController implements PlayerViewEventListener, ChallengerViewEv
         return currentPlayer.getNickname().equals(nickname);
     }
 
+    public void skipAction(EventSource source) {
+        //TODO: implement it
+    }
+
 
 
     // --------------------------------------------------------------------------------

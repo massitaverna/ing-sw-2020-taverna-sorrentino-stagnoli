@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-public class ChallengerView implements ModelEventListener, EventSource {
+public class ChallengerView implements ModelEventListener, EventSource, Runnable {
 
     private Scanner s;
     private PrintWriter outputStream;
@@ -25,7 +25,11 @@ public class ChallengerView implements ModelEventListener, EventSource {
         this.outputStream = new PrintWriter(System.out);
     }
 
-    public void chooseNumberOfPlayers(){
+    public void run() {
+        chooseNumberOfPlayers();
+    }
+
+    public void chooseNumberOfPlayers() {
         int n = 0;
 
         while(n<1 || n>2){
@@ -125,7 +129,7 @@ public class ChallengerView implements ModelEventListener, EventSource {
     }
 
     @Override
-    public void onMyTurn(List<Worker> selectableWorkers) {
+    public void onMyTurn(List<Coord> selectableWorkers) {
         view.onMyTurn(selectableWorkers);
     }
 
