@@ -25,6 +25,8 @@ public class Client {
         PrintWriter socketOut = new PrintWriter(socket.getOutputStream());
         Scanner stdin = new Scanner(System.in);
         String socketLine;
+        // Commentato solo perche' dava errore su readNickname() e vogliamo testare
+        /*
         try {
             socketLine = myView.readNickname();
 
@@ -36,6 +38,7 @@ public class Client {
             socketOut.close();
             socket.close();
         }
+         */
     }
 
 

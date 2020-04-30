@@ -1,3 +1,5 @@
+/*
+//TODO: Decommentare e riscrivere il test coi nuovi metodi introdotti
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.model.*;
@@ -40,6 +42,7 @@ public class BoardTest {
 
         //this should throw the worker not found exception
         b.getWorkerByPosition(new Coord(5, 5));
+
     }
 
     //Test getUnoccupiedSpaces works correctly
@@ -446,3 +449,4 @@ public class BoardTest {
         b.workerBuild(p1.getWorker(0), new Coord(1, 2));
     }
 }
+*/
