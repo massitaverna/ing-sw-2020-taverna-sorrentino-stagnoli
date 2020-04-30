@@ -5,6 +5,7 @@ import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.PlayerViewEventListener;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.GameModel;
+import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.view.PlayerView;
 
@@ -48,14 +49,14 @@ public class RealController implements PlayerViewEventListener, ChallengerViewEv
     }
 
     @Override
-    public void onBuildChosen(EventSource source, Coord buildChoice) {
+    public void onBuildChosen(EventSource source, Coord buildChoice, Level level) {
         String nickname = ((PlayerView) source).getNickname();
 
         if (!isCurrentPlayer(nickname)) {
             throw new IllegalStateException("Player " + nickname + "tried to build not in his turn.");
         }
 
-        model.setBuild(buildChoice);
+        model.setBuild(buildChoice, level);
         model.nextStep();
     }
 
