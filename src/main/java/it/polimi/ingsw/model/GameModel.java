@@ -276,6 +276,7 @@ public class GameModel implements EventSource {
         }
     }
 
+    //?????? perchè in player c'è flag isStartPlayer?? va contro principio di incapsulamento
     public boolean hasNewCycleBegun() {
         return currentPlayer.isStartPlayer();
     }

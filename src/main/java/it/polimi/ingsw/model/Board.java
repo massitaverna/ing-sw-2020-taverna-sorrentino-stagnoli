@@ -116,7 +116,6 @@ public class Board implements Cloneable {
             throw new InvalidCoordinatesException("Invalid coordinates.");
         }
 
-
         //Check that worker w is in the list of workers
         if(!this.workers.contains(w)){
             throw new IllegalWorkerActionException("The worker " + w.toString() + " is not part of the game.");
@@ -260,7 +259,7 @@ public class Board implements Cloneable {
     }
 
     //potrebbero essere messe nel controller, perchè qua in mezzo ci andrà anche la logica degli effetti delle divinità
-    public /*Map<Coord, Space>*/ List<Coord> getMovableSpacesAround(Coord c, int maxDiff) throws InvalidCoordinatesException{
+    public List<Coord> getMovableSpacesAround(Coord c, int maxDiff) throws InvalidCoordinatesException{
 
         //Check coordinates c are valid
         if(!Coord.validCoord(c)){
@@ -289,7 +288,7 @@ public class Board implements Cloneable {
         return result;
     }
 
-    public /*Map<Coord, Space>*/  List<Coord> getBuildableSpacesAround(Coord c) throws InvalidCoordinatesException{
+    public List<Coord> getBuildableSpacesAround(Coord c) throws InvalidCoordinatesException{
 
         //Check coordinates c are valid
         if(!Coord.validCoord(c)){
