@@ -8,6 +8,8 @@ actionType==BUILD <==> buildLevel != null
 forceDestination != null ==> actionType == MOVE
 forceDestination != null ==> decision == GRANT
 generatedRules == null <==> purpose != GENERATION
+purpose == VALIDATION ==> actionType != END
+purpose == GENERATION <==> target != null
  */
 
 
@@ -20,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
-import java.util.function.Predicate;
 
 public class Rule {
     private Purpose purpose;
@@ -30,6 +31,7 @@ public class Rule {
     private BiFunction<Coord, Coord, Coord> forceSpaceFunction;
     private Level buildLevel;
     private List<Rule> generatedRules;
+    private Target target;
     private TriPredicate<Pair<Coord>, Pair<Coord>, Board> symbolicCondition;
 
     Purpose getPurpose() {
@@ -71,6 +73,10 @@ public class Rule {
         return result;
     }
 
+    Target getTarget() {
+        return target;
+    }
+
     void setPurpose(Purpose purpose) {
         this.purpose = purpose;
     }
@@ -101,6 +107,10 @@ public class Rule {
 
     void setSymbolicCondition(TriPredicate<Pair<Coord>, Pair<Coord>, Board> symbolicCondition) {
         this.symbolicCondition = symbolicCondition;
+    }
+
+    void setTarget(Target target) {
+        this.target = target;
     }
 
     @Override

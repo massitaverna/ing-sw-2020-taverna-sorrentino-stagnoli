@@ -381,7 +381,9 @@ public class Board implements Cloneable {
         }
         Board result = new Board();
         result.board = board;
-        // List<Worker> not cloned, but set to null
+        List<Worker> workers = new ArrayList<>();
+        this.workers.forEach(w -> workers.add(w.clone()));
+        result.workers = workers;
 
         return result;
     }

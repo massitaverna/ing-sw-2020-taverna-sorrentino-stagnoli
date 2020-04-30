@@ -1,6 +1,11 @@
+/*
+Note:
+A clone of a worker contains a different instance of Player player.
+This player has only the same name as the original one, but nothing else.
+ */
+
 package it.polimi.ingsw.model;
 
-import com.sun.corba.se.spi.orbutil.threadpool.Work;
 import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 
 public class Worker implements Cloneable {

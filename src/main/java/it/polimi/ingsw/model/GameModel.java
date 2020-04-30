@@ -96,6 +96,7 @@ public class GameModel implements EventSource {
         this.board.addWorker(player.getWorker(0));
         this.board.addWorker(player.getWorker(1));
 
+        modelListeners.forEach(l -> l.onPlayerAdded(player.getNickname(), queue.size(), numPlayers));
         /*if(allPlayersArrived()) {
             for (ModelEventListener listener : modelListeners) {
                 listener.onAllPlayersArrived();
@@ -237,6 +238,7 @@ public class GameModel implements EventSource {
         }
 
         board.workerMove(currentWorker, moveChoice);
+        turn.hasMoved();
 
         handlers.get(currentPlayer).generate(moveChoice, ActionType.MOVE);
 
@@ -249,12 +251,15 @@ public class GameModel implements EventSource {
             return;
         }
         board.workerBuild(currentWorker, buildChoice, level);
+        turn.hasBuilt();
 
         handlers.get(currentPlayer).generate(buildChoice, ActionType.BUILD);
     }
 
     public void setEnd() {
         // Logica di aggiornamento del currentPlayer
+        turn.setEnded();
+        handlers.get(currentPlayer).generate(ActionType.END);
         currentWorker = null;
     }
 
@@ -298,7 +303,8 @@ public class GameModel implements EventSource {
 
     private void notifyAction() {
         ModelEventListener listener = getListenerByNickname(currentPlayer.getNickname());
-        listener.onMyAction(turn.getMovableSpacesCopy(), turn.getBuildableSpacesCopy());
+        listener.onMyAction(turn.getMovableSpacesCopy(), turn.getBuildableSpacesCopy(),
+                turn.canEndTurn());
     }
 
     //INTERROGAZIONI DALLE VIEW
@@ -337,6 +343,45 @@ public class GameModel implements EventSource {
         return modelListeners.stream()
                 .filter(listener -> listener.getNickname().equals(nickname))
                 .findFirst().orElse(null);
+    }
+
+    public void quandoPerdo() {
+        // Assumptions: a player cannot destroy before moving
+        // Under this assumption,
+        // if he cannot move as first action, then he cannot move even if he first builds.
+        // Therefore, let's check if he can move.
+        List<Worker> selectableWorkers = new ArrayList<>();
+        RequestHandler currHandler = handlers.get(currentPlayer);
+
+        for (Worker worker : currentPlayer.getWorkersList()) {
+            currentWorker = worker;
+            Coord currentPosition = currentWorker.getPosition();
+            Turn originalTurn = turn;
+            turn = new Turn();
+            currHandler.getValidSpaces(currentPosition, board.clone(),
+                    turn.getMovableSpacesReference(), turn.getBuildableSpacesReference(),
+                    turn.getForcesReference());
+            if (turn.getMovableSpacesCopy().isEmpty()) {
+                continue;
+            }
+            for (Coord moveChoice : turn.getMovableSpacesCopy()) {
+                Board originalBoard = board;
+                board = board.clone();
+                setMove(moveChoice);
+                Turn turnBeforeGenerate = turn;
+                turn = turn.clone();
+                currHandler.getValidSpaces(currentPosition, board.clone(),
+                        turn.getMovableSpacesReference(), turn.getBuildableSpacesReference(),
+                        turn.getForcesReference());
+                // Assumption: a worker can't destroy before a real build
+                // Under this assumption, if he can do a build, then it is a real build
+                if (!turn.getBuildableSpacesCopy().values().isEmpty()) {
+                    selectableWorkers.add(currentWorker);
+                    break;
+                }
+                turn = turnBeforeGenerate;
+            }
+        }
     }
 }
 

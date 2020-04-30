@@ -20,7 +20,7 @@ public interface ModelEventListener extends Listener {
     public void onStartPlayerSelection(List<String> players);
     public void onMyInitialization(List<Coord> freeSpaces);
 
-    public void onMyTurn(List<Worker> selectableWorkers);
+    public void onMyTurn(List<Coord> selectableWorkers);
     public void onMyAction(List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces, boolean canEndTurn);
 
     public String getNickname();

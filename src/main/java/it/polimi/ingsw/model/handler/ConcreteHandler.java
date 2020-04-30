@@ -12,6 +12,7 @@ import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.Pair;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,10 +20,12 @@ import java.util.stream.Collectors;
 
 class ConcreteHandler implements RuleHandler {
 
+    private static final List<ConcreteHandler> handlers = new ArrayList<>();
     private List<Rule> rules;
 
     public ConcreteHandler(List<Rule> rules) {
         this.rules = rules;
+        handlers.add(this);
     }
 
 
@@ -88,8 +91,25 @@ class ConcreteHandler implements RuleHandler {
         Pair<Coord> pair = new Pair<>(vc.getCurrentPosition(), after);
         Board board = vc.getBoard();
 
+
+        List<Rule> rulesOnOpponents = rules.stream()
+                .filter(r -> r.getPurpose()==Purpose.GENERATION)
+                .filter(r -> r.getTarget() == Target.OPPONENTS)
+                .filter(r -> r.getActionType() == at)
+                .filter(r -> r.getCondition().test(pair, board))
+                .map(r -> r.getGeneratedRules(pair))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        handlers.stream()
+                .filter(h -> h!=this)
+                .forEach(h ->
+                        h.rules.addAll(0, rulesOnOpponents)
+                );
+
         rules = rules.stream()
                 .filter(r -> r.getPurpose()==Purpose.GENERATION)
+                .filter(r -> r.getTarget() == Target.MYSELF)
                 .filter(r -> r.getActionType() == at)
                 .filter(r -> r.getCondition().test(pair, board))
                 .map(r -> r.getGeneratedRules(pair))

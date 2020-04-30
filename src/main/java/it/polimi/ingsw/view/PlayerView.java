@@ -194,7 +194,7 @@ public class PlayerView implements ModelEventListener, EventSource {
     }
 
     @Override
-    public void onMyTurn(List<Worker> selectableWorkers) {
+    public void onMyTurn(List<Coord> selectableWorkers) {
 
         boolean correct = false;
 
@@ -203,8 +203,8 @@ public class PlayerView implements ModelEventListener, EventSource {
             String input = s.nextLine();
             Coord c = Coord.convertStringToCoord(input);
 
-            for(Worker w : selectableWorkers){
-                if (w.getPosition().equals(c)){
+            for(Coord selectable : selectableWorkers){
+                if (selectable.equals(c)){
                     correct = true;
                     break;
                 }
