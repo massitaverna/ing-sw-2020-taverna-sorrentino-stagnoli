@@ -34,6 +34,10 @@ class HandlerAdapter implements RequestHandler {
 
     @Override
     public void generate(Coord after, ActionType at) {
-        ruleHandler.generate(validationContainer.getCurrentPosition(), after, at);
+        ruleHandler.generate(validationContainer, after, at);
+    }
+
+    public void reset() {
+        ruleHandler.reset();
     }
 }

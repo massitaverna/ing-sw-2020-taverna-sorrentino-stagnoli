@@ -62,6 +62,11 @@ public class Turn implements Cloneable {
     public void setEnded() {
         turnEnded = true;
     }
+
+    public boolean hasEnded() {
+        return turnEnded;
+    }
+
     public Turn clone() {
         Turn result = new Turn();
         result.movableSpaces = getMovableSpacesCopy();

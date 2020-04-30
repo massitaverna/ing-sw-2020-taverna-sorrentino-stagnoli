@@ -10,5 +10,6 @@ public class BeginState extends ModelState {
     public void nextStep() {
         model.initRequestHandlers();
         model.changeState(new PlayerTurnState(model));
+        model.nextStep();
     }
 }

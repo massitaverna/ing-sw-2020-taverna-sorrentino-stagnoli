@@ -14,5 +14,6 @@ public interface RequestHandler {
                                Map<Coord, Coord> forces);
 
     public void generate(Coord after, ActionType at);
+    public void reset();
 
 }

@@ -258,9 +258,15 @@ public class GameModel implements EventSource {
 
     public void setEnd() {
         // Logica di aggiornamento del currentPlayer
-        turn.setEnded();
-        handlers.get(currentPlayer).generate(ActionType.END);
-        currentWorker = null;
+        if (turn.hasEnded()) {
+            handlers.get(currentPlayer).reset();
+            currentWorker = null;
+            nextPlayer();
+        } else {
+            turn.setEnded();
+            Coord currPosition = currentWorker.getPosition();
+            handlers.get(currentPlayer).generate(currPosition, ActionType.END);
+        }
     }
 
     public void setWin(Player p) throws IllegalArgumentException {
@@ -297,6 +303,18 @@ public class GameModel implements EventSource {
         currHandler.getValidSpaces(currentPosition, board.clone(),
                 turn.getMovableSpacesReference(), turn.getBuildableSpacesReference(),
                 turn.getForcesReference());
+
+        if (turn.getMovableSpacesCopy().isEmpty() &&
+                turn.getBuildableSpacesCopy().values().isEmpty()) {
+            setEnd();
+            if (hasNewTurnBegun()) {
+                nextStep();
+                return;
+            } else {
+                nextAction();
+            }
+        }
+
         notifyAction();
 
     }

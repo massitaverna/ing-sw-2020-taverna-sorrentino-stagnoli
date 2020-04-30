@@ -22,9 +22,12 @@ class ConcreteHandler implements RuleHandler {
 
     private static final List<ConcreteHandler> handlers = new ArrayList<>();
     private List<Rule> rules;
+    private final List<Rule> initialRules;
+
 
     public ConcreteHandler(List<Rule> rules) {
-        this.rules = rules;
+        this.rules = new ArrayList<>(rules);
+        this.initialRules = rules;
         handlers.add(this);
     }
 
@@ -116,5 +119,9 @@ class ConcreteHandler implements RuleHandler {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
 
+    }
+
+    public void reset() {
+        rules = new ArrayList<>(initialRules);
     }
 }

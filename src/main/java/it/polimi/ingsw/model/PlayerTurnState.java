@@ -18,12 +18,13 @@ public class PlayerTurnState extends ModelState {
             String nickname = currPlayer.getNickname();
             ModelEventListener listener = model.getListenerByNickname(nickname);
 
-            //TODO: Non vanno passati tutti i worker ì, ma solo quelli validi (vedi simulate())
+            //TODO: Non vanno passati tutti i worker, ma solo quelli validi (vedi simulate())
             List<Worker> allWorkers = currPlayer.getWorkersList();
             List<Coord> selectableWorkers = allWorkers.stream().map(Worker::getPosition)
                     .collect(Collectors.toList());
             listener.onMyTurn(selectableWorkers);
+        } else {
+            model.nextAction();
         }
-        model.nextAction();
     }
 }

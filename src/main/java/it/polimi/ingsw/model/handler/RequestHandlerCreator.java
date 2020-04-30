@@ -26,15 +26,23 @@ public class RequestHandlerCreator {
 
 
     public RequestHandler createHandler() {
-        List<Rule> rules = new ArrayList<>();
-        rules.addAll(getGodRules());
-        rules.addAll(getStandardRules());
-
+        List<Rule> rules = createRulesList();
         RuleHandler ruleHandler = new ConcreteHandler(rules);
         RequestHandler requestHandler = new HandlerAdapter(ruleHandler);
 
         return requestHandler;
     }
+
+    private List<Rule> createRulesList() {
+        List<Rule> result = new ArrayList<>();
+        if (god != null) {
+            result.addAll(getGodRules());
+        }
+        result.addAll(getStandardRules());
+
+        return result;
+    }
+
     private static List<Rule> getStandardRules() {
         if (standardRules.isEmpty()) {
             initStandardRules();
@@ -45,7 +53,7 @@ public class RequestHandlerCreator {
     private List<Rule> getGodRules() {
 
         if (!godRules.containsKey(god)) {
-            initGodRules();
+            initGodRules(god);
         }
 
         return new ArrayList<>(godRules.get(god));
@@ -88,6 +96,7 @@ public class RequestHandlerCreator {
 
         r = new Rule();
         r.setPurpose(Purpose.GENERATION);
+        r.setTarget(Target.MYSELF);
         r.setActionType(ActionType.MOVE);
         condition = (cPair, board) -> true;
         r.setCondition(condition);
@@ -108,6 +117,7 @@ public class RequestHandlerCreator {
 
         r = new Rule();
         r.setPurpose(Purpose.GENERATION);
+        r.setTarget(Target.MYSELF);
         r.setActionType(ActionType.BUILD);
         condition = (cPair, board) -> true;
         r.setCondition(condition);
@@ -121,7 +131,7 @@ public class RequestHandlerCreator {
 
     }
 
-    private void initGodRules() {
+    private static void initGodRules(String god) {
         List<Rule> result = new ArrayList<>();
 
         if (god == null) {
@@ -146,6 +156,7 @@ public class RequestHandlerCreator {
         if (god.equals("Artemis")) { //COMPLETE
             Rule r = new Rule();
             r.setPurpose(Purpose.GENERATION);
+            r.setTarget(Target.MYSELF);
             r.setActionType(ActionType.MOVE);
             BiPredicate<Pair<Coord>, Board> condition = (cPair, board) -> true;
             r.setCondition(condition);
