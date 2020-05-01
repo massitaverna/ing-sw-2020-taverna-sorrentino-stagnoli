@@ -1,0 +1,13 @@
+UML:
+Class diagram Controller e View
+Class diagram model (no package handler)
+Class diagram model.handler
+
+Codice:
+Divinita' base
+Worker selezionabili
+Turni legali (cioe' che consentano di rispettare il "move-then-build")
+
+Test:
+BoardTest da sistemare
+Test su quanta piu' roba possibile (vedi casiTest.txt)
