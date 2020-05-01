@@ -24,6 +24,7 @@ public class App {
         view1.chooseNumberOfPlayers();
         // Passing just an empty list
         //TODO: pass correct list somehow
+        view1.askForNickname(new ArrayList<>());
         view2.askForNickname(new ArrayList<>());
         view3.askForNickname(new ArrayList<>());
 
