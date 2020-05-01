@@ -3,6 +3,7 @@ package it.polimi.ingsw.view;
 import it.polimi.ingsw.listeners.*;
 import it.polimi.ingsw.model.*;
 
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.Scanner;
 public class ChallengerView implements ModelEventListener, EventSource, Runnable {
 
     private Scanner s;
-    private PrintWriter outputStream;
+    private PrintStream outputStream;
     private ChallengerViewEventListener listener;
 
 
@@ -22,7 +23,7 @@ public class ChallengerView implements ModelEventListener, EventSource, Runnable
     public ChallengerView(){
         this.view = new PlayerView();
         this.s = new Scanner(System.in);
-        this.outputStream = new PrintWriter(System.out);
+        this.outputStream = new PrintStream(System.out);
     }
 
     public void run() {
@@ -150,5 +151,6 @@ public class ChallengerView implements ModelEventListener, EventSource, Runnable
         }
 
         this.listener = (ChallengerViewEventListener) listener;
+        view.addListener((PlayerViewEventListener) listener);
     }
 }

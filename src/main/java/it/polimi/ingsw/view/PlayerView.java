@@ -27,6 +27,7 @@ public class PlayerView implements ModelEventListener, EventSource {
         this.outputStream = new PrintStream(System.out);
     }
 
+
     public String getNickname() {
         return nickname;
     }

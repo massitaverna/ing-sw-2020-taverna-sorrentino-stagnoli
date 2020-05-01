@@ -71,7 +71,7 @@ public class GameModel implements EventSource {
         godsList.add(new God("Apollo", "Very powerful"));
         godsList.add(new God("Athena", "So powerful"));
         godsList.add(new God("Artemis", "Incredibly powerful"));
-        godsList.add(new God("Prometheus", "Weak"));
+        godsList.add(new God("Minotaur", "Weak"));
 
     }
 
@@ -151,7 +151,9 @@ public class GameModel implements EventSource {
 
         p.setGod(g);
         this.godsList.remove(g);
-        nextPlayer();
+        if (!godsList.isEmpty()) { // If all players have chosen, keep the Challenger as currentPlayer
+            nextPlayer();
+        }
     }
 
     public void setStartPlayer(Player startPlayer) throws IllegalArgumentException {

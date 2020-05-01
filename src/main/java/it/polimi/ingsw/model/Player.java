@@ -38,7 +38,7 @@ public class Player {
     //utilizzato solo per inserirli nella board, in seguito verrano scelti
     //dalla board tramite le loro coordinate
     public Worker getWorker(int num){
-        return workersList.get(num-1);
+        return workersList.get(num);
     }
 
     public List<Worker> getWorkersList() {

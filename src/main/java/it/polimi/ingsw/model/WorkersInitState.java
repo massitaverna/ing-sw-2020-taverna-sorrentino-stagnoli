@@ -14,10 +14,11 @@ public class WorkersInitState extends ModelState {
     @Override
     public void nextStep() {
         if (!startPlayerChosen) {
+            startPlayerChosen = true;
             String challenger = model.getCurrentPlayer().getNickname();
             ModelEventListener challengerListener = model.getListenerByNickname(challenger);
             challengerListener.onStartPlayerSelection(model.getPlayersNicknames());
-            startPlayerChosen = true;
+
             return;
         }
 
