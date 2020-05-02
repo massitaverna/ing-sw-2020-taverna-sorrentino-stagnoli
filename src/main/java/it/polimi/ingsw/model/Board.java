@@ -228,23 +228,37 @@ public class Board implements Cloneable {
             throw new IllegalWorkerActionException("The worker " + w.toString() + " is not part of the game.");
         }
 
+        //check worker w is initialized
         if(w.getPosition() == null){
             throw new IllegalWorkerActionException("The worker is not initialized.");
         }
 
         this.board[buildPos.x][buildPos.y].setLevel(level);
+    }
 
-        /*
-        //Check that worker w is near newPos
+    void workerBuild(Worker w, Coord buildPos) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException {
+        /*//Check that worker w is near newPos
         if(!(w.getPosition().isNear(buildPos))){
             throw new IllegalWorkerActionException("Cannot build here from that position");
-        }
-         */
+        }*/
 
-        //not space occupied
-        /*
+        if(!Coord.validCoord(buildPos)){
+            throw new InvalidCoordinatesException("Invalid coordinates.");
+        }
+
+        //Check that worker w in is the list of workers
+        if(!this.workers.contains(w)){
+            throw new IllegalWorkerActionException("The worker " + w.toString() + " is not part of the game.");
+        }
+
+        //check worker w is initialized
+        if(w.getPosition() == null){
+            throw new IllegalWorkerActionException("The worker is not initialized.");
+        }
+
+        //if not space occupied
         if(!this.board[buildPos.x][buildPos.y].isOccupied()) {
-            //not space full
+            //if not space full
             if (!(this.board[buildPos.x][buildPos.y].isDome())) {
                 this.board[buildPos.x][buildPos.y].levelUp();
             }
@@ -255,7 +269,11 @@ public class Board implements Cloneable {
         else{
             throw new SpaceOccupiedException("Space occupied by another worker.");
         }
-        */
+    }
+
+    //Checks that moving in that position won't cause the player to loose
+    public void validateMove(Coord movePosition){
+
     }
 
     //potrebbero essere messe nel controller, perchè qua in mezzo ci andrà anche la logica degli effetti delle divinità

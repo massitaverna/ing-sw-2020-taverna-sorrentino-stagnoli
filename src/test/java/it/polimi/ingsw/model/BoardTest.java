@@ -1,5 +1,3 @@
-/*
-//TODO: Decommentare e riscrivere il test coi nuovi metodi introdotti
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.model.*;
@@ -286,7 +284,7 @@ public class BoardTest {
         //forza costruzione di un worker dove si trova un altro worker
         Worker worker1 = p1.getWorker(0);
         Coord otherWorkerPosition = p2.getWorker(0).getPosition();
-        b.workerBuild(worker1, otherWorkerPosition);
+        b.workerBuild(worker1, otherWorkerPosition, b.getSpace(otherWorkerPosition).getHeight());
     }
 
     //Test Board.getBuildableSpaceAround method does not give occupied (there is a worker) or full (there is a Dome) space coordinates
@@ -449,4 +447,3 @@ public class BoardTest {
         b.workerBuild(p1.getWorker(0), new Coord(1, 2));
     }
 }
- */

@@ -9,5 +9,5 @@ Worker selezionabili
 Turni legali (cioe' che consentano di rispettare il "move-then-build")
 
 Test:
-BoardTest da sistemare
+BoardTest da sistemare                                                          ---- FATTO; RISOLTO CON OVERLOADING DEL METODO workerBuild(...) IN Board
 Test su quanta piu' roba possibile (vedi casiTest.txt)
