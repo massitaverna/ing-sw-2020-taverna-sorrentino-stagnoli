@@ -53,16 +53,27 @@ public class Board implements Cloneable {
         }
 
         for(Worker w: this.workers){
-            if(w.getPosition().equals(pos)){
+            if(pos.equals(w.getPosition())) {
                 return w;
             }
         }
         throw new WorkerNotFoundException("There is no worker in the selected position.");
    }
 
-    void initializeWorker(Worker worker, Coord coord) throws IllegalArgumentException, IllegalStateException {
+    void initializeWorker(Player player, Coord coord) throws IllegalArgumentException, IllegalStateException {
+
+        Worker worker = workers.stream()
+                .filter(w -> w.getPlayerNickname().equals(player.getNickname()))
+                .filter(w -> w.getPosition() == null)
+                .findFirst().orElse(null);
+
+        if (worker == null) {
+            throw new IllegalStateException("Workers for player " + player.getNickname() +
+                    " have already been initialized.");
+        }
 
         //Check worker belongs to the game
+        /*
         if(!this.workers.contains(worker)){
             throw new IllegalArgumentException("The worker " + worker.toString() + " is not part of the game.");
         }
@@ -71,14 +82,17 @@ public class Board implements Cloneable {
         if (!Coord.validCoord(coord)) {
             throw new IllegalArgumentException("Invalid Coordinates");
         }
+         */
 
         Space dest = board[coord.x][coord.y];
         if (dest.isOccupied()) {
             throw new IllegalStateException("Tried to initialize worker on an occupied space.");
         }
+        /*
         if (worker.getPosition() != null) {
             throw new IllegalStateException("Tried to initialize worker when he is already placed in board.");
         }
+        */
         worker.setPosition(coord);
         dest.setOccupied();
     }
@@ -353,7 +367,7 @@ public class Board implements Cloneable {
         for (int i = 0; i < 5; i++) {
 
             workerLine = "  |";
-            lvl3Line = (char) 65+i + " |";
+            lvl3Line = (char) ('A'+i) + " |";
             lvl2Line = "  |";
             lvl1Line = "  |";
 

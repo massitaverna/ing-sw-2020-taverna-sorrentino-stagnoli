@@ -9,10 +9,7 @@ import it.polimi.ingsw.model.handler.ActionType;
 import it.polimi.ingsw.model.handler.RequestHandler;
 import it.polimi.ingsw.model.handler.RequestHandlerCreator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class GameModel implements EventSource {
@@ -21,7 +18,7 @@ public class GameModel implements EventSource {
     private int numPlayers;
     private List<Player> queue;
     private List<God> godsList;
-    private List<Color> colors;
+    private final List<Color> colors;
     private Board board;
     private Player currentPlayer;
     private Worker currentWorker;
@@ -96,6 +93,11 @@ public class GameModel implements EventSource {
         queue.add(player);
         this.board.addWorker(player.getWorker(0));
         this.board.addWorker(player.getWorker(1));
+
+        Random r = new Random();
+        int i = r.nextInt(colors.size());
+        Color randomColor = colors.get(i);
+        setPlayerColor(player, randomColor);
 
         modelListeners.forEach(l -> l.onPlayerAdded(player.getNickname(), queue.size(), numPlayers));
         /*if(allPlayersArrived()) {
@@ -174,13 +176,15 @@ public class GameModel implements EventSource {
     }
 
     //potrebbe ricevere (String Player, Coord C) anzichè il worker
-    public void initializeWorker(Worker w, Coord c) {
-        if (!currentPlayer.getWorkersList().contains(w)) {
+    public void initializeWorker(Coord c) {
+        /*
+        if (!w.getPlayerNickname().equals(currentPlayer.getNickname())) {
             throw new IllegalStateException("Tried to initialize a worker not " +
                     "belonging to current player.");
         }
+         */
 
-        board.initializeWorker(w, c);
+        board.initializeWorker(currentPlayer, c);
         notifyBoardChanged();
 
         if (currentPlayer.getWorkersList().stream()

@@ -3,6 +3,7 @@ package it.polimi.ingsw.view;
 import it.polimi.ingsw.listeners.*;
 import it.polimi.ingsw.model.*;
 
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -23,7 +24,22 @@ public class ChallengerView implements ModelEventListener, EventSource, Runnable
     public ChallengerView(){
         this.view = new PlayerView();
         this.s = new Scanner(System.in);
-        this.outputStream = new PrintStream(System.out);
+        this.outputStream = new MyPrintStream(System.out);
+    }
+
+    // Classe provvisoria per testing
+    class MyPrintStream extends PrintStream {
+        public MyPrintStream(OutputStream outputStream) {
+            super(outputStream);
+        }
+        public void println(Object o) {
+            super.println(view.getNickname() + "'s VIEW");
+            super.println(o);
+        }
+        public void println(String s) {
+            super.println(view.getNickname() + "'s VIEW");
+            super.println(s);
+        }
     }
 
     public void run() {

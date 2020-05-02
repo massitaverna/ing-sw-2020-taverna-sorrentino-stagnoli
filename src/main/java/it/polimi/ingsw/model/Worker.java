@@ -48,6 +48,9 @@ public class Worker implements Cloneable {
 
     public Worker clone() {
 
-        return new Worker(new Player(player.getNickname()));
+        Worker result = new Worker(new Player(player.getNickname()));
+        result.color = color;
+        result.position = position;
+        return result;
     }
 }

@@ -34,6 +34,10 @@ public class Rule {
     private Target target;
     private TriPredicate<Pair<Coord>, Pair<Coord>, Board> symbolicCondition;
 
+    public Rule() {
+        forceSpaceFunction = (c1, c2) -> null;
+    }
+
     Purpose getPurpose() {
         return this.purpose;
     }

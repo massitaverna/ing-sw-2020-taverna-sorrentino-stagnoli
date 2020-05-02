@@ -6,6 +6,7 @@ import it.polimi.ingsw.listeners.ModelEventListener;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.Listener;
 
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.*;
 
@@ -24,7 +25,22 @@ public class PlayerView implements ModelEventListener, EventSource {
     public PlayerView(){
 
         this.s = new Scanner(System.in);
-        this.outputStream = new PrintStream(System.out);
+        this.outputStream = new MyPrintStream(System.out);
+    }
+
+    // Classe provvisoria per testing
+    class MyPrintStream extends PrintStream {
+        public MyPrintStream(OutputStream outputStream) {
+            super(outputStream);
+        }
+        public void println(Object o) {
+            super.println(nickname + "'s VIEW");
+            super.println(o);
+        }
+        public void println(String s) {
+            super.println(nickname + "'s VIEW");
+            super.println(s);
+        }
     }
 
 
@@ -208,6 +224,7 @@ public class PlayerView implements ModelEventListener, EventSource {
 
     @Override
     public void onMyInitialization(List<Coord> freeSpaces) {
+        /*
         int i = 0;
         while (i<2) {
             if (i == 0)
@@ -226,6 +243,20 @@ public class PlayerView implements ModelEventListener, EventSource {
                     }
                     i++;
                 }
+            }
+        }
+         */
+
+        outputStream.println("Where do you want to place your worker?");
+        String input  = s.nextLine();
+        //TODO: check for invalid format of coordinate
+        Coord c = Coord.convertStringToCoord(input);
+
+        if (freeSpaces.contains(c)){
+            try{
+                listener.onWorkerInitialization(this, c);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }

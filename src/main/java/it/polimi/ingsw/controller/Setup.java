@@ -110,17 +110,18 @@ public class Setup {
             throw new IllegalStateException("Player is trying to setup not in his turn.");
         }
 
-        Worker toBeInitialized = player.getWorkersList().stream()
-                .filter(worker -> worker.getPosition() == null).findFirst().orElse(null);
-        if (toBeInitialized == null) {
+        boolean workersInitAlreadyDone = player.getWorkersList().stream()
+                .noneMatch(worker -> worker.getPosition() == null);
+        if (workersInitAlreadyDone) {
             throw new IllegalStateException("Workers have already been initialized for this player.");
         }
         // The above logic is working as long as:
         // 1. every player has no null in his workersList and
         // 2. every worker has always NotNull coordinates after initialization
-        model.initializeWorker(toBeInitialized, place);
+        model.initializeWorker(place);
 
-        if (model.hasNewCycleBegun()) {
+        if (model.hasNewCycleBegun() && model.getCurrentPlayer().getWorkersList().stream()
+                .noneMatch(w -> w.getPosition() == null)) {
             model.changeState(new BeginState(model));
         }
 
