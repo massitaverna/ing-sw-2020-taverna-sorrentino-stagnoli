@@ -15,6 +15,7 @@ public class Worker implements Cloneable {
     private Player player;
 
     // Serve davvero che un worker sappia chi e' il suo player?
+    // RISPOSTA: sì, altrimenti dalla board, che ha una lista di worker, non si possono ricavare quelli del currentPlayer
     public Worker(Player p){
         this.player = p;
         this.position = null;

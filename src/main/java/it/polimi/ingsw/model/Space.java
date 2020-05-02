@@ -14,7 +14,6 @@ public class Space implements Cloneable {
         height = Level.GROUND;
     }
 
-
     public void setOccupied(){
         occupied = true;
     }

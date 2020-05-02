@@ -83,7 +83,7 @@ public class Board implements Cloneable {
         dest.setOccupied();
     }
 
-    //ONLY FOR INITIALIZATION PHASE !!!!!!
+    //THIS METHOD IS USED ONLY FOR INITIALIZATION PHASE !!!!!!
     public List<Coord> getUnoccupiedSpaces() {
 
         List<Coord> unoccupiedSpaces = new ArrayList<>();
@@ -269,11 +269,6 @@ public class Board implements Cloneable {
         else{
             throw new SpaceOccupiedException("Space occupied by another worker.");
         }
-    }
-
-    //Checks that moving in that position won't cause the player to loose
-    public void validateMove(Coord movePosition){
-
     }
 
     //potrebbero essere messe nel controller, perchè qua in mezzo ci andrà anche la logica degli effetti delle divinità

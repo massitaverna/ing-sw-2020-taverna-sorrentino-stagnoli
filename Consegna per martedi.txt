@@ -1,6 +1,6 @@
 UML:
 Class diagram Controller e View
-Class diagram model (no package handler)
+Class diagram model (no package handler)                                        ---- FATTO;
 Class diagram model.handler
 
 Codice:
