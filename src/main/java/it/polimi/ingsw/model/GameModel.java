@@ -181,6 +181,7 @@ public class GameModel implements EventSource {
         }
 
         board.initializeWorker(w, c);
+        notifyBoardChanged();
 
         if (currentPlayer.getWorkersList().stream()
                 .noneMatch(worker -> worker.getPosition() == null)
@@ -223,6 +224,7 @@ public class GameModel implements EventSource {
         }
 
         currentWorker = selected;
+        turn.setInitialBoard(board.clone());
     }
 
     public void setMove(Coord moveChoice) {
@@ -239,6 +241,8 @@ public class GameModel implements EventSource {
         }
 
         board.workerMove(currentWorker, moveChoice);
+        notifyBoardChanged();
+
         turn.hasMoved();
 
         handlers.get(currentPlayer).generate(moveChoice, ActionType.MOVE);
@@ -252,6 +256,8 @@ public class GameModel implements EventSource {
             return;
         }
         board.workerBuild(currentWorker, buildChoice, level);
+        notifyBoardChanged();
+
         turn.hasBuilt();
 
         handlers.get(currentPlayer).generate(buildChoice, ActionType.BUILD);
@@ -260,6 +266,7 @@ public class GameModel implements EventSource {
     public void setEnd() {
         // Logica di aggiornamento del currentPlayer
         if (turn.hasEnded()) {
+            turn.reset();
             handlers.get(currentPlayer).reset();
             currentWorker = null;
             nextPlayer();
@@ -299,7 +306,6 @@ public class GameModel implements EventSource {
     }
 
     void nextAction() {
-
         RequestHandler currHandler = handlers.get(currentPlayer);
         Coord currentPosition = currentWorker.getPosition();
         currHandler.getValidSpaces(currentPosition, board.clone(),
@@ -307,7 +313,15 @@ public class GameModel implements EventSource {
                 turn.getForcesReference());
 
         if (turn.getMovableSpacesCopy().isEmpty() &&
-                turn.getBuildableSpacesCopy().values().isEmpty()) {
+                turn.getBuildableSpacesCopy().values().isEmpty()) { // <-- this is wrong
+            if (!turn.canEndTurn()) {
+                board = turn.getInitialBoard();
+                notifyBoardChanged();
+                turn.reset();
+                currHandler.reset();
+                nextAction();
+                return;
+            }
             setEnd();
             if (hasNewTurnBegun()) {
                 nextStep();
@@ -325,6 +339,10 @@ public class GameModel implements EventSource {
         ModelEventListener listener = getListenerByNickname(currentPlayer.getNickname());
         listener.onMyAction(turn.getMovableSpacesCopy(), turn.getBuildableSpacesCopy(),
                 turn.canEndTurn());
+    }
+
+    private void notifyBoardChanged() {
+        modelListeners.forEach(l -> l.onBoardChanged(board.clone()));
     }
 
     //INTERROGAZIONI DALLE VIEW   VANNO TOLTEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE !!!!!!!!!!!!!!!!!
@@ -361,6 +379,41 @@ public class GameModel implements EventSource {
         return modelListeners.stream()
                 .filter(listener -> listener.getNickname().equals(nickname))
                 .findFirst().orElse(null);
+    }
+
+    List<Worker> getSelectableWorkers() {
+        RequestHandler currHandler = handlers.get(currentPlayer);
+        List<Worker> selectableWorkers = new ArrayList<>();
+        boolean selectable = false;
+        for (Worker worker : currentPlayer.getWorkersList()) {
+            Coord position = worker.getPosition();
+            currHandler.getValidSpaces(position, board.clone(),
+                    turn.getMovableSpacesReference(), turn.getBuildableSpacesReference(),
+                    turn.getForcesReference());
+            if (!turn.getMovableSpacesCopy().isEmpty()) {
+                if (currentPlayer.getGod().getName().equals("Apollo")) {
+                    selectable = turn.getMovableSpacesCopy().stream()
+                            .map(c -> board.getSpace(c))
+                            .anyMatch(s -> !s.isOccupied());
+                    if (!selectable) {
+                        for (Coord moveChoice : turn.getMovableSpacesCopy()) {
+                            selectable = board.getSpacesAround(moveChoice).stream()
+                                    .map(c -> board.getSpace(c))
+                                    .anyMatch(s -> !s.isOccupied() && !s.isDome());
+                            if (selectable) {
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    selectable = true;
+                }
+            }
+            if (selectable) {
+                selectableWorkers.add(worker);
+            }
+        }
+        return selectableWorkers;
     }
 
     public void quandoPerdo() {
