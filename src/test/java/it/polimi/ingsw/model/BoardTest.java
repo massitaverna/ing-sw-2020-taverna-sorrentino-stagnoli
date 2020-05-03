@@ -23,7 +23,7 @@ public class BoardTest {
         b.addWorker(p3.getWorker(0));
         b.addWorker(p3.getWorker(1));
 
-        b.initializeWorker(p1.getWorker(0), new Coord(0, 0));
+        b.initializeWorker(p1, new Coord(0, 0));
         b.initializeWorker(p1.getWorker(1), new Coord(1, 0));
         b.initializeWorker(p2.getWorker(0), new Coord(0, 1));
         b.initializeWorker(p2.getWorker(1), new Coord(1, 1));

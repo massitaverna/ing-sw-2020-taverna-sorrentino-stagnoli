@@ -72,8 +72,19 @@ public class Board implements Cloneable {
                     " have already been initialized.");
         }
 
+
+        Space dest = board[coord.x][coord.y];
+        if (dest.isOccupied()) {
+            throw new IllegalStateException("Tried to initialize worker on an occupied space.");
+        }
+
+        worker.setPosition(coord);
+        dest.setOccupied();
+    }
+
+    void initializeWorker(Worker worker, Coord coord) throws IllegalArgumentException, IllegalStateException {
+
         //Check worker belongs to the game
-        /*
         if(!this.workers.contains(worker)){
             throw new IllegalArgumentException("The worker " + worker.toString() + " is not part of the game.");
         }
@@ -82,17 +93,14 @@ public class Board implements Cloneable {
         if (!Coord.validCoord(coord)) {
             throw new IllegalArgumentException("Invalid Coordinates");
         }
-         */
 
         Space dest = board[coord.x][coord.y];
         if (dest.isOccupied()) {
             throw new IllegalStateException("Tried to initialize worker on an occupied space.");
         }
-        /*
         if (worker.getPosition() != null) {
             throw new IllegalStateException("Tried to initialize worker when he is already placed in board.");
         }
-        */
         worker.setPosition(coord);
         dest.setOccupied();
     }

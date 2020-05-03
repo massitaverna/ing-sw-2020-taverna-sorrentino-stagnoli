@@ -5,7 +5,7 @@ Class diagram model.handler
 
 Codice:
 Divinita' base
-Worker selezionabili
+Worker selezionabili                                                            ---- FATTO; SEPPUR IN MODO GOD-DEPENDENT
 Turni legali (cioe' che consentano di rispettare il "move-then-build")
 
 Test:

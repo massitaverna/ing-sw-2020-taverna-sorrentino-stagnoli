@@ -194,6 +194,21 @@ public class GameModel implements EventSource {
         }
     }
 
+    public void initializeWorker(Worker w, Coord c) {
+        if (!currentPlayer.getWorkersList().contains(w)) {
+            throw new IllegalStateException("Tried to initialize a worker not " +
+                    "belonging to current player.");
+        }
+
+        board.initializeWorker(w, c);
+
+        if (currentPlayer.getWorkersList().stream()
+                .noneMatch(worker -> worker.getPosition() == null)
+        ) {
+            nextPlayer();
+        }
+    }
+
     //GAME FUNCTIONS//
     void initRequestHandlers() {
         queue.forEach(p ->
