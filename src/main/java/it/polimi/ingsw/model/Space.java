@@ -39,13 +39,16 @@ public class Space implements Cloneable {
     }
 
     public void setLevel(Level level) {
+        /*
         if(this.isOccupied()){
             throw new SpaceOccupiedException("This space is occupied.");
         }
+        */
 
         if(this.isDome()){
             throw new SpaceOccupiedException("This space contains a dome.");
         }
+
 
         if (level != Level.DOME) {
             height = level;
