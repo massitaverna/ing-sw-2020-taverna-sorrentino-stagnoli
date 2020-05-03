@@ -14,7 +14,6 @@ public class Space implements Cloneable {
         height = Level.GROUND;
     }
 
-
     public void setOccupied(){
         occupied = true;
     }
@@ -40,14 +39,21 @@ public class Space implements Cloneable {
     }
 
     public void setLevel(Level level) {
+        if(this.isOccupied()){
+            throw new SpaceOccupiedException("This space is occupied.");
+        }
+
+        if(this.isDome()){
+            throw new SpaceOccupiedException("This space contains a dome.");
+        }
+
         if (level != Level.DOME) {
             height = level;
         } else {
             setDome();
-            setOccupied();
+            //setOccupied();  occupied indica se lo space è occupato da un worker !!!!
         }
     }
-
 
     //eccezione se viene invocata su Space con cupola o player
     public void levelUp() throws SpaceFullException, SpaceOccupiedException {
@@ -55,15 +61,17 @@ public class Space implements Cloneable {
             throw new SpaceOccupiedException("This space is occupied.");
         }
 
+        if(this.isDome()){
+            throw new SpaceOccupiedException("This space contains a dome.");
+        }
+
+        //if not level 3, level up
         if(this.height != Level.LVL3) {
             height = Level.values()[height.ordinal() + 1];
         }
+        //if level 3, set dome
         else {
-            if (!this.hasDome) {
-                this.hasDome = true;
-            } else {
-                throw new SpaceFullException("This space is full (DOME).");
-            }
+            this.setDome();
         }
     }
 
