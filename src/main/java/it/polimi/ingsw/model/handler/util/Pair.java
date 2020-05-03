@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model;
+package it.polimi.ingsw.model.handler.util;
 
 public class Pair<T> {
     private final T first;

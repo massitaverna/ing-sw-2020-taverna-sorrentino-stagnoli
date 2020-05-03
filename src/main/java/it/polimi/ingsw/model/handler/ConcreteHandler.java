@@ -10,7 +10,7 @@ package it.polimi.ingsw.model.handler;
 import it.polimi.ingsw.exceptions.UndeterminedSpaceException;
 import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
-import it.polimi.ingsw.model.Pair;
+import it.polimi.ingsw.model.handler.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collection;

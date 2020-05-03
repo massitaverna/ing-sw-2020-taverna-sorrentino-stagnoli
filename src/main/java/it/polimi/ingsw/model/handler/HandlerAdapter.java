@@ -9,7 +9,7 @@ import java.util.Map;
 
 class HandlerAdapter implements RequestHandler {
 
-    RuleHandler ruleHandler;
+    private final RuleHandler ruleHandler;
     private ValidationContainer validationContainer;
 
     HandlerAdapter(RuleHandler ruleHandler) {

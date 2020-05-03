@@ -3,7 +3,9 @@ package it.polimi.ingsw.model.handler;
 import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.Level;
-import it.polimi.ingsw.model.Pair;
+import it.polimi.ingsw.model.handler.util.Pair;
+import it.polimi.ingsw.model.handler.util.TriPredicate;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -17,10 +17,11 @@ purpose == GENERATION <==> target != null
 package it.polimi.ingsw.model.handler;
 
 import it.polimi.ingsw.model.*;
+import it.polimi.ingsw.model.handler.util.Pair;
+import it.polimi.ingsw.model.handler.util.TriPredicate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 

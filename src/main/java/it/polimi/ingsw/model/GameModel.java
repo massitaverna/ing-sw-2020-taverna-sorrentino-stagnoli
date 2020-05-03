@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import com.google.gson.Gson;
+import it.polimi.ingsw.App;
 import it.polimi.ingsw.exceptions.model.IllegalWorkerChoiceException;
 import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 import it.polimi.ingsw.listeners.EventSource;
@@ -9,6 +11,8 @@ import it.polimi.ingsw.model.handler.ActionType;
 import it.polimi.ingsw.model.handler.RequestHandler;
 import it.polimi.ingsw.model.handler.RequestHandlerCreator;
 
+import java.io.InputStream;
+import java.nio.file.NoSuchFileException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -62,13 +66,29 @@ public class GameModel implements EventSource {
 
     //INIT FUNCTIONS//
     private void loadAvailableGods() {
-        //Read from files all available gods
+        //Read from file all available gods
+        InputStream inputStream = App.class
+                .getClassLoader().getResourceAsStream("gods");
+        if (inputStream == null) {
+            System.out.println("\"gods\" file wasn't found. Exiting.");
+            System.exit(1);
+        }
+        Scanner sc = new Scanner(inputStream);
+        Gson gson = new Gson();
+        while (sc.hasNext()) {
+            godsList.add(gson.fromJson(sc.nextLine(), God.class));
+        }
 
+        System.out.println("Gods loaded: ");
+        godsList.forEach(g -> System.out.println(g.getName() + ": " + g.getDescription()));
+
+        /*
         // Alternative way, just to test:
         godsList.add(new God("Apollo", "Very powerful"));
         godsList.add(new God("Athena", "So powerful"));
         godsList.add(new God("Artemis", "Incredibly powerful"));
         godsList.add(new God("Minotaur", "Weak"));
+        */
 
     }
 

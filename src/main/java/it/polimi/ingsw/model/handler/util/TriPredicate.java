@@ -1,4 +1,4 @@
-package it.polimi.ingsw.model.handler;
+package it.polimi.ingsw.model.handler.util;
 
 @FunctionalInterface
 public interface TriPredicate<T, U, R> {

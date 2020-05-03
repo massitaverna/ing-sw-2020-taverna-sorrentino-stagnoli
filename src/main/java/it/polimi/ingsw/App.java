@@ -9,8 +9,12 @@ import it.polimi.ingsw.model.handler.Rule;
 import it.polimi.ingsw.view.ChallengerView;
 import it.polimi.ingsw.view.PlayerView;
 
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.function.BiFunction;
 
 public class App {
