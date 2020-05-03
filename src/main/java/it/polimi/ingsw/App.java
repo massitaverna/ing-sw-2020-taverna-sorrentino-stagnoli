@@ -3,6 +3,7 @@ package it.polimi.ingsw;
 import it.polimi.ingsw.controller.RealController;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.GameModel;
+import it.polimi.ingsw.model.handler.Rule;
 import it.polimi.ingsw.view.ChallengerView;
 import it.polimi.ingsw.view.PlayerView;
 

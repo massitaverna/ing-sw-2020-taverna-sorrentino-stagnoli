@@ -5,12 +5,12 @@ import org.junit.Test;
 public class GameModelTest {
 
     @Test
-    public void allPlayersHasDifferentGod(){
+    public void allPlayersHaveDifferentGod(){
 
     }
 
     @Test
-    public void allPlayersHasDifferentColors(){
+    public void allPlayersHaveDifferentColors(){
 
     }
 
