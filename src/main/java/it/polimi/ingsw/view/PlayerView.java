@@ -90,14 +90,14 @@ public class PlayerView implements ModelEventListener, EventSource {
                         String inputLvl = s.nextLine();
 
                         for (Level l : possibleLevels){
-                            if (l.equals(Level.valueOf(input.toUpperCase()))){
+                            if (l.equals(Level.valueOf(inputLvl.toUpperCase()))){
                                 validLevel = true;
                                 break;
                             }
                         }
 
                         if(validLevel)
-                            listener.onBuildChosen(this, c, Level.valueOf(input.toUpperCase()));
+                            listener.onBuildChosen(this, c, Level.valueOf(inputLvl.toUpperCase()));
                         else
                             outputStream.println("Please enter a valid level");
                     }
