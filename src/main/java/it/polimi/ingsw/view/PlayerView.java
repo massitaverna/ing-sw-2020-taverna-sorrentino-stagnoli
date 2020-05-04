@@ -66,7 +66,7 @@ public class PlayerView implements ModelEventListener, EventSource {
         boolean validCoord = false;
         boolean validLevel = false;
         int choice = 0;
-        List<Level> possibleLevels= new ArrayList<Level>();
+        List<Level> possibleLevels= new ArrayList<>();
 
         while (!validCoord){
             String input = s.nextLine();

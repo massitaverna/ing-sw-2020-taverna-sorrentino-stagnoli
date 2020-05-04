@@ -46,7 +46,7 @@ public class Coord {
         return new Coord(this.x + c.x, this.y + c.y);
     }
 
-    public static Coord convertStringToCoord(String input){
+    public static Coord convertStringToCoord(String input) {
         input = input.toUpperCase();
         int x = (input.charAt(0) - 'A');
         int y = (input.charAt(1) - '1');

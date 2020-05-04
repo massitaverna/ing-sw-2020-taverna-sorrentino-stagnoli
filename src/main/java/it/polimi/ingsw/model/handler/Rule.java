@@ -105,7 +105,7 @@ public class Rule {
     }
 
     void setDecision(Decision decision) {
-        assert this.actionType == null;
+        assert this.decision == null;
         this.decision = decision;
     }
 

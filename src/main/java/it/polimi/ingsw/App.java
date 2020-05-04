@@ -20,6 +20,7 @@ import java.util.function.BiFunction;
 public class App {
     public static void main(String[] args) {
 
+
         GameModel model = new GameModel();
         RealController controller = new RealController(model);
         ChallengerView view1 = new ChallengerView();
