@@ -26,6 +26,12 @@ public class ChallengerView implements ModelEventListener, EventSource, Runnable
         this.outputStream = new MyPrintStream(System.out);
     }
 
+    public ChallengerView(Scanner s) {
+        this.s = s;
+        this.view = new PlayerView(s);
+        this.outputStream = new MyPrintStream(System.out);
+    }
+
     // Classe provvisoria per testing
     class MyPrintStream extends PrintStream {
         public MyPrintStream(OutputStream outputStream) {
@@ -103,7 +109,7 @@ public class ChallengerView implements ModelEventListener, EventSource, Runnable
 
             for (String god : gods) {
                 if (god.toLowerCase().equals(input)) {
-                    choices.add(input);
+                    choices.add(god);
                     godIsOk = true;
                     break;
                 }

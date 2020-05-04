@@ -11,6 +11,7 @@ import it.polimi.ingsw.model.handler.ActionType;
 import it.polimi.ingsw.model.handler.RequestHandler;
 import it.polimi.ingsw.model.handler.RequestHandlerCreator;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.NoSuchFileException;
 import java.util.*;
@@ -67,7 +68,8 @@ public class GameModel implements EventSource {
     //INIT FUNCTIONS//
     private void loadAvailableGods() {
         //Read from file all available gods
-        InputStream inputStream = App.class
+
+        InputStream inputStream = this.getClass()
                 .getClassLoader().getResourceAsStream("gods");
         if (inputStream == null) {
             System.out.println("\"gods\" file wasn't found. Exiting.");
@@ -78,9 +80,19 @@ public class GameModel implements EventSource {
         while (sc.hasNext()) {
             godsList.add(gson.fromJson(sc.nextLine(), God.class));
         }
+        sc.close();
+        try {
+            inputStream.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
 
         System.out.println("Gods loaded: ");
         godsList.forEach(g -> System.out.println(g.getName() + ": " + g.getDescription()));
+        System.out.println("size: " + godsList.size());
+
 
         /*
         // Alternative way, just to test:
@@ -88,7 +100,7 @@ public class GameModel implements EventSource {
         godsList.add(new God("Athena", "So powerful"));
         godsList.add(new God("Artemis", "Incredibly powerful"));
         godsList.add(new God("Minotaur", "Weak"));
-        */
+         */
 
     }
 
@@ -347,12 +359,13 @@ public class GameModel implements EventSource {
     void nextAction() {
         RequestHandler currHandler = handlers.get(currentPlayer);
         Coord currentPosition = currentWorker.getPosition();
+        turn.clear();
         currHandler.getValidSpaces(currentPosition, board.clone(),
                 turn.getMovableSpacesReference(), turn.getBuildableSpacesReference(),
                 turn.getForcesReference());
 
-        if (turn.getMovableSpacesCopy().isEmpty() &&
-                turn.getBuildableSpacesCopy().values().isEmpty()) { // <-- this is wrong
+        if (turn.getMovableSpacesCopy().isEmpty() && turn.getBuildableSpacesCopy().values()
+                .stream().flatMap(Collection::stream).count() == 0) {
             if (!turn.canEndTurn()) {
                 board = turn.getInitialBoard();
                 notifyBoardChanged();
@@ -426,6 +439,7 @@ public class GameModel implements EventSource {
         boolean selectable = false;
         for (Worker worker : currentPlayer.getWorkersList()) {
             Coord position = worker.getPosition();
+            turn.clear();
             currHandler.getValidSpaces(position, board.clone(),
                     turn.getMovableSpacesReference(), turn.getBuildableSpacesReference(),
                     turn.getForcesReference());

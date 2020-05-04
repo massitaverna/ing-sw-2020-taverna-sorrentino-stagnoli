@@ -73,6 +73,12 @@ public class Turn implements Cloneable {
         //No need to reset the collections, since they are always overwritten for every action
     }
 
+    public void clear() {
+        movableSpaces.clear();
+        buildableSpaces.clear();
+        forces.clear();
+    }
+
     public void setInitialBoard(Board board) {
         this.board = board;
     }

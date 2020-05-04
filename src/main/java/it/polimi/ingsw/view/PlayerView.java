@@ -26,6 +26,11 @@ public class PlayerView implements ModelEventListener, EventSource {
         this.outputStream = new MyPrintStream(System.out);
     }
 
+    public PlayerView(Scanner s) {
+        this.s = s;
+        this.outputStream = new MyPrintStream(System.out);
+    }
+
     // Classe provvisoria per testing
     class MyPrintStream extends PrintStream {
         public MyPrintStream(OutputStream outputStream) {
@@ -41,14 +46,13 @@ public class PlayerView implements ModelEventListener, EventSource {
         }
     }
 
-
     public String getNickname() {
         return nickname;
     }
 
     public void askForNickname(List<String> nicknamesInGame) {
         outputStream.println("Choose a nickname: ");
-        String input = s.nextLine();
+        String input = s.next();
 
         while (nicknamesInGame.contains(input)) {
             outputStream.println("Nickname already taken, please choose another nickname: ");
@@ -118,7 +122,7 @@ public class PlayerView implements ModelEventListener, EventSource {
     }
 
     private void askToMove(List<Coord> movableSpaces){
-        outputStream.println("Where do you want to build? ");
+        outputStream.println("Where do you want to move? ");
         boolean valid = false;
 
         while (!valid){
@@ -290,7 +294,9 @@ public class PlayerView implements ModelEventListener, EventSource {
     public void onMyAction(List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces, boolean canEndTurn) {
 
         // String colors
-        String selectable = "\u001B[97m"; // Bright white
+        //String selectable = "\u001B[97m"; // Bright white
+        // It doesn't print on IntelliJ white console...
+        String selectable = "\u001B[0m"; // Standard
         String nonSelectable = "\u001B[90m"; // Grey
         String reset = "\u001B[0m"; // Standard
 

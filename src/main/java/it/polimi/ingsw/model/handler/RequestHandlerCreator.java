@@ -73,6 +73,7 @@ public class RequestHandlerCreator {
         r.setActionType(ActionType.MOVE);
         BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
         cPair.get(0).isNear(cPair.get(1)) && !board.getSpace(cPair.get(1)).isOccupied() &&
+                !board.getSpace(cPair.get(1)).isDome() &&
                 board.getSpace(cPair.get(1)).getHeight().ordinal() -
                         board.getSpace(cPair.get(0)).getHeight().ordinal() <= 1;
         r.setCondition(condition);
@@ -84,7 +85,19 @@ public class RequestHandlerCreator {
         r.setActionType(ActionType.MOVE);
         condition = (cPair, board) ->
                 !cPair.get(0).isNear(cPair.get(1)) || board.getSpace(cPair.get(1)).isOccupied() ||
-                        board.getSpace(cPair.get(1)).getHeight().ordinal() - board.getSpace(cPair.get(0)).getHeight().ordinal() > 1;
+                        board.getSpace(cPair.get(1)).isDome() ||
+                        board.getSpace(cPair.get(1)).getHeight().ordinal() -
+                                board.getSpace(cPair.get(0)).getHeight().ordinal() > 1;
+        r.setCondition(condition);
+        standardRules.add(r);
+
+        //-----------------DENY BUILD on every level------------------
+        r = new Rule();
+        r.setPurpose(Purpose.VALIDATION);
+        r.setDecision(Decision.DENY);
+        r.setActionType(ActionType.BUILD);
+        r.setBuildLevel(Level.GROUND);
+        condition = (cPair, board) -> true;
         r.setCondition(condition);
         standardRules.add(r);
 
@@ -92,9 +105,38 @@ public class RequestHandlerCreator {
         r.setPurpose(Purpose.VALIDATION);
         r.setDecision(Decision.DENY);
         r.setActionType(ActionType.BUILD);
+        r.setBuildLevel(Level.LVL1);
         condition = (cPair, board) -> true;
         r.setCondition(condition);
         standardRules.add(r);
+
+        r = new Rule();
+        r.setPurpose(Purpose.VALIDATION);
+        r.setDecision(Decision.DENY);
+        r.setActionType(ActionType.BUILD);
+        r.setBuildLevel(Level.LVL2);
+        condition = (cPair, board) -> true;
+        r.setCondition(condition);
+        standardRules.add(r);
+
+        r = new Rule();
+        r.setPurpose(Purpose.VALIDATION);
+        r.setDecision(Decision.DENY);
+        r.setActionType(ActionType.BUILD);
+        r.setBuildLevel(Level.LVL3);
+        condition = (cPair, board) -> true;
+        r.setCondition(condition);
+        standardRules.add(r);
+
+        r = new Rule();
+        r.setPurpose(Purpose.VALIDATION);
+        r.setDecision(Decision.DENY);
+        r.setActionType(ActionType.BUILD);
+        r.setBuildLevel(Level.DOME);
+        condition = (cPair, board) -> true;
+        r.setCondition(condition);
+        standardRules.add(r);
+        //-------------------------------------------------------------
 
         r = new Rule();
         r.setPurpose(Purpose.GENERATION);
@@ -242,7 +284,8 @@ public class RequestHandlerCreator {
         BiPredicate<Pair<Coord>, Board> conditionOnProximity = (cPair, board) ->
                 cPair.get(0).isNear((cPair.get(1)));
         BiPredicate<Pair<Coord>, Board> conditionOnFreeSpace = (cPair, board) ->
-                !board.getSpace(cPair.get(1)).isOccupied();
+                !board.getSpace(cPair.get(1)).isOccupied() &&
+                        !board.getSpace(cPair.get(1)).isDome();
         BiPredicate<Pair<Coord>, Board> conditionOnLevelUp;
 
         BiPredicate<Pair<Coord>, Board> condition;
@@ -251,6 +294,13 @@ public class RequestHandlerCreator {
         for (Level level : Level.values()) {
 
             if (level == Level.GROUND) {
+                r = new Rule();
+                r.setPurpose(Purpose.VALIDATION);
+                r.setActionType(ActionType.BUILD);
+                r.setDecision(Decision.DENY);
+                r.setBuildLevel(level);
+                r.setCondition((a, b) -> true);
+                result.add(r);
                 continue;
             }
 
@@ -274,6 +324,7 @@ public class RequestHandlerCreator {
             r.setDecision(Decision.DENY);
             r.setBuildLevel(level);
             r.setCondition(condition.negate());
+            result.add(r);
 
         }
 
@@ -297,6 +348,43 @@ public class RequestHandlerCreator {
         r.setPurpose(Purpose.VALIDATION);
         r.setDecision(Decision.DENY);
         r.setActionType(ActionType.BUILD);
+        r.setBuildLevel(Level.GROUND);
+        condition = (cPair, board) -> true;
+        r.setCondition(condition);
+        result.add(r);
+
+        r = new Rule();
+        r.setPurpose(Purpose.VALIDATION);
+        r.setDecision(Decision.DENY);
+        r.setActionType(ActionType.BUILD);
+        r.setBuildLevel(Level.LVL1);
+        condition = (cPair, board) -> true;
+        r.setCondition(condition);
+        result.add(r);
+
+        r = new Rule();
+        r.setPurpose(Purpose.VALIDATION);
+        r.setDecision(Decision.DENY);
+        r.setActionType(ActionType.BUILD);
+        r.setBuildLevel(Level.LVL2);
+        condition = (cPair, board) -> true;
+        r.setCondition(condition);
+        result.add(r);
+
+        r = new Rule();
+        r.setPurpose(Purpose.VALIDATION);
+        r.setDecision(Decision.DENY);
+        r.setActionType(ActionType.BUILD);
+        r.setBuildLevel(Level.LVL3);
+        condition = (cPair, board) -> true;
+        r.setCondition(condition);
+        result.add(r);
+
+        r = new Rule();
+        r.setPurpose(Purpose.VALIDATION);
+        r.setDecision(Decision.DENY);
+        r.setActionType(ActionType.BUILD);
+        r.setBuildLevel(Level.DOME);
         condition = (cPair, board) -> true;
         r.setCondition(condition);
         result.add(r);

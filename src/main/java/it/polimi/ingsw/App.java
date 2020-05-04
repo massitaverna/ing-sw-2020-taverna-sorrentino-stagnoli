@@ -1,24 +1,20 @@
 package it.polimi.ingsw;
 
-import com.google.gson.Gson;
 import it.polimi.ingsw.controller.RealController;
-import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.GameModel;
-import it.polimi.ingsw.model.God;
-import it.polimi.ingsw.model.handler.Rule;
 import it.polimi.ingsw.view.ChallengerView;
 import it.polimi.ingsw.view.PlayerView;
 
-import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Scanner;
-import java.util.function.BiFunction;
 
 public class App {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+
+        boolean simulation = false;
+
 
 
         GameModel model = new GameModel();
@@ -26,6 +22,15 @@ public class App {
         ChallengerView view1 = new ChallengerView();
         PlayerView view2 = new PlayerView();
         PlayerView view3 = new PlayerView();
+
+        //-----------------SIMULATION------------------
+        if (simulation) {
+            Scanner sc = new Scanner(System.in);
+            view1 = new ChallengerView(sc);
+            view2 = new PlayerView(sc);
+            view3 = new PlayerView(sc);
+        }
+        //-----------------SIMULATION------------------
         model.addListener(view1);
         model.addListener(view2);
         model.addListener(view3);

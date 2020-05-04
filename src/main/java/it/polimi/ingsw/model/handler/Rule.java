@@ -44,10 +44,6 @@ public class Rule {
     }
 
     ActionType getActionType() {
-        if (purpose != Purpose.VALIDATION) {
-            throw new IllegalStateException("Tried to check actionType on " + this);
-        }
-
         assert repOk();
         return actionType;
     }
@@ -126,7 +122,7 @@ public class Rule {
 
     void setGeneratedRules(List<Rule> generatedRules) {
         assert this.generatedRules == null;
-        this.generatedRules = new ArrayList<>(generatedRules);
+        this.generatedRules = generatedRules;
     }
 
     void setSymbolicCondition(TriPredicate<Pair<Coord>, Pair<Coord>, Board> symbolicCondition) {
@@ -157,15 +153,16 @@ public class Rule {
         boolean repOk = actionType != null &&
         condition != null &&
         iff(decision == null, purpose != Purpose.VALIDATION) &&
-        iff(actionType==ActionType.BUILD, buildLevel != null) &&
-        ifThen(forceSpaceFunction.apply(new Coord(0,0), new Coord(1,1)) != null,
-                actionType == ActionType.MOVE) &&
-                ifThen(forceSpaceFunction.apply(new Coord(0,0), new Coord(1,1)) != null,
-                        decision == Decision.GRANT) &&
+        iff(actionType==ActionType.BUILD && purpose == Purpose.VALIDATION, buildLevel != null) &&
+        ifThen(forceSpaceFunction != null, actionType == ActionType.MOVE) &&
+                ifThen(forceSpaceFunction != null, decision == Decision.GRANT) &&
         iff(generatedRules == null,purpose != Purpose.GENERATION) &&
         ifThen(purpose == Purpose.VALIDATION, actionType != ActionType.END) &&
         iff(purpose == Purpose.GENERATION, target != null);
 
+        if (!repOk) {
+            System.out.println("Rep for the rule is invalid.");
+        }
         return repOk;
     }
 

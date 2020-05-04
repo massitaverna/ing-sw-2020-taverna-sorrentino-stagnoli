@@ -111,7 +111,7 @@ class ConcreteHandler implements RuleHandler {
                 );
 
         rules = rules.stream()
-                .filter(r -> r.getPurpose()==Purpose.GENERATION)
+                .filter(r -> r.getPurpose() == Purpose.GENERATION)
                 .filter(r -> r.getTarget() == Target.MYSELF)
                 .filter(r -> r.getActionType() == at)
                 .filter(r -> r.getCondition().test(pair, board))
