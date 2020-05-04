@@ -47,4 +47,19 @@ public class CoordTest {
 
         //assert( !center.isNear(new Coord(5, 5)) );
     }
+
+    @Test
+    public void convertStringToCoordTest(){
+        String topLeft = "A1";
+        String topRight = "A5";
+        String bottomLeft = "E1";
+        String bottomRight = "E5";
+        String center = "C3";
+
+        assert (Coord.convertStringToCoord(topLeft).equals(new Coord(0,0)));
+        assert (Coord.convertStringToCoord(topRight).equals(new Coord(0,4)));
+        assert (Coord.convertStringToCoord(bottomLeft).equals(new Coord(4,0)));
+        assert (Coord.convertStringToCoord(bottomRight).equals(new Coord(4,4)));
+        assert (Coord.convertStringToCoord(center).equals(new Coord(2,2)));
+    }
 }

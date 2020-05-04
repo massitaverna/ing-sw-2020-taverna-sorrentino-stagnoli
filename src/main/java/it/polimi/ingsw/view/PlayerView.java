@@ -15,8 +15,6 @@ public class PlayerView implements ModelEventListener, EventSource {
     private Scanner s;
     private PrintStream outputStream;
 
-
-    // stare in ascolto su queste variabile per controllare che sia stato creato il player
     private String nickname;
     private PlayerViewEventListener listener;
     private String god;

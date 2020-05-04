@@ -95,20 +95,31 @@ public class ChallengerView implements ModelEventListener, EventSource, Runnable
     public void onGodsSelection(List<String> gods, int numPlayers) {
         outputStream.println("Choose the gods to use in this game: ");
         boolean valid = false;
+        boolean godIsOk = false;
         List<String> choices = new ArrayList<>();
 
         while (!valid){
             String input = s.nextLine();
+            input = input.toLowerCase();
 
-            if(gods.contains(input)){
-                choices.add(input);
-                if(choices.size() == numPlayers){
-                    listener.onGodsChosen(this, choices);
-                    valid = true;
-                } else
-                    outputStream.println("Choose another god: ");
+            for (String god : gods) {
+                if (god.toLowerCase().equals(input)) {
+                    choices.add(input);
+                    godIsOk = true;
+                    break;
+                }
+            }
+
+            if (choices.size() == numPlayers){
+                valid = true;
+                listener.onGodsChosen(this, choices);
             } else
-                outputStream.println("Invalid input.");
+                outputStream.println("Choose another god");
+
+            if(godIsOk)
+                godIsOk = false;
+            else
+                outputStream.println("Invalid input");
         }
     }
 
