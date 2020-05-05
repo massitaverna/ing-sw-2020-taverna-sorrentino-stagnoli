@@ -14,7 +14,6 @@ public class GameModelTest {
 
     }
 
-
     //potrebbero essere inutili, vedere commento in GameModel.java
     @Test
     public void legalWorkerChose(){
