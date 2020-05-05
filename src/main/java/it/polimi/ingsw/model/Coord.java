@@ -72,4 +72,9 @@ public class Coord implements Serializable {
     public String toString() {
         return "(" + x + ", " + y + ")" ;
     }
+
+    @Override
+    public int hashCode() {
+        return 10*x + y;
+    }
 }

@@ -281,14 +281,21 @@ public class GameModel implements EventSource {
             return;
         }
 
+        /*
         //TODO: Implementare moveWithForce() nella Board
         board.getSpace(currentWorker.getPosition()).setUnoccupied();
         if (turn.getForcesCopy().containsKey(moveChoice)) {
             Coord forceDest = turn.getForcesCopy().get(moveChoice);
             board.workerMove(moveChoice, forceDest);
         }
+         */
 
-        board.workerMove(currentWorker, moveChoice);
+        if (turn.getForcesCopy().containsKey(moveChoice)) {
+            Coord forceDest = turn.getForcesCopy().get(moveChoice);
+            board.workerForceMove(currentWorker, moveChoice, forceDest);
+        } else {
+            board.workerMove(currentWorker, moveChoice);
+        }
         notifyBoardChanged();
 
         turn.hasMoved();

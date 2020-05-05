@@ -221,7 +221,7 @@ public class RequestHandlerCreator {
             generatedRules.add(standardRules.get(standardRules.size() - 1));
         }
 
-        if (god.equals("Atlas")) { // SHOULD BE COMPLETE
+        if (god.equals("Atlas")) { // COMPLETE
             Rule r = new Rule();
             r.setPurpose(Purpose.GENERATION);
             r.setActionType(ActionType.MOVE);
