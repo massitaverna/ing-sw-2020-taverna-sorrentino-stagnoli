@@ -1,20 +1,19 @@
 package it.polimi.ingsw;
 
 import it.polimi.ingsw.controller.RealController;
-import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.view.ChallengerView;
 import it.polimi.ingsw.view.PlayerView;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) throws IOException {
 
         boolean simulation = true;
-
 
 
 

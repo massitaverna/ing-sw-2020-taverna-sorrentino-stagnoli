@@ -56,7 +56,11 @@ public class ChallengerView implements ModelEventListener, EventSource, Runnable
 
         while(n<1 || n>2){
             outputStream.println("Chose the number of opponents (1 or 2): ");
-            n = s.nextInt();
+            try{
+                n = s.nextInt();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         }
 
         listener.onNumberOfPlayersChosen(this, n+1);
@@ -133,7 +137,7 @@ public class ChallengerView implements ModelEventListener, EventSource, Runnable
         outputStream.println("Choose the starting player: ");
 
         for (int i = 0; i<players.size(); i++) {
-            outputStream.println( (i+1) + players.get(i));
+            outputStream.println( (i+1) + " " + players.get(i));
         }
 
         boolean valid = false;
