@@ -2,7 +2,12 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.model.InvalidCoordinatesException;
 
-public class Coord {
+import java.io.Serializable;
+
+public class Coord implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     public final int x;
     public final int y;
 

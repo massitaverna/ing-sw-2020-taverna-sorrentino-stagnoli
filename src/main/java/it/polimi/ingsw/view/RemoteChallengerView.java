@@ -7,9 +7,13 @@ import java.util.List;
 
 public class RemoteChallengerView extends RemotePlayerView{
 
-
     public RemoteChallengerView(String nickname, ClientConnection cc) {
         super(nickname, cc);
+    }
+
+    @Override
+    protected void handleMessageReceived() {
+        //insert code here
     }
 
     @Override

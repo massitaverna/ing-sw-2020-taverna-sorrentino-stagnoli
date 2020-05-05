@@ -38,7 +38,7 @@ public class Lobby {
     public synchronized boolean addPlayer(String nickname, Socket socket){
 
         //if name is null or is already present, return false
-        if(nickname == null || this.playersViews.stream().anyMatch(x -> x.getNickname().equals(nickname)) )
+        if(nickname == null || nickname.equals("") || this.playersViews.stream().anyMatch(x -> x.getNickname().equals(nickname)) )
             return false;
 
         if(socket.isClosed())
@@ -81,7 +81,11 @@ public class Lobby {
     }
 
     public synchronized void deregisterConnection(ClientConnection cc){
-
+        //game is ended, goodbye
+        for(RemotePlayerView v: this.playersViews){
+            v.sendObjectToClient("AZZZ");
+            //client has to close the game
+        }
     }
 
     public boolean isFull(){

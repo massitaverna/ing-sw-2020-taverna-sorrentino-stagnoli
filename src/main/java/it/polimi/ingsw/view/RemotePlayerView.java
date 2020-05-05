@@ -10,8 +10,10 @@ import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.observer.*;
 import it.polimi.ingsw.server.ClientConnection;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class RemotePlayerView implements ModelEventListener, EventSource {
 
@@ -67,52 +69,82 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
 
     @Override
     public void onBoardChanged(Board board) {
-
+        //serializza la board
+        //manda messaggio
     }
 
     @Override
     public void onGameReady() {
-
+        sendObjectToClient("OnGameReady");
     }
 
     @Override
     public void onGodsChosen(List<String> gods) {
-
+        List<Object> objects = new ArrayList<>();
+        objects.add("OnGodsChosen");
+        objects.add(gods);
+        sendObjectToClient(objects);
     }
 
     @Override
     public void onPlayerAdded(String nickname, int numCurr, int numTot) {
-
+        List<Object> objects = new ArrayList<>();
+        objects.add("onPlayerAdded");
+        objects.add(nickname);
+        objects.add(numCurr);
+        objects.add(numTot);
+        sendObjectToClient(objects);
     }
 
     @Override
     public void onGodSelection(List<String> gods) {
-
+        List<Object> objects = new ArrayList<>();
+        objects.add("onGodSelection");
+        objects.add(gods);
+        sendObjectToClient(objects);
     }
 
     @Override
     public void onGodsSelection(List<String> gods, int numPlayers) {
-
+        List<Object> objects = new ArrayList<>();
+        objects.add("onGodsSelection");
+        objects.add(gods);
+        objects.add(numPlayers);
+        sendObjectToClient(objects);
     }
 
     @Override
     public void onStartPlayerSelection(List<String> players) {
-
+        List<Object> objects = new ArrayList<>();
+        objects.add("onStartPlayerSelection");
+        objects.add(players);
+        sendObjectToClient(objects);
     }
 
     @Override
     public void onMyInitialization(List<Coord> freeSpaces) {
-
+        List<Object> objects = new ArrayList<>();
+        objects.add("onMyInitialization");
+        objects.add(freeSpaces);
+        sendObjectToClient(objects);
     }
 
     @Override
     public void onMyTurn(List<Coord> selectableWorkers) {
-
+        List<Object> objects = new ArrayList<>();
+        objects.add("onMyTurn");
+        objects.add(selectableWorkers);
+        sendObjectToClient(objects);
     }
 
     @Override
     public void onMyAction(List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces, boolean canEndTurn) {
-
+        List<Object> objects = new ArrayList<>();
+        objects.add("onMyAction");
+        objects.add(movableSpaces);
+        objects.add(buildableSpaces);
+        objects.add(canEndTurn);
+        sendObjectToClient(objects);
     }
 
     @Override
