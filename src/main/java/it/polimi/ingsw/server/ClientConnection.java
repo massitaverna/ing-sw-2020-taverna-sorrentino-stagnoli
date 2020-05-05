@@ -15,6 +15,7 @@ public class ClientConnection extends Observable<Object> implements Runnable {
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
+
     private Lobby lobby;
 
     private boolean active = true;

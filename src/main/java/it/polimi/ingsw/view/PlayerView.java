@@ -19,9 +19,7 @@ public class PlayerView implements ModelEventListener, EventSource {
     private PlayerViewEventListener listener;
     private String god;
 
-
     public PlayerView(){
-
         this.s = new Scanner(System.in);
         this.outputStream = new MyPrintStream(System.out);
     }

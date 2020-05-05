@@ -41,6 +41,15 @@ public class MainServer {
             }
         }
 
+        private void writeObject(Object message) {
+            try {
+            out.writeObject(message);
+            out.flush();
+            }catch(IOException e) {
+
+            }
+        }
+
         @Override
         public void run() {
             //If no lobbies or all lobbies are full:

@@ -2,7 +2,11 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.Player;
 
-public class God {
+import java.io.Serializable;
+
+public class God implements Serializable {
+
+    private static final long serialVersionUID = 2L;
 
     private final String name;
     private final String description;
@@ -14,6 +18,5 @@ public class God {
 
     public String getName() { return name; }
     public String getDescription() { return description; }
-
 
 }
