@@ -5,13 +5,12 @@ import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.view.ChallengerView;
 import it.polimi.ingsw.view.PlayerView;
 
-import java.io.IOException;
-import java.io.InputStream;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class App {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         boolean simulation = true;
 
