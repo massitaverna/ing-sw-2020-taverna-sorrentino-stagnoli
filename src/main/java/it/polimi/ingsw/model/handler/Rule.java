@@ -77,7 +77,7 @@ public class Rule {
         List<Rule> result = new ArrayList<>();
         for (Rule rule : generatedRules) {
             if (rule.symbolicCondition != null) {
-                rule.condition = (cPair, board) -> symbolicCondition.test(oldAction, cPair, board);
+                rule.condition = (cPair, board) -> rule.symbolicCondition.test(oldAction, cPair, board);
             }
             result.add(rule);
         }

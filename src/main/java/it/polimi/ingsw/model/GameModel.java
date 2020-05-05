@@ -91,7 +91,7 @@ public class GameModel implements EventSource {
 
         System.out.println("Gods loaded: ");
         godsList.forEach(g -> System.out.println(g.getName() + ": " + g.getDescription()));
-        System.out.println("size: " + godsList.size());
+        //System.out.println("size: " + godsList.size());
 
 
         /*

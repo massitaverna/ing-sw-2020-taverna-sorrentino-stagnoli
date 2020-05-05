@@ -171,7 +171,7 @@ public class RequestHandlerCreator {
         r.setGeneratedRules(generatedRules);
 
         generatedRules.addAll(denyAll());
-
+        generatedRules.add(doNothingOnEnd());
 
     }
 
@@ -218,7 +218,7 @@ public class RequestHandlerCreator {
             generatedRules.add(r);
 
             generatedRules.add(standardRules.get(0));
-            generatedRules.add(standardRules.get(3));
+            generatedRules.add(standardRules.get(standardRules.size() - 1));
         }
 
         if (god.equals("Atlas")) {
@@ -390,5 +390,21 @@ public class RequestHandlerCreator {
         result.add(r);
 
         return result;
+    }
+
+    private static Rule doNothingOnEnd() {
+        Rule r = new Rule();
+        r.setPurpose(Purpose.GENERATION);
+        r.setTarget(Target.MYSELF);
+        r.setActionType(ActionType.END);
+        BiPredicate<Pair<Coord>, Board> condition = (cPair, board) -> true;
+        r.setCondition(condition);
+
+        List<Rule> generatedRules = new ArrayList<>();
+        r.setGeneratedRules(generatedRules);
+
+        generatedRules.addAll(denyAll());
+
+        return r;
     }
 }

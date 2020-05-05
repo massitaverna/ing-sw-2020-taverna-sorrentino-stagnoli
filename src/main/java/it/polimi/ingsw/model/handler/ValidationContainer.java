@@ -125,15 +125,15 @@ class ValidationContainer {
         return true;
     }
 
-    public Set<Coord> getNotValidatedSpaces() {
-        Set<Coord> result = new HashSet<>();
+    public List<Coord> getNotValidatedSpaces() {
+        List<Coord> result = new ArrayList<>();
         for (int i = 0; i < superList.size(); i += 2) {
             final int idx = i;
             result.addAll(
                     allSpaces.stream()
                             .filter(s -> !superList.get(idx).contains(s))
                             .filter(s -> !superList.get(idx + 1).contains(s))
-                            .collect(Collectors.toSet())
+                            .collect(Collectors.toList())
             );
         }
 
