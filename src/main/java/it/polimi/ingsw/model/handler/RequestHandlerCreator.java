@@ -221,15 +221,28 @@ public class RequestHandlerCreator {
             generatedRules.add(standardRules.get(standardRules.size() - 1));
         }
 
-        if (god.equals("Atlas")) {
+        if (god.equals("Atlas")) { // SHOULD BE COMPLETE
             Rule r = new Rule();
+            r.setPurpose(Purpose.GENERATION);
+            r.setActionType(ActionType.MOVE);
+            r.setTarget(Target.MYSELF);
+            BiPredicate<Pair<Coord>, Board> condition = (cPair, board) -> true;
+            r.setCondition(condition);
+            result.add(r);
+
+            List<Rule> generatedRules = new ArrayList<>();
+            r.setGeneratedRules(generatedRules);
+
+            r = new Rule();
             r.setPurpose(Purpose.VALIDATION);
             r.setActionType(ActionType.BUILD);
             r.setDecision(Decision.GRANT);
-            BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
-                    !board.getSpace(cPair.get(1)).isOccupied() && cPair.get(0).isNear(cPair.get(1));
+            r.setBuildLevel(Level.DOME);
+            condition = (cPair, board) ->
+                    !board.getSpace(cPair.get(1)).isOccupied() && cPair.get(0).isNear(cPair.get(1)) &&
+                            !board.getSpace(cPair.get(1)).isDome();
             r.setCondition(condition);
-            result.add(r);
+            generatedRules.add(r);
         }
 
         /*if (god.equals("Demeter")) {
@@ -245,15 +258,82 @@ public class RequestHandlerCreator {
             godRules.put("Demeter", result);
         }*/
 
-        if (god.equals("Hephaestus")) {
+        if (god.equals("Hephaestus")) { //SHOULD BE COMPLETE
             Rule r = new Rule();
-            r.setPurpose(Purpose.VALIDATION);
+            r.setPurpose(Purpose.GENERATION);
             r.setActionType(ActionType.BUILD);
-            r.setDecision(Decision.GRANT);
-            BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
-                    !board.getSpace(cPair.get(1)).isOccupied() && cPair.get(0).isNear(cPair.get(1));
+            r.setTarget(Target.MYSELF);
+            BiPredicate<Pair<Coord>, Board> condition = (cPair, board) -> true;
             r.setCondition(condition);
             result.add(r);
+
+            List<Rule> generatedRules = new ArrayList<>();
+            r.setGeneratedRules(generatedRules);
+
+            r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.BUILD);
+            r.setDecision(Decision.DENY);
+            r.setBuildLevel(Level.GROUND);
+            TriPredicate<Pair<Coord>, Pair<Coord>, Board> symbolicCondition =
+                    (oldPair, pair, board) -> !pair.get(1).equals(oldPair.get(1));
+            r.setSymbolicCondition(symbolicCondition);
+            generatedRules.add(r);
+
+            r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.BUILD);
+            r.setDecision(Decision.DENY);
+            r.setBuildLevel(Level.LVL1);
+            symbolicCondition = (oldPair, pair, board) -> !pair.get(1).equals(oldPair.get(1));
+            r.setSymbolicCondition(symbolicCondition);
+            generatedRules.add(r);
+
+            r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.BUILD);
+            r.setDecision(Decision.DENY);
+            r.setBuildLevel(Level.LVL2);
+            symbolicCondition = (oldPair, pair, board) -> !pair.get(1).equals(oldPair.get(1));
+            r.setSymbolicCondition(symbolicCondition);
+            generatedRules.add(r);
+
+            r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.BUILD);
+            r.setDecision(Decision.DENY);
+            r.setBuildLevel(Level.LVL3);
+            symbolicCondition = (oldPair, pair, board) -> !pair.get(1).equals(oldPair.get(1));
+            r.setSymbolicCondition(symbolicCondition);
+            generatedRules.add(r);
+
+            r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.BUILD);
+            r.setDecision(Decision.DENY);
+            r.setBuildLevel(Level.DOME);
+            symbolicCondition = (oldPair, pair, board) -> !pair.get(1).equals(oldPair.get(1));
+            r.setSymbolicCondition(symbolicCondition);
+            generatedRules.add(r);
+
+            generatedRules.addAll(getStandardBuildUpRules());
+
+            r = new Rule();
+            r.setPurpose(Purpose.GENERATION);
+            r.setTarget(Target.MYSELF);
+            r.setActionType(ActionType.BUILD);
+            condition = (cPair, board) -> true;
+            r.setCondition(condition);
+            generatedRules.add(r);
+
+            generatedRules = new ArrayList<>();
+            r.setGeneratedRules(generatedRules);
+            generatedRules.addAll(denyAll());
+            generatedRules.add(doNothingOnEnd());
+
+            //TODO: definire metodo getStandardBuildRules() che restituisce:
+            // getBuildUpRules() + GEN_BUILD-->[ denyAll() + doNothingOnEnd() ]
+
         }
 
         if (god.equals("Minotaur")) { //COMPLETE
@@ -329,6 +409,12 @@ public class RequestHandlerCreator {
         }
 
         return result;
+    }
+
+    private BiPredicate<Pair<Coord>, Board> getBuildUpConditionFrom(Level level) {
+        BiPredicate<Pair<Coord>, Board> conditionOnLevelUp = (cPair, board) ->
+                board.getSpace(cPair.get(1)).getHeight().ordinal() == level.ordinal() + 1;
+        return conditionOnLevelUp;
     }
 
     private static List<Rule> denyAll() {

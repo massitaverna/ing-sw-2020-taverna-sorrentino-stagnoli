@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-public class ChallengerView implements ModelEventListener, EventSource, Runnable {
+public class ChallengerView implements ModelEventListener, EventSource {
 
     private Scanner s;
     private PrintStream outputStream;
@@ -47,9 +47,6 @@ public class ChallengerView implements ModelEventListener, EventSource, Runnable
         }
     }
 
-    public void run() {
-        chooseNumberOfPlayers();
-    }
 
     public void chooseNumberOfPlayers() {
         int n = 0;
