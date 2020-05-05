@@ -56,7 +56,11 @@ public class ChallengerView implements ModelEventListener, EventSource, Runnable
 
         while(n<1 || n>2){
             outputStream.println("Chose the number of opponents (1 or 2): ");
-            n = s.nextInt();
+            try{
+                n = s.nextInt();
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         }
 
         listener.onNumberOfPlayersChosen(this, n+1);

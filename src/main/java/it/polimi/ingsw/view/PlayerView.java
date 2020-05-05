@@ -74,11 +74,12 @@ public class PlayerView implements ModelEventListener, EventSource {
             String input = s.nextLine();
             Coord c = Coord.convertStringToCoord(input);
 
-            for (List<Coord> list : buildableSpaces.values()){
+            for (Level key : buildableSpaces.keySet()){
+                List<Coord> list = buildableSpaces.get(key);
                 if (list.contains(c)) {
                     validCoord = true;
                     choice++;
-                    possibleLevels.add(getKeyFromValue(buildableSpaces, list));
+                    possibleLevels.add(key);
                 }
             }
 
@@ -110,15 +111,6 @@ public class PlayerView implements ModelEventListener, EventSource {
             else
                 outputStream.println("Please enter a valid coordinate");
         }
-    }
-
-    private Level getKeyFromValue(Map<Level, List<Coord>> buildableSpaces, List<Coord> value){
-        for (Map.Entry<Level, List<Coord>> entry : buildableSpaces.entrySet()){
-            if (entry.getValue().equals(value))
-                return entry.getKey();
-        }
-        // non dovrebbe ritornare null mai
-        return null;
     }
 
     private void askToMove(List<Coord> movableSpaces){
