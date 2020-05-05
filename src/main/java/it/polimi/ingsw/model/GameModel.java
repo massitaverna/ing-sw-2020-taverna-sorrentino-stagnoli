@@ -1,9 +1,7 @@
 package it.polimi.ingsw.model;
 
 import com.google.gson.Gson;
-import it.polimi.ingsw.App;
 import it.polimi.ingsw.exceptions.model.IllegalWorkerChoiceException;
-import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.Listener;
 import it.polimi.ingsw.listeners.ModelEventListener;
@@ -13,7 +11,6 @@ import it.polimi.ingsw.model.handler.RequestHandlerCreator;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.NoSuchFileException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -397,7 +394,7 @@ public class GameModel implements EventSource {
         modelListeners.forEach(l -> l.onBoardChanged(board.clone()));
     }
 
-    //INTERROGAZIONI DALLE VIEW   VANNO TOLTEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE !!!!!!!!!!!!!!!!!
+    //INTERROGAZIONI DALLE VIEW VANNO TOLTEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE !!!!!!!!!!!!!!!!!
     public Board getBoard(){
         return this.board.clone();
     }

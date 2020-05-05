@@ -133,7 +133,7 @@ public class ChallengerView implements ModelEventListener, EventSource, Runnable
         outputStream.println("Choose the starting player: ");
 
         for (int i = 0; i<players.size(); i++) {
-            outputStream.println( (i+1) + players.get(i));
+            outputStream.println( (i+1) + " " + players.get(i));
         }
 
         boolean valid = false;

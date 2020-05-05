@@ -1,7 +1,6 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.view.Client;
-import sun.reflect.generics.scope.Scope;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

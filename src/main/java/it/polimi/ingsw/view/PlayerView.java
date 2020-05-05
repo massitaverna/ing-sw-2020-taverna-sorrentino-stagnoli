@@ -172,7 +172,7 @@ public class PlayerView implements ModelEventListener, EventSource {
 
     @Override
     public void onPlayerAdded(String nickname, int numCurr, int numTot) {
-        outputStream.println(nickname + "has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
+        outputStream.println(nickname + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
     }
 
     @Override
