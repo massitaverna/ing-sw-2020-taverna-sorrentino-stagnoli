@@ -19,6 +19,10 @@ public class RequestHandlerCreator {
     private static final List<Rule> standardRules = new ArrayList<>();
     private static final Map<String, List<Rule>> godRules = new HashMap<>();
 
+    static {
+        initStandardRules();
+    }
+
     public RequestHandlerCreator() {
         this.god = null;
     }
@@ -40,17 +44,20 @@ public class RequestHandlerCreator {
         if (god != null) {
             result.addAll(getGodRules());
         }
-        result.addAll(getStandardRules());
+        result.addAll(standardRules);
 
         return result;
     }
 
+    /*
     private static List<Rule> getStandardRules() {
         if (standardRules.isEmpty()) {
             initStandardRules();
         }
+
         return new ArrayList<>(standardRules);
     }
+    */
 
     private List<Rule> getGodRules() {
 
@@ -183,7 +190,7 @@ public class RequestHandlerCreator {
                     "at construction-time.");
         }
 
-        if (god.equals("Apollo")) { //COMPLETE
+        if (god.equals("Apollo")) { //COMPLETE&TESTED
             Rule r = new Rule();
             r.setPurpose(Purpose.VALIDATION);
             r.setActionType(ActionType.MOVE);
@@ -197,7 +204,7 @@ public class RequestHandlerCreator {
             result.add(r);
         }
 
-        if (god.equals("Artemis")) { //COMPLETE
+        if (god.equals("Artemis")) { //COMPLETE&TESTED
             Rule r = new Rule();
             r.setPurpose(Purpose.GENERATION);
             r.setTarget(Target.MYSELF);
@@ -221,7 +228,7 @@ public class RequestHandlerCreator {
             generatedRules.add(standardRules.get(standardRules.size() - 1));
         }
 
-        if (god.equals("Atlas")) { // COMPLETE
+        if (god.equals("Atlas")) { // COMPLETE&TESTED
             Rule r = new Rule();
             r.setPurpose(Purpose.GENERATION);
             r.setActionType(ActionType.MOVE);
@@ -258,16 +265,28 @@ public class RequestHandlerCreator {
             godRules.put("Demeter", result);
         }*/
 
-        if (god.equals("Hephaestus")) { //SHOULD BE COMPLETE
+        if (god.equals("Hephaestus")) { //COMPLETE&TESTED
             Rule r = new Rule();
             r.setPurpose(Purpose.GENERATION);
-            r.setActionType(ActionType.BUILD);
+            r.setActionType(ActionType.MOVE);
             r.setTarget(Target.MYSELF);
             BiPredicate<Pair<Coord>, Board> condition = (cPair, board) -> true;
             r.setCondition(condition);
-            result.add(r);
 
             List<Rule> generatedRules = new ArrayList<>();
+            r.setGeneratedRules(generatedRules);
+            generatedRules.add(r);
+            result.add(r);
+
+            r = new Rule();
+            r.setPurpose(Purpose.GENERATION);
+            r.setActionType(ActionType.BUILD);
+            r.setTarget(Target.MYSELF);
+            condition = (cPair, board) -> true;
+            r.setCondition(condition);
+            generatedRules.add(r);
+
+            generatedRules = new ArrayList<>();
             r.setGeneratedRules(generatedRules);
 
             r = new Rule();
@@ -336,7 +355,7 @@ public class RequestHandlerCreator {
 
         }
 
-        if (god.equals("Minotaur")) { //COMPLETE
+        if (god.equals("Minotaur")) { //COMPLETE&TESTED
             Rule r = new Rule();
             r.setPurpose(Purpose.VALIDATION);
             r.setActionType(ActionType.MOVE);

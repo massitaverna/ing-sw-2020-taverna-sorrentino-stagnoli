@@ -204,12 +204,6 @@ public class Board implements Cloneable {
             throw new IllegalWorkerActionException("The worker is not initialized.");
         }
 
-        /*
-        //Check that worker w is near newPos
-        if(!(w.getPosition().isNear(newPos))){
-            throw new IllegalWorkerActionException("Cannot move here from that position.");
-        }
-        */
 
         Space currentSpace, newSpace, forceSpace;
         currentSpace = this.board[w.getPosition().x][w.getPosition().y];
@@ -217,19 +211,14 @@ public class Board implements Cloneable {
         forceSpace = this.board[forcePos.x][forcePos.y];
 
         //not space full
-        if ( !(newSpace.isDome()) && !(forceSpace.isOccupied())) {
 
-            w.setPosition(newPos);
-            otherW.setPosition(forcePos);
+        w.setPosition(newPos);
+        otherW.setPosition(forcePos);
 
-            currentSpace.setUnoccupied();
-            newSpace.setOccupied();
-            forceSpace.setOccupied();
+        currentSpace.setUnoccupied();
+        newSpace.setOccupied();
+        forceSpace.setOccupied();
 
-        }
-        else {
-            throw new SpaceFullException("Space is DOME.");
-        }
 
         //TODO : Check for Winning
         boolean win = checkForWin(currentSpace, newSpace);
