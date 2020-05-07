@@ -1,18 +1,13 @@
 /*
-Rep:
-
-actionType != null
-condition != null
-decision == null <==> purpose != VALIDATION
-actionType==BUILD <==> buildLevel != null
-forceDestination != null ==> actionType == MOVE
-forceDestination != null ==> decision == GRANT
-generatedRules == null <==> purpose != GENERATION
-purpose == VALIDATION ==> actionType != END
-purpose == GENERATION <==> target != null
+Fundamental principle of the class:
+IMMUTABILITY
+Every rule is created just once and then all its attributes are NEVER modified.
+Rules are read, discarded and re-added in RuleHandlers, but never modified.
+When a rule is generated and its symbolic condition needs to be transformed into
+a condition, a new rule is generated in place of the original one, preventing the
+original one to be changed. Therefore, other handlers can still use it and use its
+symbolic condition.
  */
-
-
 
 package it.polimi.ingsw.model.handler;
 
@@ -36,6 +31,20 @@ public class Rule {
     private List<Rule> generatedRules;
     private Target target;
     private TriPredicate<Pair<Coord>, Pair<Coord>, Board> symbolicCondition;
+
+    public Rule() {}
+
+    public Rule(Rule rule) {
+        this.purpose = rule.purpose;
+        this.actionType = rule.actionType;
+        this.decision = rule.decision;
+        this.condition = rule.condition;
+        this.forceSpaceFunction = rule.forceSpaceFunction;
+        this.buildLevel = rule.buildLevel;
+        this.generatedRules = rule.generatedRules;
+        this.target = rule.target;
+        this.symbolicCondition = rule.symbolicCondition;
+    }
 
 
     Purpose getPurpose() {
@@ -74,14 +83,19 @@ public class Rule {
     }
 
     List<Rule> getGeneratedRules(Pair<Coord> oldAction) {
+        assert repOk();
         List<Rule> result = new ArrayList<>();
         for (Rule rule : generatedRules) {
+            Rule g = rule;
             if (rule.symbolicCondition != null) {
-                rule.condition = (cPair, board) -> rule.symbolicCondition.test(oldAction, cPair, board);
+                g = new Rule(rule);
+                g.condition = (cPair, board) ->
+                        rule.symbolicCondition.test(oldAction, cPair, board);
+                g.symbolicCondition = null;
             }
-            result.add(rule);
+            g.repOk(); // Recently added
+            result.add(g);
         }
-        assert repOk();
         return result;
     }
 
@@ -107,6 +121,7 @@ public class Rule {
 
     void setCondition(BiPredicate<Pair<Coord>, Board> condition) {
         assert this.condition == null;
+        assert this.symbolicCondition == null; // Recently added
         this.condition = condition;
     }
 
@@ -127,6 +142,7 @@ public class Rule {
 
     void setSymbolicCondition(TriPredicate<Pair<Coord>, Pair<Coord>, Board> symbolicCondition) {
         assert this.symbolicCondition == null;
+        assert this.condition == null; // Recently added
         this.symbolicCondition = symbolicCondition;
     }
 
@@ -139,23 +155,20 @@ public class Rule {
     public String toString() {
         String result;
 
-        if (actionType != null) {
-            result = actionType.name();
-        } else {
-            result = "";
-        }
-
-        result = purpose.name() + result + "rule" + super.toString();
+        result = actionType.name();
+        result = purpose.name() + "_" + actionType.name() + " Rule @ " + Integer.toHexString(hashCode());
         return result;
     }
 
     private boolean repOk() {
         boolean repOk = actionType != null &&
         condition != null &&
+        symbolicCondition == null &&
         iff(decision == null, purpose != Purpose.VALIDATION) &&
         iff(actionType==ActionType.BUILD && purpose == Purpose.VALIDATION, buildLevel != null) &&
+        ifThen(forceSpaceFunction != null, purpose == Purpose.VALIDATION) &&
         ifThen(forceSpaceFunction != null, actionType == ActionType.MOVE) &&
-                ifThen(forceSpaceFunction != null, decision == Decision.GRANT) &&
+        ifThen(forceSpaceFunction != null, decision == Decision.GRANT) &&
         iff(generatedRules == null,purpose != Purpose.GENERATION) &&
         ifThen(purpose == Purpose.VALIDATION, actionType != ActionType.END) &&
         iff(purpose == Purpose.GENERATION, target != null);

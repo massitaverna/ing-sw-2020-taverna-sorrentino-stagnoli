@@ -9,11 +9,12 @@ import java.util.Map;
 
 public interface RequestHandler {
 
-    public void getValidSpaces(Coord current, Board board,
+    void getValidSpaces(Coord current, Board board,
                                List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces,
                                Map<Coord, Coord> forces);
 
-    public void generate(Coord after, ActionType at);
-    public void reset();
+    void generate(Coord after, ActionType at);
+    boolean checkForWin(Coord after, ActionType at);
+    void reset();
 
 }

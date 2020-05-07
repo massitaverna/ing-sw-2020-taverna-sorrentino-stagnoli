@@ -2,17 +2,21 @@ package it.polimi.ingsw;
 
 import it.polimi.ingsw.controller.RealController;
 import it.polimi.ingsw.model.GameModel;
+import it.polimi.ingsw.model.Level;
+import it.polimi.ingsw.model.Space;
 import it.polimi.ingsw.view.ChallengerView;
 import it.polimi.ingsw.view.PlayerView;
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) {
 
-        boolean simulation = false;
+        boolean simulation = true;
+
 
 
 

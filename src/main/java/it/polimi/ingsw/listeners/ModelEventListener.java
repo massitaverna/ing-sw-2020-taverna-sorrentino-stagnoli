@@ -14,6 +14,7 @@ public interface ModelEventListener extends Listener {
     public void onGameReady();
     public void onGodsChosen(List<String> gods);
     public void onPlayerAdded(String nickname, int numCurr, int numTot);
+    public void onMessage(String message);
 
     public void onGodSelection(List<String> gods);
     public void onGodsSelection(List<String> gods, int numPlayers);
@@ -22,6 +23,7 @@ public interface ModelEventListener extends Listener {
 
     public void onMyTurn(List<Coord> selectableWorkers);
     public void onMyAction(List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces, boolean canEndTurn);
+    public void onWin(String winner);
 
     public String getNickname();
 }

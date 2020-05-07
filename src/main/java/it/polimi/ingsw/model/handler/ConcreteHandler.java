@@ -90,6 +90,7 @@ class ConcreteHandler implements RuleHandler {
 
     }
 
+    @Override
     public void generate(ValidationContainer vc, Coord after, ActionType at) {
         Pair<Coord> pair = new Pair<>(vc.getCurrentPosition(), after);
         Board board = vc.getBoard();
@@ -121,6 +122,18 @@ class ConcreteHandler implements RuleHandler {
 
     }
 
+    @Override
+    public boolean handleWinCheckRequest(ValidationContainer vc, Coord after, ActionType at) {
+        Pair<Coord> pair = new Pair<>(vc.getCurrentPosition(), after);
+        Board board = vc.getBoard();
+
+        return rules.stream()
+                .filter(r -> r.getPurpose() == Purpose.WIN)
+                .filter(r -> r.getActionType() == at)
+                .anyMatch(r -> r.getCondition().test(pair, board));
+    }
+
+    @Override
     public void reset() {
         rules = new ArrayList<>(initialRules);
     }

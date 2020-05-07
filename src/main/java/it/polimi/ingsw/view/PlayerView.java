@@ -166,6 +166,10 @@ public class PlayerView implements ModelEventListener, EventSource {
     }
 
     @Override
+    public void onMessage(String message) {
+        outputStream.println(message);
+    }
+    @Override
     public void onGodSelection(List<String> gods) {
 
 
@@ -173,7 +177,7 @@ public class PlayerView implements ModelEventListener, EventSource {
 
         while (!correct){
             outputStream.println("Choose a God, you can use \"[god_name] help\" to read the power of the God: ");
-            for (String g: gods) {
+            for (String g : gods) {
                 outputStream.println("- " + g);
             }
 
@@ -349,5 +353,12 @@ public class PlayerView implements ModelEventListener, EventSource {
         }
 
         //End Menu
+    }
+
+    @Override
+    public void onWin(String winner) {
+        outputStream.println(winner + " won.\nThe game is finished.\n\nThanks for playing!");
+        outputStream.close();
+        s.close();
     }
 }

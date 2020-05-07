@@ -70,7 +70,6 @@ public class Turn implements Cloneable {
 
     public void reset() {
         turnEnded = hasMoved = hasBuilt = false;
-        //No need to reset the collections, since they are always overwritten for every action
     }
 
     public void clear() {

@@ -6,12 +6,10 @@ import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.model.handler.util.Pair;
 import it.polimi.ingsw.model.handler.util.TriPredicate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 public class RequestHandlerCreator {
 
@@ -74,6 +72,8 @@ public class RequestHandlerCreator {
     // Coord after --> cPair.get(1)
 
     private static void initStandardRules() {
+
+        //--------------------------STANDARD MOVE--------------------------
         Rule r = new Rule();
         r.setPurpose(Purpose.VALIDATION);
         r.setDecision(Decision.GRANT);
@@ -143,8 +143,11 @@ public class RequestHandlerCreator {
         condition = (cPair, board) -> true;
         r.setCondition(condition);
         standardRules.add(r);
-        //-------------------------------------------------------------
 
+        //-------------------------WIN RULES---------------------------
+        standardRules.addAll(getStandardWinRules());
+
+        //----------------------BUILD GENERATION-----------------------
         r = new Rule();
         r.setPurpose(Purpose.GENERATION);
         r.setTarget(Target.MYSELF);
@@ -166,6 +169,7 @@ public class RequestHandlerCreator {
         r.setCondition(condition);
         generatedRules.add(r);
 
+        //-----------------------END GENERATION-----------------------
         r = new Rule();
         r.setPurpose(Purpose.GENERATION);
         r.setTarget(Target.MYSELF);
@@ -511,5 +515,34 @@ public class RequestHandlerCreator {
         generatedRules.addAll(denyAll());
 
         return r;
+    }
+
+    public static List<Rule> getStandardWinRules() {
+
+        //TODO: test accurately the correct propagation of these rules
+
+        Rule r = new Rule();
+        r.setPurpose(Purpose.WIN);
+        r.setActionType(ActionType.MOVE);
+        BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
+                board.getSpace(cPair.get(0)).getHeight() == Level.LVL2 &&
+                        board.getSpace(cPair.get(1)).getHeight() == Level.LVL3;
+        r.setCondition(condition);
+
+        List<Rule> rulesForPropagation = Arrays.stream(ActionType.values())
+                .map(at -> {
+                    Rule g = new Rule();
+                    g.setPurpose(Purpose.GENERATION);
+                    g.setActionType(at);
+                    g.setTarget(Target.MYSELF);
+                    g.setCondition((cPair, board) -> true);
+                    return g;
+                }
+                ).collect(Collectors.toList());
+        List<Rule> generatedRules = new ArrayList<>(rulesForPropagation);
+        generatedRules.add(r);
+        rulesForPropagation.forEach(p -> p.setGeneratedRules(generatedRules));
+
+        return generatedRules;
     }
 }

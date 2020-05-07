@@ -1,7 +1,5 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.handler.RequestHandler;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +7,7 @@ public class Player {
 
     private final String nickname;
     private God god;
-    private boolean hasWon;
+    //private boolean hasWon;
     private List<Worker> workersList;
     private Color workerColor;
     private boolean isStartPlayer;
@@ -22,7 +20,7 @@ public class Player {
         this.workersList.add(new Worker(this));
         this.isStartPlayer = false;
         /*this.rules = new Collection<Rule>();*/
-        this.hasWon = false;
+        //this.hasWon = false;
     }
 
     public void setGod(God god){
@@ -70,7 +68,10 @@ public class Player {
     void setAsStartPlayer() {
         isStartPlayer = true;
     }
+
+    /*
     public void win(){
         hasWon = true;
     }
+     */
 }

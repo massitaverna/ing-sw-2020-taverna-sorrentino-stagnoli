@@ -37,6 +37,12 @@ class HandlerAdapter implements RequestHandler {
         ruleHandler.generate(validationContainer, after, at);
     }
 
+    @Override
+    public boolean checkForWin(Coord after, ActionType at) {
+        return ruleHandler.handleWinCheckRequest(validationContainer, after, at);
+    }
+
+    @Override
     public void reset() {
         ruleHandler.reset();
     }

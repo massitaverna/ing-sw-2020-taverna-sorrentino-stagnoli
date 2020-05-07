@@ -82,8 +82,8 @@ public class GameModel implements EventSource {
             inputStream.close();
         }
         catch (IOException e) {
+            System.out.println("Couldn't close the inputStream from \"gods\" file.");
             e.printStackTrace();
-            System.exit(1);
         }
 
         System.out.println("Gods loaded: ");
@@ -151,6 +151,8 @@ public class GameModel implements EventSource {
                 godsList.stream()
                 .filter(god -> gods.contains(god.getName()))
                 .collect(Collectors.toList());
+
+        modelListeners.forEach(l -> l.onGodsChosen(gods));
 
         nextPlayer();
     }
@@ -281,15 +283,6 @@ public class GameModel implements EventSource {
             return;
         }
 
-        /*
-        //TODO: Implementare moveWithForce() nella Board
-        board.getSpace(currentWorker.getPosition()).setUnoccupied();
-        if (turn.getForcesCopy().containsKey(moveChoice)) {
-            Coord forceDest = turn.getForcesCopy().get(moveChoice);
-            board.workerMove(moveChoice, forceDest);
-        }
-         */
-
         if (turn.getForcesCopy().containsKey(moveChoice)) {
             Coord forceDest = turn.getForcesCopy().get(moveChoice);
             board.workerForceMove(currentWorker, moveChoice, forceDest);
@@ -300,7 +293,14 @@ public class GameModel implements EventSource {
 
         turn.hasMoved();
 
-        handlers.get(currentPlayer).generate(moveChoice, ActionType.MOVE);
+        //Check if this action caused the current player to win
+        RequestHandler handler = handlers.get(currentPlayer);
+        if (handler.checkForWin(moveChoice, ActionType.MOVE)) {
+            state = new EndState(this);
+            return;
+        }
+
+        handler.generate(moveChoice, ActionType.MOVE);
 
 
     }
@@ -315,11 +315,18 @@ public class GameModel implements EventSource {
 
         turn.hasBuilt();
 
-        handlers.get(currentPlayer).generate(buildChoice, ActionType.BUILD);
+        //Check if this action caused the current player to win
+        RequestHandler handler = handlers.get(currentPlayer);
+        if (handler.checkForWin(buildChoice, ActionType.BUILD)) {
+            state = new EndState(this);
+            return;
+        }
+
+        handler.generate(buildChoice, ActionType.BUILD);
     }
 
     public void setEnd() {
-        // Logica di aggiornamento del currentPlayer
+
         if (turn.hasEnded()) {
             turn.reset();
             handlers.get(currentPlayer).reset();
@@ -328,10 +335,19 @@ public class GameModel implements EventSource {
         } else {
             turn.setEnded();
             Coord currPosition = currentWorker.getPosition();
-            handlers.get(currentPlayer).generate(currPosition, ActionType.END);
+
+            //Check if this action caused the current player to win
+            RequestHandler handler = handlers.get(currentPlayer);
+            if (handler.checkForWin(currPosition, ActionType.END)) {
+                state = new EndState(this);
+                return;
+            }
+
+            handler.generate(currPosition, ActionType.END);
         }
     }
 
+    /*
     public void setWin(Player p) throws IllegalArgumentException {
         //Check that player p is part of the game
         if( !(this.queue.contains(p)) ){
@@ -339,8 +355,8 @@ public class GameModel implements EventSource {
         }
 
         p.win();
-        //TODO: End of the Game
     }
+    */
 
     public void nextPlayer() {
         //Check the game is ready
@@ -351,7 +367,6 @@ public class GameModel implements EventSource {
         }
     }
 
-    //?????? perchè in player c'è flag isStartPlayer?? va contro principio di incapsulamento
     public boolean hasNewCycleBegun() {
         return currentPlayer.isStartPlayer();
     }
@@ -373,18 +388,16 @@ public class GameModel implements EventSource {
             if (!turn.canEndTurn()) {
                 board = turn.getInitialBoard();
                 notifyBoardChanged();
+                notifyMessage(currentPlayer + " couldn't complete the turn and has been " +
+                        "taken back to the beginning of the turn.");
                 turn.reset();
                 currHandler.reset();
                 nextAction();
-                return;
-            }
-            setEnd();
-            if (hasNewTurnBegun()) {
+            } else { // canEndTurn == true
+                setEnd();
                 nextStep();
-                return;
-            } else {
-                nextAction();
             }
+            return;
         }
 
         notifyAction();
@@ -399,6 +412,10 @@ public class GameModel implements EventSource {
 
     private void notifyBoardChanged() {
         modelListeners.forEach(l -> l.onBoardChanged(board.clone()));
+    }
+
+    private void notifyMessage(String message) {
+        modelListeners.forEach(l -> l.onMessage(message));
     }
 
     //INTERROGAZIONI DALLE VIEW VANNO TOLTEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE !!!!!!!!!!!!!!!!!
@@ -436,6 +453,7 @@ public class GameModel implements EventSource {
                 .filter(listener -> listener.getNickname().equals(nickname))
                 .findFirst().orElse(null);
     }
+
 
     List<Worker> getSelectableWorkers() {
         RequestHandler currHandler = handlers.get(currentPlayer);
