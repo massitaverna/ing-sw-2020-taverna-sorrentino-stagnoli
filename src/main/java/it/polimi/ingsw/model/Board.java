@@ -407,6 +407,7 @@ public class Board implements Cloneable {
                 else
                     workerLine = workerLine + "         |";
 
+
                 switch (board[i][j].getHeight()) {
                     case LVL3:
                         lvl3Line = lvl3Line + "   ***   |";
@@ -433,6 +434,7 @@ public class Board implements Cloneable {
                         break;
                 }
             }
+
 
             workerLine = workerLine + "\n";
             lvl3Line = lvl3Line + "\n";

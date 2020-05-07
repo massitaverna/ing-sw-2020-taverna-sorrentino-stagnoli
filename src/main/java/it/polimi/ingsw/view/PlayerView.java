@@ -145,6 +145,8 @@ public class PlayerView implements ModelEventListener, EventSource {
     @Override
     public void onBoardChanged(Board board) {
         outputStream.println(board);
+        //outputStream.println(decorateBoard(board, info, 5));
+        //TODO: finish board decoration
     }
 
     @Override
@@ -360,5 +362,20 @@ public class PlayerView implements ModelEventListener, EventSource {
         outputStream.println(winner + " won.\nThe game is finished.\n\nThanks for playing!");
         //outputStream.close(); Should be closed, but commented for simulation
         s.close();
+    }
+
+    private String decorateBoard(Board board, List<String> toBeAdded, int offset) {
+        String[] splitBoard = board.toString().split("\n");
+
+        for (String s : toBeAdded) {
+            splitBoard[toBeAdded.indexOf(s) + offset] += "\t\t\t" + s;
+        }
+
+        String newBoard = "";
+        for (String s : splitBoard) {
+            newBoard += s + "\n";
+        }
+
+        return newBoard;
     }
 }
