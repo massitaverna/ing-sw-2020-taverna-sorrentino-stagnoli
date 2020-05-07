@@ -48,5 +48,9 @@ public class App {
         view2.askForNickname(new ArrayList<>());
         view3.askForNickname(new ArrayList<>());
 
+
+
+        System.out.println("Reached end of main()");
+
     }
 }

@@ -97,6 +97,12 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
     }
 
     @Override
+    public void onMessage(String message) {
+        //TODO: added this event in interface ModelEventListener.
+        // @Nico/Luca: do you need it?
+    }
+
+    @Override
     public void onGodSelection(List<String> gods) {
         List<Object> objects = new ArrayList<>();
         objects.add("onGodSelection");
@@ -145,6 +151,12 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         objects.add(buildableSpaces);
         objects.add(canEndTurn);
         sendObjectToClient(objects);
+    }
+
+    @Override
+    public void onWin(String winner) {
+        //TODO: added this event in interface ModelEventListener.
+        // @Nico/Luca: do you need it?
     }
 
     @Override

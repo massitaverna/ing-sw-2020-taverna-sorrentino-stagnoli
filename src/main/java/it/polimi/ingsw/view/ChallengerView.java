@@ -93,6 +93,11 @@ public class ChallengerView implements ModelEventListener, EventSource {
     }
 
     @Override
+    public void onMessage(String message) {
+        view.onMessage(message);
+    }
+
+    @Override
     public void onGodSelection(List<String> gods) {
         view.onGodSelection(gods);
     }
@@ -170,6 +175,11 @@ public class ChallengerView implements ModelEventListener, EventSource {
     @Override
     public void onMyAction(List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces, boolean canEndTurn) {
         view.onMyAction(movableSpaces, buildableSpaces, canEndTurn);
+    }
+
+    @Override
+    public void onWin(String winner) {
+        view.onWin(winner);
     }
 
     public String getNickname() {

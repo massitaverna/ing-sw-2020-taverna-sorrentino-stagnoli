@@ -358,7 +358,7 @@ public class PlayerView implements ModelEventListener, EventSource {
     @Override
     public void onWin(String winner) {
         outputStream.println(winner + " won.\nThe game is finished.\n\nThanks for playing!");
-        outputStream.close();
+        //outputStream.close(); Should be closed, but commented for simulation
         s.close();
     }
 }
