@@ -70,44 +70,47 @@ public class PlayerView implements ModelEventListener, EventSource {
 
         while (!validCoord){
             String input = s.nextLine();
-            Coord c = Coord.convertStringToCoord(input);
-
-            for (Level key : buildableSpaces.keySet()){
-                List<Coord> list = buildableSpaces.get(key);
-                if (list.contains(c)) {
-                    validCoord = true;
-                    choice++;
-                    possibleLevels.add(key);
-                }
-            }
-
-            if(validCoord){
-                if(choice == 1)
-                    listener.onBuildChosen(this, c, possibleLevels.get(0));
-                else{
-                    outputStream.println("What level would you like to build?");
-                    for (Level l : possibleLevels){
-                        outputStream.println("- " + l);
+            try{
+                Coord c = Coord.convertStringToCoord(input);
+                for (Level key : buildableSpaces.keySet()){
+                    List<Coord> list = buildableSpaces.get(key);
+                    if (list.contains(c)) {
+                        validCoord = true;
+                        choice++;
+                        possibleLevels.add(key);
                     }
-                    while (!validLevel){
-                        String inputLvl = s.nextLine();
+                }
 
+                if(validCoord){
+                    if(choice == 1)
+                        listener.onBuildChosen(this, c, possibleLevels.get(0));
+                    else{
+                        outputStream.println("What level would you like to build?");
                         for (Level l : possibleLevels){
-                            if (l.equals(Level.valueOf(inputLvl.toUpperCase()))){
-                                validLevel = true;
-                                break;
-                            }
+                            outputStream.println("- " + l);
                         }
+                        while (!validLevel){
+                            String inputLvl = s.nextLine();
 
-                        if(validLevel)
-                            listener.onBuildChosen(this, c, Level.valueOf(inputLvl.toUpperCase()));
-                        else
-                            outputStream.println("Please enter a valid level");
+                            for (Level l : possibleLevels){
+                                if (l.equals(Level.valueOf(inputLvl.toUpperCase()))){
+                                    validLevel = true;
+                                    break;
+                                }
+                            }
+
+                            if(validLevel)
+                                listener.onBuildChosen(this, c, Level.valueOf(inputLvl.toUpperCase()));
+                            else
+                                outputStream.println("Please enter a valid level");
+                        }
                     }
                 }
+                else
+                    outputStream.println("Please enter a valid coordinate");
+            } catch (Exception e) {
+                outputStream.println("Invalid input");
             }
-            else
-                outputStream.println("Please enter a valid coordinate");
         }
     }
 
@@ -117,15 +120,19 @@ public class PlayerView implements ModelEventListener, EventSource {
 
         while (!valid){
             String input = s.nextLine();
-            Coord c = Coord.convertStringToCoord(input);
+            try{
+                Coord c = Coord.convertStringToCoord(input);
+                if (movableSpaces.contains(c))
+                    valid = true;
 
-            if (movableSpaces.contains(c))
-                valid = true;
+                if(valid)
+                    listener.onMoveChosen(this, c);
+                else
+                    outputStream.println("Please enter a valid coordinate");
+            } catch (Exception e) {
+                outputStream.println("Invalid input");
+            }
 
-            if(valid)
-                listener.onMoveChosen(this, c);
-            else
-                outputStream.println("Please enter a valid coordinate");
         }
     }
 
@@ -222,41 +229,25 @@ public class PlayerView implements ModelEventListener, EventSource {
 
     @Override
     public void onMyInitialization(List<Coord> freeSpaces) {
-        /*
-        int i = 0;
-        while (i<2) {
-            if (i == 0)
-                outputStream.println("Where do you want to place the first worker?");
-            if (i == 1)
-                outputStream.println("Where do you want to place the second worker?");
+        boolean valid = false;
+        outputStream.println("Where do you want to place your worker?");
+        while (!valid) {
             String input  = s.nextLine();
-            Coord c = Coord.convertStringToCoord(input);
-
-            for (Coord space : freeSpaces){
-                if (c.equals(space)){
+            try{
+                Coord c = Coord.convertStringToCoord(input);
+                if (freeSpaces.contains(c)){
                     try{
+                        valid = true;
                         listener.onWorkerInitialization(this, c);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    i++;
                 }
-            }
-        }
-         */
-
-        outputStream.println("Where do you want to place your worker?");
-        String input  = s.nextLine();
-        //TODO: check for invalid format of coordinate
-        Coord c = Coord.convertStringToCoord(input);
-
-        if (freeSpaces.contains(c)){
-            try{
-                listener.onWorkerInitialization(this, c);
             } catch (Exception e) {
-                e.printStackTrace();
+                outputStream.println("Invalid input");
             }
         }
+
     }
 
     @Override
@@ -267,21 +258,21 @@ public class PlayerView implements ModelEventListener, EventSource {
         while (!correct){
             outputStream.println("Please select the worker to use in this turn, using its position: ");
             String input = s.nextLine();
-            Coord c = Coord.convertStringToCoord(input);
+            try {
+                Coord c = Coord.convertStringToCoord(input);
 
-            for(Coord selectable : selectableWorkers){
-                if (selectable.equals(c)){
+                if (selectableWorkers.contains(c))
                     correct = true;
-                    break;
-                }
-            }
 
-            if (correct){
-                try{
-                    listener.onWorkerChosen(this, c);
-                } catch (Exception e){
-                    e.printStackTrace();
+                if (correct){
+                    try{
+                        listener.onWorkerChosen(this, c);
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
+            } catch (Exception e) {
+                outputStream.println("Invalid input");
             }
         }
     }
