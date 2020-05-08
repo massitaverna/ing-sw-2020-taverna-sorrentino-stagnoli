@@ -1,13 +1,12 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.server.ClientConnection;
-import it.polimi.ingsw.view.RemotePlayerView;
+import it.polimi.ingsw.server.Connection;
 
 import java.util.List;
 
 public class RemoteChallengerView extends RemotePlayerView{
 
-    public RemoteChallengerView(String nickname, ClientConnection cc) {
+    public RemoteChallengerView(String nickname, Connection cc) {
         super(nickname, cc);
     }
 

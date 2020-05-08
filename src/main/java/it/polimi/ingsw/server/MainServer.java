@@ -1,7 +1,5 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.view.Client;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -10,7 +8,6 @@ import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class MainServer {
@@ -62,7 +59,7 @@ public class MainServer {
                 //ask the client for name and numPlayers (2 or 3)
                 try {
                     while (nickname == null || (numPlayers != 2 && numPlayers != 3)) {
-                        out.writeObject("challanger");
+                        out.writeObject("challenger");
                         out.flush();
                         out.writeObject("?nickname");
                         out.flush();
@@ -98,7 +95,7 @@ public class MainServer {
                 boolean validNickname = false;
 
                 try {
-                    out.writeObject("!challanger");
+                    out.writeObject("!challenger");
                     out.flush();
                     while (nickname == null || !validNickname) {
                         List<String> nicknames = firstFreeLobby.getPlayersNicknames();

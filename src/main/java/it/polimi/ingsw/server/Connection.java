@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 //                            To send coming messages (from the client) to the listener (the RemoteView)
-public class ClientConnection extends Observable<Object> implements Runnable {
+public class Connection extends Observable<Object> implements Runnable {
 
     private Socket socket;
     private ObjectOutputStream out;
@@ -20,9 +20,20 @@ public class ClientConnection extends Observable<Object> implements Runnable {
 
     private boolean active = true;
 
-    public ClientConnection(Socket socket, Lobby lobby) {
+    public Connection(Socket socket, Lobby lobby) {
         this.socket = socket;
         this.lobby = lobby;
+        try {
+            in = new ObjectInputStream(socket.getInputStream());
+            out = new ObjectOutputStream(socket.getOutputStream());
+        }catch (IOException e){
+            e.printStackTrace();
+            this.active = false;
+        }
+    }
+
+    public Connection(Socket socket){
+        this.socket = socket;
         try {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());

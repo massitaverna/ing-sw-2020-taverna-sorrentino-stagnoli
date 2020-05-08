@@ -8,7 +8,7 @@ import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.observer.*;
-import it.polimi.ingsw.server.ClientConnection;
+import it.polimi.ingsw.server.Connection;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,14 +27,14 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         }
     }
 
-    private ClientConnection clientConnection;
+    private Connection clientConnection;
     private Object receivedObject;
 
     private String nickname;
     private PlayerViewEventListener controller;
     private String waitStatus;
 
-    public RemotePlayerView(String nickname, ClientConnection cc){
+    public RemotePlayerView(String nickname, Connection cc){
         this.clientConnection = cc;
         //when a message arrives from the client, handle with my MessageReceiver
         this.clientConnection.addObserver(new MessageReceiver());
@@ -42,7 +42,7 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         this.nickname = nickname;
     }
 
-    public ClientConnection getClientConnection(){
+    public Connection getClientConnection(){
         return this.clientConnection;
     }
 

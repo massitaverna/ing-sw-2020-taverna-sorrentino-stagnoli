@@ -46,7 +46,7 @@ public class Lobby {
 
         //if it is the first player coming, he is the challenger
         if(this.playersViews.size() == 0){
-            this.challengerView = new RemoteChallengerView(nickname, new ClientConnection(socket, this));
+            this.challengerView = new RemoteChallengerView(nickname, new Connection(socket, this));
             //add to the list of players
             this.playersViews.add(challengerView);
             //pass the controller to make the challenger view to add it as a listener
@@ -58,7 +58,7 @@ public class Lobby {
         }
         //if not the first player, he is a normal player
         else {
-            RemotePlayerView playerView = new RemotePlayerView(nickname, new ClientConnection(socket, this));
+            RemotePlayerView playerView = new RemotePlayerView(nickname, new Connection(socket, this));
             //add to the list of players
             this.playersViews.add(playerView);
             //pass the controller to make the view to add it as listener
@@ -80,7 +80,7 @@ public class Lobby {
         this.controller.onNumberOfPlayersChosen(this.challengerView, numPlayers);
     }
 
-    public synchronized void deregisterConnection(ClientConnection cc){
+    public synchronized void deregisterConnection(Connection cc){
         //game is ended, goodbye
         for(RemotePlayerView v: this.playersViews){
             v.sendObjectToClient("AZZZ");
