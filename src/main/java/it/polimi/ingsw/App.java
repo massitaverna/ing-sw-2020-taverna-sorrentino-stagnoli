@@ -17,9 +17,6 @@ public class App {
 
         boolean simulation = true;
 
-
-
-
         GameModel model = new GameModel();
         RealController controller = new RealController(model);
         ChallengerView view1 = new ChallengerView();

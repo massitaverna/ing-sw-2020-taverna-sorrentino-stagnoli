@@ -182,6 +182,13 @@ public class PlayerView implements ModelEventListener, EventSource {
     public void onGodSelection(List<String> gods) {
 
 
+//            if (input.substring(input.length() - 4).toLowerCase().equals("help")){
+//                // model needs to handle wrong deities names
+//                String desc = model.getDescriptionByGodName(input.substring(0, input.length() - 5));
+//                outputStream.println(desc);
+//            } DA METTERE LATO CLIENT NON REMOTE VIEW
+
+
         boolean correct = false;
 
         while (!correct){
@@ -192,11 +199,6 @@ public class PlayerView implements ModelEventListener, EventSource {
 
             String input = s.nextLine();
 
-//            if (input.substring(input.length() - 4).toLowerCase().equals("help")){
-//                // model needs to handle wrong deities names
-//                String desc = model.getDescriptionByGodName(input.substring(0, input.length() - 5));
-//                outputStream.println(desc);
-//            } DA METTERE LATO CLIENT NON REMOTE VIEW
 
             for(String g : gods){
                 if (input.toLowerCase().equals(g.toLowerCase())){

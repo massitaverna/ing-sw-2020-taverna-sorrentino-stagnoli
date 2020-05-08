@@ -75,13 +75,13 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
 
     @Override
     public void onGameReady() {
-        sendObjectToClient("OnGameReady");
+        sendObjectToClient("onGameReady");
     }
 
     @Override
     public void onGodsChosen(List<String> gods) {
         List<Object> objects = new ArrayList<>();
-        objects.add("OnGodsChosen");
+        objects.add("onGodsChosen");
         objects.add(gods);
         sendObjectToClient(objects);
     }
