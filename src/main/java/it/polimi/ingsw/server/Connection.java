@@ -91,8 +91,11 @@ public class Connection extends Observable<Object> implements Runnable {
                 Object received = this.in.readObject();
                 notify(received);
             }
-            //disconnect the client, end of the game
-            lobby.deregisterConnection(this);
+
+            //disconnect the client, end of the game (if in server)
+            if(lobby != null) {
+                lobby.deregisterConnection(this);
+            }
         } catch (IOException | NoSuchElementException | ClassNotFoundException e) {
             System.err.println("Error!" + e.getMessage());
         }finally{

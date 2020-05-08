@@ -69,13 +69,17 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
 
     @Override
     public void onBoardChanged(Board board) {
-        //serializza la board
-        //manda messaggio
+        List<Object> objects = new ArrayList<>();
+        objects.add("onBoardChanged");
+        objects.add(board);
+        sendObjectToClient(objects);
     }
 
     @Override
     public void onGameReady() {
-        sendObjectToClient("onGameReady");
+        List<Object> objects = new ArrayList<>();
+        objects.add("onGameReady");
+        sendObjectToClient(objects);
     }
 
     @Override

@@ -2,6 +2,7 @@ package it.polimi.ingsw.view;
 
 import it.polimi.ingsw.server.Connection;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RemoteChallengerView extends RemotePlayerView{
@@ -17,11 +18,18 @@ public class RemoteChallengerView extends RemotePlayerView{
 
     @Override
     public void onGodsSelection(List<String> gods, int numPlayers) {
-
+        List<Object> objects = new ArrayList<>();
+        objects.add("OnGodsSelection");
+        objects.add(gods);
+        objects.add(numPlayers);
+        sendObjectToClient(objects);
     }
 
     @Override
     public void onStartPlayerSelection(List<String> players) {
-
+        List<Object> objects = new ArrayList<>();
+        objects.add("OnStartPlayerSelection");
+        objects.add(players);
+        sendObjectToClient(objects);
     }
 }

@@ -77,6 +77,9 @@ public class MainServer {
                     //the player is the challanger
                     newLobby.addPlayer(nickname, socket);
                     newLobby.setNumPlayers(numPlayers);
+
+                    out.writeObject("ok");
+                    out.flush();
                 }
                 //connection interrupted
                 catch (IOException e) {
@@ -93,11 +96,17 @@ public class MainServer {
                 //ask the client until he choose a valid nickname
                 String nickname = null;
                 boolean validNickname = false;
-
                 try {
                     out.writeObject("!challenger");
                     out.flush();
                     while (nickname == null || !validNickname) {
+
+                        //another player could has been faster than this player
+                        if(firstFreeLobby.isFull()){
+                            out.writeObject("fullLobby");
+                            out.flush();
+                        }
+
                         List<String> nicknames = firstFreeLobby.getPlayersNicknames();
                         out.writeObject("Players already in the lobby: \n");
                         for (String name : nicknames) {
@@ -111,6 +120,10 @@ public class MainServer {
                         //note that if two clients are trying to connect in the same moment, they could choose the same nickname
                         //only the faster client will manage to connect
                         validNickname = firstFreeLobby.addPlayer(nickname, socket);
+                        if(validNickname) {
+                            out.writeObject("ok");
+                            out.flush();
+                        }
                     }
                 }
                 //connection interrupted

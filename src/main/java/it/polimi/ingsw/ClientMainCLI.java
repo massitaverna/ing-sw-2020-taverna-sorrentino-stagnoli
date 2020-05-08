@@ -76,6 +76,8 @@ public class ClientMainCLI
             }
         }
         if(in.readObject().equals("ok")){
+            in.close();
+            out.close();
             ClientCLI cli = new ClientCLI(new Connection(socket));
             cli.run();
         } else {

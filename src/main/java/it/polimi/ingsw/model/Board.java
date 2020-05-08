@@ -2,10 +2,13 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.model.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Board implements Cloneable {
+public class Board implements Cloneable, Serializable {
+
+    private static final long serialVersionUID = 2L;
 
     private static final int BOARD_SIZE = 5;
     private Space[][] board;
