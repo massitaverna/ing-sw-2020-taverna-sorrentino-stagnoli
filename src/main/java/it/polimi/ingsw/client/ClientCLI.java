@@ -1,5 +1,8 @@
 package it.polimi.ingsw.client;
 
+import it.polimi.ingsw.model.Board;
+import it.polimi.ingsw.model.Coord;
+import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.observer.Observer;
 import it.polimi.ingsw.server.Connection;
 import jdk.jshell.Snippet;
@@ -8,6 +11,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -29,11 +33,15 @@ public class ClientCLI {
 
     private Object receivedObject;
     private Connection serverConnection;
+
     private String nickname;
+    private boolean isChallenger;
 
     public ClientCLI(Connection serverConnection){
+        //initialize connection object to send/receive objects from the server
         this.serverConnection = serverConnection;
         this.serverConnection.addObserver(new MessageReceiver());
+
         this.outputStream = new PrintStream(System.out);
         this.s = new Scanner(System.in);
     }
@@ -50,7 +58,8 @@ public class ClientCLI {
 
         switch (event) {
             case "onBoardChanged":
-                outputStream.println(objs.get(1));
+                Board b = (Board)objs.get(0);
+                outputStream.println(b.toString());
                 break;
 
             case "onGameReady":
@@ -72,11 +81,56 @@ public class ClientCLI {
                 outputStream.println(nickname + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
                 break;
 
+            case "onMessage":
+                handleGameMessage();
+                break;
+
             case "onGodSelection":
                 List<String> godsForSelection = (List<String>) objs.get(1);
                 onGodSelection(godsForSelection);
+                break;
 
+            case "onGodsSelection":
+                List<String> selectedGods = (List<String>) objs.get(1);
+                int numPlayers = (int) objs.get(2);
+                selectedGods.forEach(g -> System.out.println("- " + g));
+                break;
+
+            case "onStartPlayerSelection":
+                if(isChallenger){
+                    //TODO: ask the challenger to choose starting player
+                }
+                else {
+                    System.out.println("Challenger is choosing the starting player");
+                }
+                break;
+
+            case "onMyInitialization":
+                List<Coord> freeSpaces = (List<Coord>) objs.get(1);
+                //TODO: ask the player to initialize workers
+                break;
+
+            case "onMyTurn":
+                List<Coord> selectableWorkers = (List<Coord>) objs.get(1);
+                //TODO: ask the player to choose the worker for his turn
+                break;
+
+            case "onMyAction":
+                List<Coord> movableSpaces = (List<Coord>) objs.get(1);
+                Map<Level, List<Coord>> buildableSpaces = (Map<Level, List<Coord>>) objs.get(2);
+                boolean canEndTurn = (boolean) objs.get(3);
+                //TODO: ask the player to make an action
+                break;
+
+            case "onWin":
+                String winner = (String)objs.get(1);
+                outputStream.println("The winner is: " + winner);
+                //TODO: end of the game
         }
+
+    }
+
+    private void handleGameMessage(){
 
     }
 

@@ -1,14 +1,13 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.listeners.EventSource;
-import it.polimi.ingsw.listeners.Listener;
-import it.polimi.ingsw.listeners.ModelEventListener;
-import it.polimi.ingsw.listeners.PlayerViewEventListener;
+import it.polimi.ingsw.exceptions.controller.IllegalPlayerException;
+import it.polimi.ingsw.listeners.*;
 import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.observer.*;
 import it.polimi.ingsw.server.Connection;
+import org.hamcrest.CoreMatchers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +27,11 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
     }
 
     private Connection clientConnection;
-    private Object receivedObject;
+    protected Object receivedObject;
 
     private String nickname;
-    private PlayerViewEventListener controller;
-    private String waitStatus;
+
+    protected PlayerViewEventListener controller;
 
     public RemotePlayerView(String nickname, Connection cc){
         this.clientConnection = cc;
@@ -57,7 +56,45 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
 
     //this method is fired when an object is received from the client
     protected void handleMessageReceived() {
-        //insert code here
+        List<Object> objects;
+        if(receivedObject instanceof List)
+            objects = (List<Object>)receivedObject;
+        else {
+            System.out.println("Something went wrong in handling received message");
+            return;
+        }
+
+        //the first object received is always the event
+        String event = (String) objects.get(0);
+        switch (event) {
+            case "onGodChosen":
+                String god = (String) objects.get(1);
+                try{
+                    controller.onGodChosen(this, god);
+                }catch (IllegalPlayerException e){ System.out.println("Illegal Player"); }
+                break;
+            case "onWorkerInitialization":
+                Coord choice = (Coord) objects.get(1);
+                controller.onWorkerInitialization(this, choice);
+                break;
+            case "onWorkerChosen":
+                Coord workerPos = (Coord) objects.get(1);
+                controller.onWorkerChosen(this, workerPos);
+                break;
+            case "onMoveChosen":
+                Coord moveChoice = (Coord) objects.get(1);
+                controller.onMoveChosen(this, moveChoice);
+                break;
+            case "onBuildChosen":
+                Coord buildChoice = (Coord) objects.get(1);
+                Level level = (Level) objects.get(2);
+                controller.onBuildChosen(this, buildChoice, level);
+                break;
+            case "skipAction":
+                controller.skipAction(this);
+            default:
+                break;
+        }
     }
 
     //used to send objects to the client through the ClientConnection
@@ -66,7 +103,6 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
     }
 
     //Model Events:
-
     @Override
     public void onBoardChanged(Board board) {
         List<Object> objects = new ArrayList<>();
@@ -102,8 +138,10 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
 
     @Override
     public void onMessage(String message) {
-        //TODO: added this event in interface ModelEventListener.
-        // @Nico/Luca: do you need it?
+        List<Object> objects = new ArrayList<>();
+        objects.add("onMessage");
+        objects.add(message);
+        sendObjectToClient(objects);
     }
 
     @Override
@@ -159,8 +197,10 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
 
     @Override
     public void onWin(String winner) {
-        //TODO: added this event in interface ModelEventListener.
-        // @Nico/Luca: do you need it?
+        List<Object> objects = new ArrayList<>();
+        objects.add("onWin");
+        objects.add(winner);
+        sendObjectToClient(objects);
     }
 
     @Override
