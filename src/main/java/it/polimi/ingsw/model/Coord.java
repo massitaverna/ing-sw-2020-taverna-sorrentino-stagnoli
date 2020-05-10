@@ -27,7 +27,7 @@ public class Coord implements Serializable {
 
     public boolean isNear(Coord c) throws InvalidCoordinatesException {
         if( !Coord.validCoord(this) ){
-            throw new InvalidCoordinatesException("Mehtod isNear() has been called on invalid coordinates.");
+            throw new InvalidCoordinatesException("Method isNear() has been called on invalid coordinates.");
         }
         if( !Coord.validCoord(c) ){
             throw new InvalidCoordinatesException("Invalid coordinates given.");
@@ -51,14 +51,18 @@ public class Coord implements Serializable {
         return new Coord(this.x + c.x, this.y + c.y);
     }
 
-    public static Coord convertStringToCoord(String input) throws IllegalArgumentException{
-        if (input.length() > 2 || input.length() == 0)
+    public static Coord convertStringToCoord(String input) throws IllegalArgumentException {
+        if (input.length() != 2)
             throw new IllegalArgumentException();
         input = input.toUpperCase();
         int x = (input.charAt(0) - 'A');
         int y = (input.charAt(1) - '1');
 
-        return new Coord(x, y);
+        Coord result = new Coord(x, y);
+        if (!validCoord(result)) {
+            throw new IllegalArgumentException();
+        }
+        return result;
     }
 
     @Override

@@ -5,7 +5,6 @@ import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.observer.Observer;
 import it.polimi.ingsw.server.Connection;
-import jdk.jshell.Snippet;
 
 import java.io.OutputStream;
 import java.io.PrintStream;

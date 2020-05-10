@@ -7,7 +7,6 @@ import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.observer.*;
 import it.polimi.ingsw.server.Connection;
-import org.hamcrest.CoreMatchers;
 
 import java.util.ArrayList;
 import java.util.List;

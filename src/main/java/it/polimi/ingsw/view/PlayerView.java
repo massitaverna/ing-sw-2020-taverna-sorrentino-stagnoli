@@ -129,7 +129,7 @@ public class PlayerView implements ModelEventListener, EventSource {
                     listener.onMoveChosen(this, c);
                 else
                     outputStream.println("Please enter a valid coordinate");
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 outputStream.println("Invalid input");
             }
 
