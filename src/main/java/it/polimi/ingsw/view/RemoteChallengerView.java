@@ -12,6 +12,7 @@ public class RemoteChallengerView extends RemotePlayerView{
         super(nickname, cc);
     }
 
+    /*
     @Override
     protected void handleMessageReceived() {
         super.handleMessageReceived();
@@ -41,7 +42,7 @@ public class RemoteChallengerView extends RemotePlayerView{
         }
     }
 
-   /* @Override
+   *//* @Override
     public void onGodsSelection(List<String> gods, int numPlayers) {
         List<Object> objects = new ArrayList<>();
         objects.add("onGodsSelection");

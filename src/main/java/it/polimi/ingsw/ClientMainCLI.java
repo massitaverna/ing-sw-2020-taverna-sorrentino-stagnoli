@@ -14,7 +14,7 @@ import java.util.Scanner;
 
 public class ClientMainCLI
 {
-    public static void main( String[] args ) throws IOException, ClassNotFoundException{
+    public static void main( String[] args ) throws IOException, ClassNotFoundException {
 
         String ip = "127.0.0.1";
         int port = 12345;
@@ -24,13 +24,18 @@ public class ClientMainCLI
         ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
         ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 
+        /*while (true) {
+            String messsage = (String) in.readObject();
+
+        }*/
+
         String challenger = (String) in.readObject();
-        if (challenger.equals("challenger")){ // YOU ARE THE CHALLENGER
+        if (challenger.equals("challenger")) { // YOU ARE THE CHALLENGER
             // NICKNAME
             in.readObject(); // should be "?nickname"
             System.out.println("What's your nickname?");
             String input = "";
-            while (input.equals("")){
+            while (input.equals("")) {
                 System.out.println("Your nickname can't be an empty string");
                 input = s.nextLine();
             }
@@ -41,7 +46,7 @@ public class ClientMainCLI
             in.readObject(); // should be "?numPlayers"
             System.out.println("Choose the number of opponents (1 or 2):");
             int numInput = 0;
-            while(numInput != 1 && numInput != 2){
+            while (numInput != 1 && numInput != 2) {
                 try {
                     numInput = s.nextInt();
                 } catch (Exception e) {
@@ -56,14 +61,14 @@ public class ClientMainCLI
         } else { // YOU ARE NOT THE CHALLENGER
             Object o = in.readObject();
             List<String> nicknamesInLobby;
-            if (o instanceof List){
+            if (o instanceof List) {
                 nicknamesInLobby = (List<String>) o;
                 in.readObject(); // should be "?nickname"
                 System.out.println("What's your nickname?");
                 String input = "";
-                while (nicknamesInLobby.contains(input) || input.equals("")){
+                while (nicknamesInLobby.contains(input) || input.equals("")) {
                     input = s.nextLine();
-                    if(nicknamesInLobby.contains(input))
+                    if (nicknamesInLobby.contains(input))
                         System.out.println("Invalid input: nickname already in the lobby.");
                     else if (input.equals(""))
                         System.out.println("Invalid input: nickname can't be an empty string.");
@@ -75,7 +80,7 @@ public class ClientMainCLI
                 return;
             }
         }
-        if(in.readObject().equals("ok")){
+        if (in.readObject().equals("ok")) {
             in.close();
             out.close();
             ClientCLI cli = new ClientCLI(new Connection(socket));

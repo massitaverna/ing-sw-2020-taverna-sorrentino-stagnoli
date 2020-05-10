@@ -67,6 +67,7 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         //the first object received is always the event
         String event = (String) objects.get(0);
         switch (event) {
+            //player events
             case "onGodChosen":
                 String god = (String) objects.get(1);
                 try{
@@ -92,7 +93,22 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
                 break;
             case "skipAction":
                 controller.skipAction(this);
+                break;
+            //challenger events
+            case "onGodsChosen":
+                List<String> gods = (List)objects.get(1);
+                ((ChallengerViewEventListener)controller).onGodsChosen(this, gods);
+                break;
+            case "onStartPlayerChosen":
+                String startPlayer = (String)objects.get(1);
+                ((ChallengerViewEventListener)controller).onStartPlayerChosen(this, startPlayer);
+                break;
+            //client ping check
+            case "onPing":
+                //TODO: client ping succesful
+                break;
             default:
+                System.out.println("Event message not recognized.");
                 break;
         }
     }

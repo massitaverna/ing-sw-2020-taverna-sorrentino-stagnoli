@@ -67,20 +67,14 @@ public class Connection extends Observable<Object> implements Runnable {
     }
 
     public synchronized void closeConnection() {
-        send("Connection closed!");
         try {
             socket.close();
         } catch (IOException e) {
             System.err.println("Error when closing socket!");
         }
         active = false;
-    }
-
-    private void close() {
-        closeConnection();
         System.out.println("Deregistering client...");
         lobby.deregisterConnection(this);
-        System.out.println("Done!");
     }
 
     @Override
@@ -96,10 +90,11 @@ public class Connection extends Observable<Object> implements Runnable {
             if(lobby != null) {
                 lobby.deregisterConnection(this);
             }
+
         } catch (IOException | NoSuchElementException | ClassNotFoundException e) {
             System.err.println("Error!" + e.getMessage());
         }finally{
-            close();
+            closeConnection();
         }
     }
 }

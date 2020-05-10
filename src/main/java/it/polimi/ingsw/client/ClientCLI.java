@@ -14,7 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class ClientCLI {
 
@@ -126,12 +128,25 @@ public class ClientCLI {
                 String winner = (String)objs.get(1);
                 outputStream.println("The winner is: " + winner);
                 //TODO: end of the game
+                break;
+
+            default:
+                outputStream.println("Event message not recognized.");
+                break;
         }
 
     }
 
     private void handleGameMessage(){
-
+        String message = (String)((List)receivedObject).get(1);
+        switch (message){
+            case "onPing":
+                List<Object> response = new ArrayList<>();
+                response.add("onPing");
+                this.serverConnection.asyncSend(response);
+            case "disconnected":
+                //TODO: the game is no more valid, client must disconnect
+        }
     }
 
     private void onGodSelection(List<String> gods){
@@ -163,8 +178,19 @@ public class ClientCLI {
     }
 
     public void run(){
-        Executor exec = Executors.newFixedThreadPool(1);
-        exec.execute(serverConnection);
+        ExecutorService exec = Executors.newFixedThreadPool(1);
+        Future<Boolean> connectionEnded = exec.submit(() -> {
+            serverConnection.run();
+            return true;
+        });
         outputStream.println("You have entered the lobby.");
+
+        //while connection is not ended, wait
+        try{
+            while(connectionEnded.get() == null){
+                wait(1000);
+            }
+        }catch (Exception e){ }
+
     }
 }
