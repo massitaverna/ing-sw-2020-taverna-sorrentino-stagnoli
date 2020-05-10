@@ -5,6 +5,8 @@ import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.view.RemoteChallengerView;
 import it.polimi.ingsw.view.RemotePlayerView;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +46,7 @@ public class Lobby {
         return result;
     }
 
-    public synchronized boolean addPlayer(String nickname, Socket socket){
+    public synchronized boolean addPlayer(String nickname, Socket socket, ObjectOutputStream o, ObjectInputStream i){
 
         //if name is null or is already present, return false
         if(nickname == null || nickname.equals("") || this.playersViews.stream().anyMatch(x -> x.getNickname().equals(nickname)) )
@@ -53,15 +55,16 @@ public class Lobby {
         if(socket.isClosed())
             return false;
 
-        RemotePlayerView playerView = new RemotePlayerView(nickname, new Connection(socket, this));
+        RemotePlayerView playerView = new RemotePlayerView(nickname, new Connection(socket, this, o, i));
+        //start a separate thread waiting for client messages
+        this.executor.submit(playerView.getClientConnection());
         //add to the list of players
         this.playersViews.add(playerView);
         //pass the controller to make the view to add it as listener
         playerView.addListener(controller);
         //the player view is a listener of the model
-        this.controller.onNicknameChosen(playerView, nickname);
-        //start a separate thread waiting for client messages
-        this.executor.submit(playerView.getClientConnection());
+        this.model.addListener(playerView);
+        executor.submit(new Runnable(){public void run(){controller.onNicknameChosen(playerView, nickname);}});
 
         //if it is the first player coming, he is the challenger
         if(this.playersViews.size() == 1){

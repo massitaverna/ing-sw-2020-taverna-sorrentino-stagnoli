@@ -12,10 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 public class ClientCLI {
 
@@ -35,16 +32,17 @@ public class ClientCLI {
     private Object receivedObject;
     private Connection serverConnection;
 
-    private String nickname;
     private boolean isChallenger;
 
-    public ClientCLI(Connection serverConnection){
+    public ClientCLI(Connection serverConnection, boolean isChallenger){
         //initialize connection object to send/receive objects from the server
         this.serverConnection = serverConnection;
         this.serverConnection.addObserver(new MessageReceiver());
 
         this.outputStream = new PrintStream(System.out);
         this.s = new Scanner(System.in);
+
+        this.isChallenger = isChallenger;
     }
 
     private void handleMessageReceived(){
@@ -139,10 +137,10 @@ public class ClientCLI {
     private void handleGameMessage(){
         String message = (String)((List)receivedObject).get(1);
         switch (message){
-            case "onPing":
+            /*case "onPing":
                 List<Object> response = new ArrayList<>();
                 response.add("onPing");
-                this.serverConnection.asyncSend(response);
+                this.serverConnection.asyncSend(response);*/
             case "disconnected":
                 //TODO: the game is no more valid, client must disconnect
         }
@@ -177,19 +175,16 @@ public class ClientCLI {
     }
 
     public void run(){
-        ExecutorService exec = Executors.newFixedThreadPool(1);
-        Future<Boolean> connectionEnded = exec.submit(() -> {
-            serverConnection.run();
-            return true;
-        });
         outputStream.println("You have entered the lobby.");
 
-        //while connection is not ended, wait
-        try{
-            while(connectionEnded.get() == null){
-                wait(1000);
-            }
-        }catch (Exception e){ }
+        ExecutorService exec = Executors.newFixedThreadPool(1);
+        Future<?> future = exec.submit(serverConnection);
 
+        //wait for the thread to finish
+        try {
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 }

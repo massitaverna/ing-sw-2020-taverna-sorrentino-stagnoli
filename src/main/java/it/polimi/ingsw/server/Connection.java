@@ -20,27 +20,17 @@ public class Connection extends Observable<Object> implements Runnable {
 
     private boolean active = true;
 
-    public Connection(Socket socket, Lobby lobby) {
+    public Connection(Socket socket, Lobby lobby, ObjectOutputStream o, ObjectInputStream i) {
         this.socket = socket;
         this.lobby = lobby;
-        try {
-            in = new ObjectInputStream(socket.getInputStream());
-            out = new ObjectOutputStream(socket.getOutputStream());
-        }catch (IOException e){
-            e.printStackTrace();
-            this.active = false;
-        }
+        this.out = o;
+        this.in = i;
     }
 
-    public Connection(Socket socket){
+    public Connection(Socket socket, ObjectOutputStream o, ObjectInputStream i){
         this.socket = socket;
-        try {
-            in = new ObjectInputStream(socket.getInputStream());
-            out = new ObjectOutputStream(socket.getOutputStream());
-        }catch (IOException e){
-            e.printStackTrace();
-            this.active = false;
-        }
+        this.out = o;
+        this.in = i;
     }
 
     private synchronized boolean isActive(){
@@ -73,8 +63,10 @@ public class Connection extends Observable<Object> implements Runnable {
             System.err.println("Error when closing socket!");
         }
         active = false;
-        System.out.println("Deregistering client...");
-        lobby.deregisterConnection(this);
+        System.out.println("Closing connection");
+        if(lobby != null) {
+            lobby.deregisterConnection(this);
+        }
     }
 
     @Override
@@ -86,7 +78,7 @@ public class Connection extends Observable<Object> implements Runnable {
                 notify(received);
             }
 
-            //disconnect the client, end of the game (if in server)
+            //tell disconnection to the client, (if in server)
             if(lobby != null) {
                 lobby.deregisterConnection(this);
             }

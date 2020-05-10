@@ -14,79 +14,106 @@ import java.util.Scanner;
 
 public class ClientMainCLI
 {
-    public static void main( String[] args ) throws IOException, ClassNotFoundException {
+    public static void main( String[] args ) {
 
         String ip = "127.0.0.1";
         int port = 12345;
 
         Scanner s = new Scanner(System.in);
-        Socket socket = new Socket(ip, port);
-        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-        ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+        Socket socket = null;
+        ObjectInputStream in;
+        ObjectOutputStream out;
 
-        /*while (true) {
-            String messsage = (String) in.readObject();
+        try {
+            socket = new Socket(ip, port);
+            out = new ObjectOutputStream(socket.getOutputStream());
+            in = new ObjectInputStream(socket.getInputStream());
+        } catch (IOException e) {
+            System.out.println("Connection to the server failed.");
+            return;
+        }
 
-        }*/
+        boolean challenger = false;
+        int numPlayers = 0;
+        String nickname = "";
 
-        String challenger = (String) in.readObject();
-        if (challenger.equals("challenger")) { // YOU ARE THE CHALLENGER
-            // NICKNAME
-            in.readObject(); // should be "?nickname"
-            System.out.println("What's your nickname?");
-            String input = "";
-            while (input.equals("")) {
-                System.out.println("Your nickname can't be an empty string");
-                input = s.nextLine();
-            }
-            out.writeUTF(input);
-            out.flush();
+        boolean finished = false;
+        try {
+            while (!finished) {
+                String messsage = (String) in.readObject();
+                switch (messsage) {
+                    case "challenger":
+                        System.out.println("You are the challenger");
+                        challenger = true;
+                        break;
 
-            // OPPONENTS
-            in.readObject(); // should be "?numPlayers"
-            System.out.println("Choose the number of opponents (1 or 2):");
-            int numInput = 0;
-            while (numInput != 1 && numInput != 2) {
-                try {
-                    numInput = s.nextInt();
-                } catch (Exception e) {
-                    System.out.println("Insert a digit.");
+                    case "!challenger":
+                        challenger = false;
+                        break;
+
+                    case "?numPlayers":
+                        System.out.println("Insert the number of opponents (1 or 2):");
+                        while (numPlayers != 1 && numPlayers != 2) {
+                            try {
+                                numPlayers = s.nextInt();
+                            } catch (Exception e) {
+                                System.out.println("Insert a digit.");
+                            }
+                            if (numPlayers != 1 && numPlayers != 2)
+                                System.out.println("Invalid input, try again");
+                        }
+                        numPlayers++;
+                        out.writeObject(numPlayers);
+                        out.flush();
+                        break;
+
+                    case "?nickname":
+                        List<String> nicknamesInLobby = (List<String>) in.readObject();
+                        System.out.println("What's your nickname?");
+                        if(nicknamesInLobby.size() > 0) {
+                            System.out.println("Players already in the lobby: ");
+                            nicknamesInLobby.forEach(System.out::println);
+                        }
+                        while (nicknamesInLobby.contains(nickname) || nickname.equals("")) {
+                            nickname = s.nextLine();
+                            if (nicknamesInLobby.contains(nickname))
+                                System.out.println("Invalid input: nickname already in the lobby.");
+                            else if (nickname.equals(""))
+                                System.out.println("Invalid input: nickname can't be an empty string.");
+                        }
+                        out.writeObject(nickname);
+                        out.flush();
+                        break;
+
+                    case "fullLobby":
+                        System.out.println("The lobby is full");
+                        finished = true;
+                        break;
+
+                    case "ok":
+                        finished = true;
+                        ClientCLI cli = new ClientCLI(new Connection(socket, out, in), challenger);
+                        cli.run();
+                        break;
+
+                    default:
+                        System.out.println("Something went wrong. Bye!");
+                        finished = true;
+                        break;
+
                 }
-                if (numInput != 1 && numInput != 2)
-                    System.out.println("Invalid input, try again");
             }
-            numInput++;
-            out.writeInt(numInput);
-            out.flush();
-        } else { // YOU ARE NOT THE CHALLENGER
-            Object o = in.readObject();
-            List<String> nicknamesInLobby;
-            if (o instanceof List) {
-                nicknamesInLobby = (List<String>) o;
-                in.readObject(); // should be "?nickname"
-                System.out.println("What's your nickname?");
-                String input = "";
-                while (nicknamesInLobby.contains(input) || input.equals("")) {
-                    input = s.nextLine();
-                    if (nicknamesInLobby.contains(input))
-                        System.out.println("Invalid input: nickname already in the lobby.");
-                    else if (input.equals(""))
-                        System.out.println("Invalid input: nickname can't be an empty string.");
-                }
-                out.writeObject(input);
-                out.flush();
-            } else {
-                System.out.println("Something went wrong. Bye!");
-                return;
+        }catch (IOException | ClassNotFoundException e){
+            System.out.println("Connection went down while trying to connect.");
+        }finally {
+            try {
+                in.close();
+                out.close();
+                socket.close();
+            } catch (IOException e) {
             }
         }
-        if (in.readObject().equals("ok")) {
-            in.close();
-            out.close();
-            ClientCLI cli = new ClientCLI(new Connection(socket));
-            cli.run();
-        } else {
-            System.out.println("Something went wrong. Bye!");
-        }
+
+        System.out.println("Closing application...");
     }
 }
