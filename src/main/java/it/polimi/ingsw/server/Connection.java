@@ -10,7 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 //                            To send coming messages (from the client) to the listener (the RemoteView)
-public class ClientConnection extends Observable<Object> implements Runnable {
+public class Connection extends Observable<Object> implements Runnable {
 
     private Socket socket;
     private ObjectOutputStream out;
@@ -20,9 +20,20 @@ public class ClientConnection extends Observable<Object> implements Runnable {
 
     private boolean active = true;
 
-    public ClientConnection(Socket socket, Lobby lobby) {
+    public Connection(Socket socket, Lobby lobby) {
         this.socket = socket;
         this.lobby = lobby;
+        try {
+            in = new ObjectInputStream(socket.getInputStream());
+            out = new ObjectOutputStream(socket.getOutputStream());
+        }catch (IOException e){
+            e.printStackTrace();
+            this.active = false;
+        }
+    }
+
+    public Connection(Socket socket){
+        this.socket = socket;
         try {
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
@@ -56,20 +67,14 @@ public class ClientConnection extends Observable<Object> implements Runnable {
     }
 
     public synchronized void closeConnection() {
-        send("Connection closed!");
         try {
             socket.close();
         } catch (IOException e) {
             System.err.println("Error when closing socket!");
         }
         active = false;
-    }
-
-    private void close() {
-        closeConnection();
         System.out.println("Deregistering client...");
         lobby.deregisterConnection(this);
-        System.out.println("Done!");
     }
 
     @Override
@@ -80,12 +85,16 @@ public class ClientConnection extends Observable<Object> implements Runnable {
                 Object received = this.in.readObject();
                 notify(received);
             }
-            //disconnect the client, end of the game
-            lobby.deregisterConnection(this);
+
+            //disconnect the client, end of the game (if in server)
+            if(lobby != null) {
+                lobby.deregisterConnection(this);
+            }
+
         } catch (IOException | NoSuchElementException | ClassNotFoundException e) {
             System.err.println("Error!" + e.getMessage());
         }finally{
-            close();
+            closeConnection();
         }
     }
 }

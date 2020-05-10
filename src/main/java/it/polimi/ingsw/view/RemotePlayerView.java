@@ -1,14 +1,13 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.listeners.EventSource;
-import it.polimi.ingsw.listeners.Listener;
-import it.polimi.ingsw.listeners.ModelEventListener;
-import it.polimi.ingsw.listeners.PlayerViewEventListener;
+import it.polimi.ingsw.exceptions.controller.IllegalPlayerException;
+import it.polimi.ingsw.listeners.*;
 import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.observer.*;
-import it.polimi.ingsw.server.ClientConnection;
+import it.polimi.ingsw.server.Connection;
+import org.hamcrest.CoreMatchers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,14 +26,14 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         }
     }
 
-    private ClientConnection clientConnection;
-    private Object receivedObject;
+    private Connection clientConnection;
+    protected Object receivedObject;
 
     private String nickname;
-    private PlayerViewEventListener controller;
-    private String waitStatus;
 
-    public RemotePlayerView(String nickname, ClientConnection cc){
+    protected PlayerViewEventListener controller;
+
+    public RemotePlayerView(String nickname, Connection cc){
         this.clientConnection = cc;
         //when a message arrives from the client, handle with my MessageReceiver
         this.clientConnection.addObserver(new MessageReceiver());
@@ -42,7 +41,7 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         this.nickname = nickname;
     }
 
-    public ClientConnection getClientConnection(){
+    public Connection getClientConnection(){
         return this.clientConnection;
     }
 
@@ -57,7 +56,61 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
 
     //this method is fired when an object is received from the client
     protected void handleMessageReceived() {
-        //insert code here
+        List<Object> objects;
+        if(receivedObject instanceof List)
+            objects = (List<Object>)receivedObject;
+        else {
+            System.out.println("Something went wrong in handling received message");
+            return;
+        }
+
+        //the first object received is always the event
+        String event = (String) objects.get(0);
+        switch (event) {
+            //player events
+            case "onGodChosen":
+                String god = (String) objects.get(1);
+                try{
+                    controller.onGodChosen(this, god);
+                }catch (IllegalPlayerException e){ System.out.println("Illegal Player"); }
+                break;
+            case "onWorkerInitialization":
+                Coord choice = (Coord) objects.get(1);
+                controller.onWorkerInitialization(this, choice);
+                break;
+            case "onWorkerChosen":
+                Coord workerPos = (Coord) objects.get(1);
+                controller.onWorkerChosen(this, workerPos);
+                break;
+            case "onMoveChosen":
+                Coord moveChoice = (Coord) objects.get(1);
+                controller.onMoveChosen(this, moveChoice);
+                break;
+            case "onBuildChosen":
+                Coord buildChoice = (Coord) objects.get(1);
+                Level level = (Level) objects.get(2);
+                controller.onBuildChosen(this, buildChoice, level);
+                break;
+            case "skipAction":
+                controller.skipAction(this);
+                break;
+            //challenger events
+            case "onGodsChosen":
+                List<String> gods = (List)objects.get(1);
+                ((ChallengerViewEventListener)controller).onGodsChosen(this, gods);
+                break;
+            case "onStartPlayerChosen":
+                String startPlayer = (String)objects.get(1);
+                ((ChallengerViewEventListener)controller).onStartPlayerChosen(this, startPlayer);
+                break;
+            //client ping check
+            case "onPing":
+                //TODO: client ping succesful
+                break;
+            default:
+                System.out.println("Event message not recognized.");
+                break;
+        }
     }
 
     //used to send objects to the client through the ClientConnection
@@ -66,22 +119,25 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
     }
 
     //Model Events:
-
     @Override
     public void onBoardChanged(Board board) {
-        //serializza la board
-        //manda messaggio
+        List<Object> objects = new ArrayList<>();
+        objects.add("onBoardChanged");
+        objects.add(board);
+        sendObjectToClient(objects);
     }
 
     @Override
     public void onGameReady() {
-        sendObjectToClient("OnGameReady");
+        List<Object> objects = new ArrayList<>();
+        objects.add("onGameReady");
+        sendObjectToClient(objects);
     }
 
     @Override
     public void onGodsChosen(List<String> gods) {
         List<Object> objects = new ArrayList<>();
-        objects.add("OnGodsChosen");
+        objects.add("onGodsChosen");
         objects.add(gods);
         sendObjectToClient(objects);
     }
@@ -98,8 +154,10 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
 
     @Override
     public void onMessage(String message) {
-        //TODO: added this event in interface ModelEventListener.
-        // @Nico/Luca: do you need it?
+        List<Object> objects = new ArrayList<>();
+        objects.add("onMessage");
+        objects.add(message);
+        sendObjectToClient(objects);
     }
 
     @Override
@@ -155,8 +213,10 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
 
     @Override
     public void onWin(String winner) {
-        //TODO: added this event in interface ModelEventListener.
-        // @Nico/Luca: do you need it?
+        List<Object> objects = new ArrayList<>();
+        objects.add("onWin");
+        objects.add(winner);
+        sendObjectToClient(objects);
     }
 
     @Override

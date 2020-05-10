@@ -3,7 +3,12 @@ package it.polimi.ingsw.model;
 import it.polimi.ingsw.exceptions.model.SpaceFullException;
 import it.polimi.ingsw.exceptions.model.SpaceOccupiedException;
 
-public class Space implements Cloneable {
+import java.io.Serializable;
+
+public class Space implements Cloneable, Serializable {
+
+    private static final long serialVersionUID = 4L;
+
     private boolean occupied;
     private boolean hasDome;
     private Level height;

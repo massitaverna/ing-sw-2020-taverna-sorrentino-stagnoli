@@ -8,10 +8,18 @@ import it.polimi.ingsw.view.RemotePlayerView;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Lobby {
+
+    /*private class PingChecker implements Runnable{
+        @Override
+        public void run() {
+
+        }
+    }*/
 
     private GameModel model;
     private RealController controller;
@@ -20,6 +28,7 @@ public class Lobby {
     private RemotePlayerView challengerView;
 
     private ExecutorService executor = Executors.newCachedThreadPool();
+    //private ExecutorService pingExecutor = Executors.newScheduledThreadPool(1);
 
     public Lobby(){
         this.model = new GameModel();
@@ -27,7 +36,7 @@ public class Lobby {
         this.playersViews = new ArrayList<>();
     }
 
-    public List<String> getPlayersNicknames(){
+    public synchronized List<String> getPlayersNicknames(){
         List<String> result = new ArrayList<>();
         for(RemotePlayerView v: this.playersViews){
             result.add(v.getNickname());
@@ -44,29 +53,19 @@ public class Lobby {
         if(socket.isClosed())
             return false;
 
+        RemotePlayerView playerView = new RemotePlayerView(nickname, new Connection(socket, this));
+        //add to the list of players
+        this.playersViews.add(playerView);
+        //pass the controller to make the view to add it as listener
+        playerView.addListener(controller);
+        //the player view is a listener of the model
+        this.controller.onNicknameChosen(playerView, nickname);
+        //start a separate thread waiting for client messages
+        this.executor.submit(playerView.getClientConnection());
+
         //if it is the first player coming, he is the challenger
-        if(this.playersViews.size() == 0){
-            this.challengerView = new RemoteChallengerView(nickname, new ClientConnection(socket, this));
-            //add to the list of players
-            this.playersViews.add(challengerView);
-            //pass the controller to make the challenger view to add it as a listener
-            this.challengerView.addListener(controller);
-            //the challenger view is a listener of the model
-            this.controller.onNicknameChosen(challengerView, nickname);
-            //start a separate thread waiting for client messages
-            this.executor.submit(challengerView.getClientConnection());
-        }
-        //if not the first player, he is a normal player
-        else {
-            RemotePlayerView playerView = new RemotePlayerView(nickname, new ClientConnection(socket, this));
-            //add to the list of players
-            this.playersViews.add(playerView);
-            //pass the controller to make the view to add it as listener
-            playerView.addListener(controller);
-            //the player view is a listener of the model
-            this.controller.onNicknameChosen(playerView, nickname);
-            //start a separate thread waiting for client messages
-            this.executor.submit(playerView.getClientConnection());
+        if(this.playersViews.size() == 1){
+            this.challengerView = playerView;
         }
 
         return true;
@@ -80,15 +79,19 @@ public class Lobby {
         this.controller.onNumberOfPlayersChosen(this.challengerView, numPlayers);
     }
 
-    public synchronized void deregisterConnection(ClientConnection cc){
+    public synchronized void deregisterConnection(Connection cc){
         //game is ended, goodbye
         for(RemotePlayerView v: this.playersViews){
-            v.sendObjectToClient("AZZZ");
+            List<Object> message = new ArrayList<>();
+            message.add("onMessage");
+            message.add("disconnected");
+            v.sendObjectToClient(message);
             //client has to close the game
         }
+        //this.playersViews.clear();
     }
 
-    public boolean isFull(){
+    public synchronized boolean isFull(){
         return this.playersViews.size() == this.model.getNumPlayers();
     }
 }

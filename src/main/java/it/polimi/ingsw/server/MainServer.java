@@ -1,7 +1,5 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.view.Client;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -10,7 +8,6 @@ import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class MainServer {
@@ -62,7 +59,7 @@ public class MainServer {
                 //ask the client for name and numPlayers (2 or 3)
                 try {
                     while (nickname == null || (numPlayers != 2 && numPlayers != 3)) {
-                        out.writeObject("challanger");
+                        out.writeObject("challenger");
                         out.flush();
                         out.writeObject("?nickname");
                         out.flush();
@@ -80,6 +77,9 @@ public class MainServer {
                     //the player is the challanger
                     newLobby.addPlayer(nickname, socket);
                     newLobby.setNumPlayers(numPlayers);
+
+                    out.writeObject("ok");
+                    out.flush();
                 }
                 //connection interrupted
                 catch (IOException e) {
@@ -96,11 +96,17 @@ public class MainServer {
                 //ask the client until he choose a valid nickname
                 String nickname = null;
                 boolean validNickname = false;
-
                 try {
-                    out.writeObject("!challanger");
+                    out.writeObject("!challenger");
                     out.flush();
                     while (nickname == null || !validNickname) {
+
+                        //another player could has been faster than this player
+                        if(firstFreeLobby.isFull()){
+                            out.writeObject("fullLobby");
+                            out.flush();
+                        }
+
                         List<String> nicknames = firstFreeLobby.getPlayersNicknames();
                         out.writeObject("Players already in the lobby: \n");
                         for (String name : nicknames) {
@@ -114,6 +120,10 @@ public class MainServer {
                         //note that if two clients are trying to connect in the same moment, they could choose the same nickname
                         //only the faster client will manage to connect
                         validNickname = firstFreeLobby.addPlayer(nickname, socket);
+                        if(validNickname) {
+                            out.writeObject("ok");
+                            out.flush();
+                        }
                     }
                 }
                 //connection interrupted

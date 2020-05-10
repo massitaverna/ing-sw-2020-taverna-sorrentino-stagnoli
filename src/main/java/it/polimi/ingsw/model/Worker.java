@@ -8,7 +8,11 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 
-public class Worker implements Cloneable {
+import java.io.Serializable;
+
+public class Worker implements Cloneable, Serializable {
+
+    private static final long serialVersionUID = 3L;
 
     private Color color;
     private Coord position;

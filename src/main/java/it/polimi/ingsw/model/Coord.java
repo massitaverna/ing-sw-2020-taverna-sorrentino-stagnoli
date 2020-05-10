@@ -51,7 +51,9 @@ public class Coord implements Serializable {
         return new Coord(this.x + c.x, this.y + c.y);
     }
 
-    public static Coord convertStringToCoord(String input) {
+    public static Coord convertStringToCoord(String input) throws IllegalArgumentException{
+        if (input.length() > 2 || input.length() == 0)
+            throw new IllegalArgumentException();
         input = input.toUpperCase();
         int x = (input.charAt(0) - 'A');
         int y = (input.charAt(1) - '1');
