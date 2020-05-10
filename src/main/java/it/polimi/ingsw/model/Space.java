@@ -45,6 +45,7 @@ public class Space implements Cloneable {
         }
         */
 
+        //Not sure this check should remain
         if(this.isDome()){
             throw new SpaceOccupiedException("This space contains a dome.");
         }

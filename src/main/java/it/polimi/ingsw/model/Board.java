@@ -42,7 +42,11 @@ public class Board implements Cloneable {
     }
 
     Worker[] getAllWorkers(){
-        return (Worker[])this.workers.toArray();
+        Worker[] allWorkers = new Worker[this.workers.size()];
+        for (int i = 0; i < this.workers.size(); i++) {
+            allWorkers[i] = this.workers.get(i);
+        }
+        return allWorkers;
     }
 
     Worker getWorkerByPosition(Coord pos) throws WorkerNotFoundException {

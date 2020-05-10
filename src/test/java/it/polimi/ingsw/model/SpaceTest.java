@@ -35,7 +35,7 @@ public class SpaceTest {
     }
 
     @Test (expected = SpaceOccupiedException.class)
-    public void destroyBlockTest(){
+    public void destroyDomeTest(){
         Space s = new Space();
         s.setLevel(Level.DOME);
 
