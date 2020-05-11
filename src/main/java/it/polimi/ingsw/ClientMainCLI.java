@@ -24,6 +24,8 @@ public class ClientMainCLI
         ObjectInputStream in;
         ObjectOutputStream out;
 
+        ClientCLI cli = null;
+
         try {
             socket = new Socket(ip, port);
             out = new ObjectOutputStream(socket.getOutputStream());
@@ -92,7 +94,7 @@ public class ClientMainCLI
 
                     case "ok":
                         finished = true;
-                        ClientCLI cli = new ClientCLI(new Connection(socket, out, in), challenger);
+                        cli = new ClientCLI(new Connection(socket, out, in), challenger);
                         cli.run();
                         break;
 
@@ -115,5 +117,8 @@ public class ClientMainCLI
         }
 
         System.out.println("Game finished. Closing application...");
+        if(cli != null) {
+            cli.stop();
+        }
     }
 }

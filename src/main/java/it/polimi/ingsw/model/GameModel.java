@@ -86,8 +86,8 @@ public class GameModel implements EventSource {
             e.printStackTrace();
         }
 
-        System.out.println("Gods loaded: ");
-        godsList.forEach(g -> System.out.println(g.getName() + ": " + g.getDescription()));
+        //System.out.println("Gods loaded: ");
+        //godsList.forEach(g -> System.out.println(g.getName() + ": " + g.getDescription()));
         //System.out.println("size: " + godsList.size());
 
 

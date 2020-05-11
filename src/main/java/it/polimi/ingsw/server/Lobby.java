@@ -66,6 +66,8 @@ public class Lobby {
 
     private MainServer server;
 
+    private boolean isClosed = false;
+
     public Lobby(MainServer server){
         this.server = server;
         this.model = new GameModel();
@@ -139,24 +141,28 @@ public class Lobby {
         //this.playersViews.clear();
     }*/
 
+    //used by PingChecker
     private void closeLobby(){
         executor.shutdown();
     }
 
-    public void closeConnections(){
-        System.out.println("A client has been disconnected, disconnecting other clients...");
-        for(RemotePlayerView view: playersViews){
-            try {
-                //tell the client to disconnect
-                List<Object> disconnection = new ArrayList<>();
-                disconnection.add("onMessage");
-                disconnection.add("disconnected");
-                view.getClientConnection().getOutputStream().writeObject(disconnection);
-                //close the socket on the server connected to that client
-                view.getClientConnection().closeConnection();
-            } catch (IOException ex) { /*do nothing*/ }
+    public synchronized void closeConnections(){
+        if(!isClosed) {
+            System.out.println("A client has been disconnected, disconnecting other clients...");
+            for (RemotePlayerView view : playersViews) {
+                try {
+                    //tell the client to disconnect
+                    List<Object> disconnection = new ArrayList<>();
+                    disconnection.add("onMessage");
+                    disconnection.add("disconnected");
+                    view.getClientConnection().getOutputStream().writeObject(disconnection);
+                    //close the socket on the server connected to that client
+                    view.getClientConnection().closeConnection();
+                } catch (IOException ex) { /*do nothing*/ }
+            }
+            executor.shutdown();
+            this.server.removeLobby(this);
+            this.isClosed = true;
         }
-        executor.shutdown();
-        this.server.removeLobby(this);
     }
 }

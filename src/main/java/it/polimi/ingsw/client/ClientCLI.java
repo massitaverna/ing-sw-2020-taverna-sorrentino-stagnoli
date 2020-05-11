@@ -5,9 +5,7 @@ import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.observer.Observer;
 import it.polimi.ingsw.server.Connection;
-import jdk.jshell.Snippet;
 
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +22,7 @@ public class ClientCLI {
     private class MessageReceiver implements Observer<Object> {
         @Override
         public void update(Object message) {
-            System.out.println("Received: " + message.toString());
+            //System.out.println("Received: " + message.toString());
             receivedObject = message;
             handleMessageReceived();
         }
@@ -32,9 +30,10 @@ public class ClientCLI {
 
     private Object receivedObject;
     private Connection serverConnection;
-    private String nickname;
 
     private boolean isChallenger;
+
+    private ExecutorService exec;
 
     public ClientCLI(Connection serverConnection, boolean isChallenger){
         //initialize connection object to send/receive objects from the server
@@ -45,6 +44,8 @@ public class ClientCLI {
         this.s = new Scanner(System.in);
 
         this.isChallenger = isChallenger;
+
+        exec = Executors.newFixedThreadPool(1);
     }
 
     private void handleMessageReceived(){
@@ -59,7 +60,7 @@ public class ClientCLI {
 
         switch (event) {
             case "onBoardChanged":
-                Board b = (Board)objs.get(0);
+                Board b = (Board)objs.get(1);
                 outputStream.println(b.toString());
                 break;
 
@@ -68,7 +69,6 @@ public class ClientCLI {
                 break;
 
             case "onGodsChosen":
-                List<String> gods = (List<String>) objs.get(1);
                 outputStream.println("Challenger has chosen the playable gods");
                 List<String> selectedGods = (List<String>) objs.get(1);
                 for (String s : selectedGods){
@@ -93,7 +93,7 @@ public class ClientCLI {
                 break;
 
             case "onGodsSelection":
-                if (isChallenger){
+                if (isChallenger) {
                     List<String> allGods = (List<String>) objs.get(1);
                     int numPlayers = (int) objs.get(2);
                     onGodsSelection(allGods, numPlayers);
@@ -128,7 +128,7 @@ public class ClientCLI {
                 }
                 break;
 
-           case "onWin":
+            case "onWin":
                 String winner = (String)objs.get(1);
                 outputStream.println("The winner is: " + winner);
                 //TODO: end of the game
@@ -149,7 +149,9 @@ public class ClientCLI {
                 response.add("onPong");
                 this.serverConnection.asyncSend(response);*/
             case "disconnected":
-                //TODO: the game is no more valid, client must disconnect
+                // the game is no more valid, client must disconnect
+                System.out.println("A client disconnected from the game, disconnecting...");
+                this.stop();
         }
     }
 
@@ -177,12 +179,14 @@ public class ClientCLI {
                 objects.add("onGodChosen");
                 objects.add(input);
                 serverConnection.asyncSend(objects);
+                outputStream.println("Waiting for other players to choose their god...");
             }
         }
     }
 
     public void onGodsSelection(List<String> gods, int numPlayers) {
         outputStream.println("Choose the gods to use in this game: ");
+        gods.stream().forEach(outputStream::println);
         boolean valid = false;
         boolean godIsOk = false;
         List<Object> objects = new ArrayList<>();
@@ -233,16 +237,17 @@ public class ClientCLI {
                 valid = true;
                 objects.add(players.get(0));
                 serverConnection.asyncSend(objects);
-            } if (input.equals("2") || input.toLowerCase().equals(players.get(1).toLowerCase())){
+            }else if (input.equals("2") || input.toLowerCase().equals(players.get(1).toLowerCase())){
                 valid = true;
                 objects.add(players.get(1));
                 serverConnection.asyncSend(objects);
-            } if (input.equals("3") || input.toLowerCase().equals(players.get(2).toLowerCase())){
+            }else if (input.equals("3") || input.toLowerCase().equals(players.get(2).toLowerCase())){
                 valid = true;
                 objects.add(players.get(2));
                 serverConnection.asyncSend(objects);
-            } else
+            } else {
                 outputStream.println("Invalid nickname");
+            }
         }
 
     }
@@ -252,7 +257,7 @@ public class ClientCLI {
         List<Object> objects = new ArrayList<>();
         objects.add("onWorkerInitialization");
 
-        outputStream.println("Where do you want to place your worker?");
+        outputStream.println("Where do you want to place your worker (insert coordinates like: A1, B2... from A to E, from 1 to 5)?");
         while (!valid) {
             String input  = s.nextLine();
             try{
@@ -265,6 +270,9 @@ public class ClientCLI {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                }
+                else{
+                    outputStream.println("Invalid input");
                 }
             } catch (Exception e) {
                 outputStream.println("Invalid input");
@@ -461,12 +469,9 @@ public class ClientCLI {
     }
 
     public void run(){
-        Executor exec = Executors.newFixedThreadPool(1);
-        exec.execute(serverConnection);
         outputStream.println("You have entered the lobby.");
 
-        ExecutorService execService = Executors.newFixedThreadPool(1);
-        Future<?> future = execService.submit(serverConnection);
+        Future<?> future = exec.submit(serverConnection);
 
         //wait for the thread to finish
         try {
@@ -474,5 +479,9 @@ public class ClientCLI {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
+    }
+
+    public void stop(){
+        this.exec.shutdown();
     }
 }

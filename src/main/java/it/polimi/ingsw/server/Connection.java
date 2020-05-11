@@ -46,12 +46,14 @@ public class Connection extends Observable<Object> implements Runnable {
     }
 
     private synchronized void send(Object message) {
-        try{
-            out.reset();
-            out.writeObject(message);
-            out.flush();
-        } catch(IOException e){
-            System.err.println(e.getMessage());
+        if(isActive()) {
+            try {
+                out.reset();
+                out.writeObject(message);
+                out.flush();
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
         }
     }
 
@@ -65,16 +67,18 @@ public class Connection extends Observable<Object> implements Runnable {
     }
 
     public synchronized void closeConnection() {
-        try {
-            socket.close();
-        } catch (IOException e) {
-            System.err.println("Error when closing socket!");
+        if(isActive()) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                System.err.println("Error when closing socket!");
+            }
+            active = false;
+            System.out.println("Socket " + this.toString() + ": Closing connection");
+            /*if(lobby != null) {
+                lobby.deregisterConnection(this);
+            }*/
         }
-        active = false;
-        System.out.println("Socket " + this.toString() + ": Closing connection");
-        /*if(lobby != null) {
-            lobby.deregisterConnection(this);
-        }*/
     }
 
     @Override
@@ -95,7 +99,7 @@ public class Connection extends Observable<Object> implements Runnable {
             //System.err.println("Error! " + e.getMessage());
 
             //if this connection is running on the server, tell the lobby to close all the connections
-            if(lobby != null){
+            if (lobby != null) {
                 lobby.closeConnections();
             }
         }finally{

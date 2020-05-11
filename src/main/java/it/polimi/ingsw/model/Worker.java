@@ -18,7 +18,6 @@ public class Worker implements Cloneable, Serializable {
     private Coord position;
     private Player player;
 
-
     public Worker(Player p){
         this.player = p;
         this.position = null;
