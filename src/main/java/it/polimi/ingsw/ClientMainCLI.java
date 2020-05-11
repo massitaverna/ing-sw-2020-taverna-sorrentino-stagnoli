@@ -40,8 +40,8 @@ public class ClientMainCLI
         boolean finished = false;
         try {
             while (!finished) {
-                String messsage = (String) in.readObject();
-                switch (messsage) {
+                String message = (String) in.readObject();
+                switch (message) {
                     case "challenger":
                         System.out.println("You are the challenger");
                         challenger = true;
@@ -114,6 +114,6 @@ public class ClientMainCLI
             }
         }
 
-        System.out.println("Closing application...");
+        System.out.println("Game finished. Closing application...");
     }
 }

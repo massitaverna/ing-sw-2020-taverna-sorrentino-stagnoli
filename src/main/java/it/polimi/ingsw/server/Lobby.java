@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class Lobby {
 
@@ -36,6 +37,10 @@ public class Lobby {
         this.model = new GameModel();
         this.controller = new RealController(this.model);
         this.playersViews = new ArrayList<>();
+    }
+
+    public synchronized boolean isFull(){
+        return this.playersViews.size() == this.model.getNumPlayers();
     }
 
     public synchronized List<String> getPlayersNicknames(){
@@ -64,7 +69,6 @@ public class Lobby {
         playerView.addListener(controller);
         //the player view is a listener of the model
         this.model.addListener(playerView);
-        executor.submit(new Runnable(){public void run(){controller.onNicknameChosen(playerView, nickname);}});
 
         //if it is the first player coming, he is the challenger
         if(this.playersViews.size() == 1){
@@ -72,6 +76,12 @@ public class Lobby {
         }
 
         return true;
+    }
+
+    //the controller must add the player to the model AFTER the server finished it's initial communication with the new client
+    public synchronized void controllerAddPlayer(String nickname){
+        RemotePlayerView playerView = this.playersViews.stream().filter(v -> v.getNickname().equals(nickname)).collect(Collectors.toList()).get(0);
+        controller.onNicknameChosen(playerView, nickname);
     }
 
     public synchronized void setNumPlayers(int numPlayers){
@@ -92,9 +102,5 @@ public class Lobby {
             //client has to close the game
         }
         //this.playersViews.clear();
-    }
-
-    public synchronized boolean isFull(){
-        return this.playersViews.size() == this.model.getNumPlayers();
     }
 }

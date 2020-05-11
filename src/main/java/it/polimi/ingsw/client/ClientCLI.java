@@ -66,9 +66,9 @@ public class ClientCLI {
                 break;
 
             case "onGodsChosen":
-                List<String> gods = (List<String>) objs.get(1);
                 outputStream.println("Challenger has chosen the playable gods");
-                for (String s : gods){
+                List<String> selectedGods = (List<String>) objs.get(1);
+                for (String s : selectedGods){
                     outputStream.println("- " + s);
                 }
                 break;
@@ -90,9 +90,14 @@ public class ClientCLI {
                 break;
 
             case "onGodsSelection":
-                List<String> selectedGods = (List<String>) objs.get(1);
-                int numPlayers = (int) objs.get(2);
-                selectedGods.forEach(g -> System.out.println("- " + g));
+                if(isChallenger) {
+                    List<String> gods = (List<String>) objs.get(1);
+                    int numPlayers = (int) objs.get(2);
+                    gods.forEach(g -> System.out.println("- " + g));
+                }
+                else {
+                    outputStream.println("Challenger is choosing gods for the game");
+                }
                 break;
 
             case "onStartPlayerSelection":
@@ -139,7 +144,7 @@ public class ClientCLI {
         switch (message){
             /*case "onPing":
                 List<Object> response = new ArrayList<>();
-                response.add("onPing");
+                response.add("onPong");
                 this.serverConnection.asyncSend(response);*/
             case "disconnected":
                 //TODO: the game is no more valid, client must disconnect

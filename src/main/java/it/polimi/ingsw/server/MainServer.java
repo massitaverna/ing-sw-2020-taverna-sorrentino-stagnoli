@@ -78,6 +78,7 @@ public class MainServer {
                         //the player is the challanger
                         newLobby.addPlayer(nickname, socket, out, in);
                         newLobby.setNumPlayers(numPlayers);
+                        newLobby.controllerAddPlayer(nickname);
 
                     }
                     //connection interrupted
@@ -126,6 +127,7 @@ public class MainServer {
                             if (validNickname) {
                                 out.writeObject("ok");
                                 out.flush();
+                                firstFreeLobby.controllerAddPlayer(nickname);
                             }
                         }
                     }
