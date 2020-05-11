@@ -1,5 +1,7 @@
 package it.polimi.ingsw.server;
 
+import com.sun.tools.javac.Main;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -29,9 +31,12 @@ public class MainServer {
         ObjectOutputStream out;
         ObjectInputStream in;
 
+        MainServer server;
+
         boolean valid = true;
 
-        public ClientInitializer(Socket s) {
+        public ClientInitializer(Socket s, MainServer server) {
+            this.server = server;
             this.socket = s;
             try {
                 out = new ObjectOutputStream(socket.getOutputStream());
@@ -71,7 +76,7 @@ public class MainServer {
                         out.flush();
 
                         //valid name and numPlayers, create the lobby
-                        Lobby newLobby = new Lobby();
+                        Lobby newLobby = new Lobby(server);
                         synchronized (lobbies) {
                             lobbies.add(newLobby);
                         }
@@ -145,7 +150,7 @@ public class MainServer {
         while(true) {
             try {
                 Socket newSocket = serverSocket.accept();
-                executor.submit(new ClientInitializer(newSocket));
+                executor.submit(new ClientInitializer(newSocket, this));
             } catch (IOException e) {
                 System.out.println("Server socket closed.");
                 break;
@@ -153,5 +158,10 @@ public class MainServer {
         }
         executor.shutdown();
         serverSocket.close();
+    }
+
+    public void removeLobby(Lobby lobby){
+        System.out.println("Server: Closing lobby " + lobby.toString());
+        this.lobbies.remove(lobby);
     }
 }
