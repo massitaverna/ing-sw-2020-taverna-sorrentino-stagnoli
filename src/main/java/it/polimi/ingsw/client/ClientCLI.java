@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.observer.Observer;
 import it.polimi.ingsw.server.Connection;
+import jdk.jshell.Snippet;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -31,6 +32,7 @@ public class ClientCLI {
 
     private Object receivedObject;
     private Connection serverConnection;
+    private String nickname;
 
     private boolean isChallenger;
 
@@ -66,6 +68,7 @@ public class ClientCLI {
                 break;
 
             case "onGodsChosen":
+                List<String> gods = (List<String>) objs.get(1);
                 outputStream.println("Challenger has chosen the playable gods");
                 List<String> selectedGods = (List<String>) objs.get(1);
                 for (String s : selectedGods){
@@ -90,43 +93,42 @@ public class ClientCLI {
                 break;
 
             case "onGodsSelection":
-                if(isChallenger) {
-                    List<String> gods = (List<String>) objs.get(1);
+                if (isChallenger){
+                    List<String> allGods = (List<String>) objs.get(1);
                     int numPlayers = (int) objs.get(2);
-                    gods.forEach(g -> System.out.println("- " + g));
-                }
-                else {
-                    outputStream.println("Challenger is choosing gods for the game");
-                }
-                break;
-
-            case "onStartPlayerSelection":
-                if(isChallenger){
-                    //TODO: ask the challenger to choose starting player
-                }
-                else {
-                    System.out.println("Challenger is choosing the starting player");
-                }
+                    onGodsSelection(allGods, numPlayers);
+                } else
+                    outputStream.println("The challenger is choosing the gods");
                 break;
 
             case "onMyInitialization":
                 List<Coord> freeSpaces = (List<Coord>) objs.get(1);
-                //TODO: ask the player to initialize workers
+                onMyInitialization(freeSpaces);
                 break;
 
             case "onMyTurn":
                 List<Coord> selectableWorkers = (List<Coord>) objs.get(1);
-                //TODO: ask the player to choose the worker for his turn
+                onMyTurn(selectableWorkers);
                 break;
 
             case "onMyAction":
                 List<Coord> movableSpaces = (List<Coord>) objs.get(1);
                 Map<Level, List<Coord>> buildableSpaces = (Map<Level, List<Coord>>) objs.get(2);
                 boolean canEndTurn = (boolean) objs.get(3);
-                //TODO: ask the player to make an action
+                onMyAction(movableSpaces, buildableSpaces, canEndTurn);
                 break;
 
-            case "onWin":
+            case "onStartPlayerSelection":
+                if(isChallenger){
+                    List<String> players = (List<String>) objs.get(1);
+                    onStartPlayerSelection(players);
+                }
+                else {
+                    System.out.println("Challenger is choosing the starting player");
+                }
+                break;
+
+           case "onWin":
                 String winner = (String)objs.get(1);
                 outputStream.println("The winner is: " + winner);
                 //TODO: end of the game
@@ -179,11 +181,292 @@ public class ClientCLI {
         }
     }
 
+    public void onGodsSelection(List<String> gods, int numPlayers) {
+        outputStream.println("Choose the gods to use in this game: ");
+        boolean valid = false;
+        boolean godIsOk = false;
+        List<Object> objects = new ArrayList<>();
+        List<String> choices = new ArrayList<>();
+
+        while (!valid){
+            String input = s.nextLine();
+            input = input.toLowerCase();
+
+            for (String god : gods) {
+                if (god.toLowerCase().equals(input)) {
+                    choices.add(god);
+                    godIsOk = true;
+                    break;
+                }
+            }
+
+            if (choices.size() == numPlayers){
+                valid = true;
+                objects.add("onGodsChosen");
+                objects.add(choices);
+                serverConnection.asyncSend(objects);
+            } else
+                outputStream.println("Choose another god");
+
+            if(godIsOk)
+                godIsOk = false;
+            else
+                outputStream.println("Invalid input");
+        }
+    }
+
+    public void onStartPlayerSelection(List<String> players) {
+        outputStream.println("Choose the starting player: ");
+        List<Object> objects = new ArrayList<>();
+        objects.add("onStartPlayerChosen");
+
+        for (int i = 0; i<players.size(); i++) {
+            outputStream.println( (i+1) + " " + players.get(i));
+        }
+
+        boolean valid = false;
+
+        while (!valid){
+            String input = s.nextLine();
+
+            if (input.equals("1") || input.toLowerCase().equals(players.get(0).toLowerCase())){
+                valid = true;
+                objects.add(players.get(0));
+                serverConnection.asyncSend(objects);
+            } if (input.equals("2") || input.toLowerCase().equals(players.get(1).toLowerCase())){
+                valid = true;
+                objects.add(players.get(1));
+                serverConnection.asyncSend(objects);
+            } if (input.equals("3") || input.toLowerCase().equals(players.get(2).toLowerCase())){
+                valid = true;
+                objects.add(players.get(2));
+                serverConnection.asyncSend(objects);
+            } else
+                outputStream.println("Invalid nickname");
+        }
+
+    }
+
+    public void onMyInitialization(List<Coord> freeSpaces) {
+        boolean valid = false;
+        List<Object> objects = new ArrayList<>();
+        objects.add("onWorkerInitialization");
+
+        outputStream.println("Where do you want to place your worker?");
+        while (!valid) {
+            String input  = s.nextLine();
+            try{
+                Coord c = Coord.convertStringToCoord(input);
+                if (freeSpaces.contains(c)){
+                    try{
+                        valid = true;
+                        objects.add(c);
+                        serverConnection.asyncSend(objects);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                outputStream.println("Invalid input");
+            }
+        }
+
+    }
+
+    public void onMyTurn(List<Coord> selectableWorkers) {
+
+        boolean correct = false;
+        List<Object> objects = new ArrayList<>();
+        objects.add("onWorkerChosen");
+
+        while (!correct){
+            outputStream.println("Please select the worker to use in this turn, using its position: ");
+            String input = s.nextLine();
+            try {
+                Coord c = Coord.convertStringToCoord(input);
+
+                if (selectableWorkers.contains(c))
+                    correct = true;
+
+                if (correct){
+                    try{
+                        objects.add(c);
+                        serverConnection.asyncSend(objects);
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                outputStream.println("Invalid input");
+            }
+        }
+    }
+
+    public void onMyAction(List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces, boolean canEndTurn) {
+
+        // String colors
+        //String selectable = "\u001B[97m"; // Bright white
+        // It doesn't print on IntelliJ white console...
+        String selectable = "\u001B[0m"; // Standard
+        String nonSelectable = "\u001B[90m"; // Grey
+        String reset = "\u001B[0m"; // Standard
+
+        //booleans for the menu
+        boolean[] valid = new boolean[3];
+        boolean correctInput = false;
+        boolean isBuild = false;
+
+        // Menu
+
+        outputStream.println("What would you like to do?");
+
+        if (movableSpaces.isEmpty())
+            outputStream.println(nonSelectable + "1. Move" + reset);
+        else {
+            outputStream.println(selectable + "1. Move" + reset);
+            valid[0] = true;
+        }
+
+        for (List<Coord> list : buildableSpaces.values()){
+            if (!list.isEmpty()) {
+                isBuild = true;
+                break;
+            }
+        }
+
+        if (!isBuild)
+            outputStream.println(nonSelectable + "2. Build" + reset);
+        else {
+            outputStream.println(selectable + "2. Build" + reset);
+            valid[1] = true;
+        }
+
+        if (!canEndTurn)
+            outputStream.println(nonSelectable + "3. End" + reset);
+        else {
+            outputStream.println(selectable + "3. End" + reset);
+            valid[2] = true;
+        }
+
+        String input;
+
+        while (!correctInput){
+            input = s.nextLine();
+
+            if ((input.toLowerCase().equals("move") || input.equals("1")) && valid[0]) {
+                correctInput = true;
+                this.askToMove(movableSpaces);
+            }
+            if ((input.toLowerCase().equals("build") || input.equals("2")) && valid[1]) {
+                correctInput = true;
+                this.askToBuild(buildableSpaces);
+            }
+            if ((input.toLowerCase().equals("end") || input.equals("3")) && valid[2]) {
+                correctInput = true;
+                List<Object> objects = new ArrayList<>();
+                objects.add("skipAction");
+                serverConnection.asyncSend(objects);
+            } else
+                outputStream.println("Please enter a valid action");
+
+        }
+
+        //End Menu
+    }
+
+    private void askToBuild(Map<Level, List<Coord>> buildableSpaces){
+        outputStream.println("Where do you want to build? ");
+        boolean validCoord = false;
+        boolean validLevel = false;
+        int choice = 0;
+        List<Level> possibleLevels= new ArrayList<>();
+
+        while (!validCoord){
+            String input = s.nextLine();
+            try{
+                Coord c = Coord.convertStringToCoord(input);
+                for (Level key : buildableSpaces.keySet()){
+                    List<Coord> list = buildableSpaces.get(key);
+                    if (list.contains(c)) {
+                        validCoord = true;
+                        choice++;
+                        possibleLevels.add(key);
+                    }
+                }
+
+                if(validCoord){
+                    if(choice == 1) {
+                        List<Object> objects = new ArrayList<>();
+                        objects.add("onBuildChosen");
+                        objects.add(c);
+                        objects.add(possibleLevels.get(0));
+                        serverConnection.asyncSend(objects);
+                    } else{
+                        outputStream.println("What level would you like to build?");
+                        for (Level l : possibleLevels){
+                            outputStream.println("- " + l);
+                        }
+                        while (!validLevel){
+                            String inputLvl = s.nextLine();
+
+                            for (Level l : possibleLevels){
+                                if (l.equals(Level.valueOf(inputLvl.toUpperCase()))){
+                                    validLevel = true;
+                                    break;
+                                }
+                            }
+
+                            if(validLevel) {
+                                List<Object> objects = new ArrayList<>();
+                                objects.add("onBuildChosen");
+                                objects.add(c);
+                                objects.add(Level.valueOf(inputLvl.toUpperCase()));
+                                serverConnection.asyncSend(objects);
+                            } else
+                                outputStream.println("Please enter a valid level");
+                        }
+                    }
+                }
+                else
+                    outputStream.println("Please enter a valid coordinate");
+            } catch (Exception e) {
+                outputStream.println("Invalid input");
+            }
+        }
+    }
+
+    private void askToMove(List<Coord> movableSpaces){
+        outputStream.println("Where do you want to move? ");
+        boolean valid = false;
+
+        while (!valid){
+            String input = s.nextLine();
+            try{
+                Coord c = Coord.convertStringToCoord(input);
+                if (movableSpaces.contains(c))
+                    valid = true;
+
+                if(valid) {
+                    List<Object> objects = new ArrayList<>();
+                    objects.add("onMoveChosen");
+                    objects.add(c);
+                    serverConnection.asyncSend(objects);
+                } else
+                    outputStream.println("Please enter a valid coordinate");
+            } catch (Exception e) {
+                outputStream.println("Invalid input");
+            }
+
+        }
+    }
+
     public void run(){
+        Executor exec = Executors.newFixedThreadPool(1);
+        exec.execute(serverConnection);
         outputStream.println("You have entered the lobby.");
 
-        ExecutorService exec = Executors.newFixedThreadPool(1);
-        Future<?> future = exec.submit(serverConnection);
+        ExecutorService execService = Executors.newFixedThreadPool(1);
+        Future<?> future = execService.submit(serverConnection);
 
         //wait for the thread to finish
         try {
