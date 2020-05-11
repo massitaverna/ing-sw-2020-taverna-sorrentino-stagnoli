@@ -33,6 +33,14 @@ public class Connection extends Observable<Object> implements Runnable {
         this.in = i;
     }
 
+    public synchronized ObjectOutputStream getOutputStream(){
+        return this.out;
+    }
+
+    public synchronized ObjectInputStream getInputStream(){
+        return this.in;
+    }
+
     private synchronized boolean isActive(){
         return active;
     }
@@ -63,10 +71,10 @@ public class Connection extends Observable<Object> implements Runnable {
             System.err.println("Error when closing socket!");
         }
         active = false;
-        System.out.println("Closing connection");
-        if(lobby != null) {
+        System.out.println("Socket " + this.toString() + ": Closing connection");
+        /*if(lobby != null) {
             lobby.deregisterConnection(this);
-        }
+        }*/
     }
 
     @Override
@@ -79,12 +87,17 @@ public class Connection extends Observable<Object> implements Runnable {
             }
 
             //tell disconnection to the client, (if in server)
-            if(lobby != null) {
+            /*if(lobby != null) {
                 lobby.deregisterConnection(this);
-            }
+            }*/
 
         } catch (IOException | NoSuchElementException | ClassNotFoundException e) {
-            System.err.println("Error!" + e.getMessage());
+            //System.err.println("Error! " + e.getMessage());
+
+            //if this connection is running on the server, tell the lobby to close all the connections
+            if(lobby != null){
+                lobby.closeConnections();
+            }
         }finally{
             closeConnection();
         }

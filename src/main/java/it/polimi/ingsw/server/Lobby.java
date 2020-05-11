@@ -1,10 +1,12 @@
 package it.polimi.ingsw.server;
 
+import com.sun.tools.javac.Main;
 import it.polimi.ingsw.controller.RealController;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.view.RemoteChallengerView;
 import it.polimi.ingsw.view.RemotePlayerView;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -17,12 +19,42 @@ import java.util.stream.Collectors;
 
 public class Lobby {
 
-    /*private class PingChecker implements Runnable{
+    private class PingChecker implements Runnable{
         @Override
         public void run() {
-
+            while(true){
+                System.out.println("Pinging " + playersViews.size() + " clients.");
+                for(RemotePlayerView view: playersViews){
+                    try {
+                        List<Object> message = new ArrayList<>();
+                        message.add("onMessage");
+                        message.add("onPing");
+                        view.getClientConnection().getOutputStream().writeObject(message);
+                    } catch (IOException e) {
+                        //a client has been disconnected
+                        //tell other client to disconnect
+                        System.out.println("A client has been disconnected, disconnecting other clients...");
+                        for(RemotePlayerView other: playersViews){
+                            try {
+                                List<Object> disconnection = new ArrayList<>();
+                                disconnection.add("onMessage");
+                                disconnection.add("disconnected");
+                                other.getClientConnection().getOutputStream().writeObject(disconnection);
+                                other.getClientConnection().closeConnection();
+                            } catch (IOException ex) { /*do nothing*/ }
+                        }
+                        //stop pinging
+                        break;
+                    }
+                }
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException e) { break; }
+            }
+            System.out.println("Closing lobby...");
+            closeLobby();
         }
-    }*/
+    }
 
     private GameModel model;
     private RealController controller;
@@ -31,12 +63,15 @@ public class Lobby {
     private RemotePlayerView challengerView;
 
     private ExecutorService executor = Executors.newCachedThreadPool();
-    //private ExecutorService pingExecutor = Executors.newScheduledThreadPool(1);
 
-    public Lobby(){
+    private MainServer server;
+
+    public Lobby(MainServer server){
+        this.server = server;
         this.model = new GameModel();
         this.controller = new RealController(this.model);
         this.playersViews = new ArrayList<>();
+        //new Thread(new PingChecker(), "PingChecker").start();
     }
 
     public synchronized boolean isFull(){
@@ -92,7 +127,7 @@ public class Lobby {
         this.controller.onNumberOfPlayersChosen(this.challengerView, numPlayers);
     }
 
-    public synchronized void deregisterConnection(Connection cc){
+    /*public synchronized void deregisterConnection(Connection cc){
         //game is ended, goodbye
         for(RemotePlayerView v: this.playersViews){
             List<Object> message = new ArrayList<>();
@@ -102,5 +137,26 @@ public class Lobby {
             //client has to close the game
         }
         //this.playersViews.clear();
+    }*/
+
+    private void closeLobby(){
+        executor.shutdown();
+    }
+
+    public void closeConnections(){
+        System.out.println("A client has been disconnected, disconnecting other clients...");
+        for(RemotePlayerView view: playersViews){
+            try {
+                //tell the client to disconnect
+                List<Object> disconnection = new ArrayList<>();
+                disconnection.add("onMessage");
+                disconnection.add("disconnected");
+                view.getClientConnection().getOutputStream().writeObject(disconnection);
+                //close the socket on the server connected to that client
+                view.getClientConnection().closeConnection();
+            } catch (IOException ex) { /*do nothing*/ }
+        }
+        executor.shutdown();
+        this.server.removeLobby(this);
     }
 }
