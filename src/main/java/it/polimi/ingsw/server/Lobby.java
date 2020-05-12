@@ -1,9 +1,7 @@
 package it.polimi.ingsw.server;
 
-import com.sun.tools.javac.Main;
 import it.polimi.ingsw.controller.RealController;
 import it.polimi.ingsw.model.GameModel;
-import it.polimi.ingsw.view.RemoteChallengerView;
 import it.polimi.ingsw.view.RemotePlayerView;
 
 import java.io.IOException;
@@ -12,7 +10,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;

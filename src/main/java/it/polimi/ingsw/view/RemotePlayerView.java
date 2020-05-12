@@ -26,7 +26,7 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
     }
 
     private Connection clientConnection;
-    protected Object receivedObject;
+    private Object receivedObject;
 
     private String nickname;
 
@@ -54,7 +54,7 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
     }
 
     //this method is fired when an object is received from the client
-    protected void handleMessageReceived() {
+    private void handleMessageReceived() {
         List<Object> objects;
         if(receivedObject instanceof List)
             objects = (List<Object>)receivedObject;
