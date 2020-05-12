@@ -92,6 +92,7 @@ public class ClientMainCLI
                         finished = true;
                         break;
 
+                    //entro in una lobby
                     case "ok":
                         finished = true;
                         cli = new ClientCLI(new Connection(socket, out, in), challenger);
@@ -119,6 +120,12 @@ public class ClientMainCLI
         System.out.println("Game finished. Closing application...");
         if(cli != null) {
             cli.stop();
+        }
+        try {
+            System.out.println("Premere un tasto per continuare");
+            in.read();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -59,6 +59,7 @@ public class ClientCLI {
         String event = (String) objs.get(0);
 
         switch (event) {
+            //MODEL MESSAGES
             case "onBoardChanged":
                 Board b = (Board)objs.get(1);
                 outputStream.println(b.toString());
@@ -84,7 +85,8 @@ public class ClientCLI {
                 break;
 
             case "onMessage":
-                handleGameMessage();
+                String message = (String)((List<Object>) receivedObject).get(2);
+                outputStream.println(message);
                 break;
 
             case "onGodSelection":
@@ -128,30 +130,27 @@ public class ClientCLI {
                 }
                 break;
 
-            case "onWin":
-                String winner = (String)objs.get(1);
-                outputStream.println("The winner is: " + winner);
-                //TODO: end of the game
+            case "onEnd":
+                outputStream.println("Game Ended");
+                this.onEnd();
+                break;
+
+            //LOBBY MESSAGES
+            case "onPing":
+                List<Object> response = new ArrayList<>();
+                response.add("onPong");
+                this.serverConnection.asyncSend(response);
+                break;
+
+            case "disconnected":
+                // the game is no more valid, client must disconnect
+                System.out.println("A client disconnected from the game, disconnecting...");
+                this.stop();
                 break;
 
             default:
                 outputStream.println("Event message not recognized.");
                 break;
-        }
-
-    }
-
-    private void handleGameMessage(){
-        String message = (String)((List)receivedObject).get(1);
-        switch (message){
-            /*case "onPing":
-                List<Object> response = new ArrayList<>();
-                response.add("onPong");
-                this.serverConnection.asyncSend(response);*/
-            case "disconnected":
-                // the game is no more valid, client must disconnect
-                System.out.println("A client disconnected from the game, disconnecting...");
-                this.stop();
         }
     }
 
@@ -466,6 +465,16 @@ public class ClientCLI {
             }
 
         }
+    }
+
+    private void onEnd(){
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        this.serverConnection.closeConnection();
+        this.stop();
     }
 
     public void run(){

@@ -178,9 +178,14 @@ public class ChallengerView implements ModelEventListener, EventSource {
     }
 
     @Override
+    public void onEnd() {
+        view.onEnd();
+    }
+
+    /*@Override
     public void onWin(String winner) {
         view.onWin(winner);
-    }
+    }*/
 
     public String getNickname() {
         return view.getNickname();

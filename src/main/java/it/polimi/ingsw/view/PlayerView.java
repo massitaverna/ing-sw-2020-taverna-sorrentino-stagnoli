@@ -351,11 +351,18 @@ public class PlayerView implements ModelEventListener, EventSource {
     }
 
     @Override
+    public void onEnd() {
+        outputStream.println("Game ended!");
+        //outputStream.close(); //Should be closed, but commented for simulation
+        s.close();
+    }
+
+    /*@Override
     public void onWin(String winner) {
         outputStream.println(winner + " won.\nThe game is finished.\n\nThanks for playing!");
         //outputStream.close(); Should be closed, but commented for simulation
         s.close();
-    }
+    }*/
 
     private String decorateBoard(Board board, List<String> toBeAdded, int offset) {
         String[] splitBoard = board.toString().split("\n");

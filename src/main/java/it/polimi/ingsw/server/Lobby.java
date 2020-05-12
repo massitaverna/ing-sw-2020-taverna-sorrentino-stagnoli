@@ -24,7 +24,6 @@ public class Lobby {
                 for(RemotePlayerView view: playersViews){
                     try {
                         List<Object> message = new ArrayList<>();
-                        message.add("onMessage");
                         message.add("onPing");
                         view.getClientConnection().getOutputStream().writeObject(message);
                     } catch (IOException e) {
@@ -34,7 +33,6 @@ public class Lobby {
                         for(RemotePlayerView other: playersViews){
                             try {
                                 List<Object> disconnection = new ArrayList<>();
-                                disconnection.add("onMessage");
                                 disconnection.add("disconnected");
                                 other.getClientConnection().getOutputStream().writeObject(disconnection);
                                 other.getClientConnection().closeConnection();
@@ -125,18 +123,6 @@ public class Lobby {
         //the controller sets the number of players
         this.controller.onNumberOfPlayersChosen(this.challengerView, numPlayers);
     }
-
-    /*public synchronized void deregisterConnection(Connection cc){
-        //game is ended, goodbye
-        for(RemotePlayerView v: this.playersViews){
-            List<Object> message = new ArrayList<>();
-            message.add("onMessage");
-            message.add("disconnected");
-            v.sendObjectToClient(message);
-            //client has to close the game
-        }
-        //this.playersViews.clear();
-    }*/
 
     //used by PingChecker
     private void closeLobby(){

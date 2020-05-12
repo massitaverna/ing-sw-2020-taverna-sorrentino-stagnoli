@@ -18,6 +18,13 @@ public class PlayerTurnState extends ModelState {
             String nickname = currPlayer.getNickname();
             ModelEventListener listener = model.getListenerByNickname(nickname);
             List<Worker> selectableWorkers = model.getSelectableWorkers();
+
+            if(selectableWorkers.size() == 0){
+                //TODO: remove player from the model
+                //TODO: onMessage( looser )
+                //TODO: check if onEnd has to be called
+            }
+
             List<Coord> selectableCoords = selectableWorkers.stream().map(Worker::getPosition)
                     .collect(Collectors.toList());
             listener.onMyTurn(selectableCoords);
