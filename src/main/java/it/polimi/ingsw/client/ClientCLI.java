@@ -486,7 +486,7 @@ public class ClientCLI {
         try {
             future.get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 

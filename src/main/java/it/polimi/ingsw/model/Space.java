@@ -52,7 +52,7 @@ public class Space implements Cloneable, Serializable {
 
         //Not sure this check should remain
         if(this.isDome()){
-            throw new SpaceOccupiedException("This space contains a dome.");
+            throw new SpaceFullException("This space contains a dome.");
         }
 
 

@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class Lobby {
 
-    private class PingChecker implements Runnable{
+    /*private class PingChecker implements Runnable{
         @Override
         public void run() {
             while(true){
@@ -36,7 +36,7 @@ public class Lobby {
                                 disconnection.add("disconnected");
                                 other.getClientConnection().getOutputStream().writeObject(disconnection);
                                 other.getClientConnection().closeConnection();
-                            } catch (IOException ex) { /*do nothing*/ }
+                            } catch (IOException ex) {  }
                         }
                         //stop pinging
                         break;
@@ -49,10 +49,11 @@ public class Lobby {
             System.out.println("Closing lobby...");
             closeLobby();
         }
-    }
+    }*/
 
     private GameModel model;
     private RealController controller;
+    private int numPlayers;
 
     private List<RemotePlayerView> playersViews;
     private RemotePlayerView challengerView;
@@ -63,16 +64,17 @@ public class Lobby {
 
     private boolean isClosed = false;
 
-    public Lobby(MainServer server){
+    public Lobby(MainServer server, int numPlayers){
         this.server = server;
         this.model = new GameModel();
         this.controller = new RealController(this.model);
         this.playersViews = new ArrayList<>();
+        this.numPlayers = numPlayers;
         //new Thread(new PingChecker(), "PingChecker").start();
     }
 
     public synchronized boolean isFull(){
-        return this.playersViews.size() == this.model.getNumPlayers();
+        return this.playersViews.size() == this.numPlayers;
     }
 
     public synchronized List<String> getPlayersNicknames(){
@@ -92,6 +94,14 @@ public class Lobby {
         if(socket.isClosed())
             return false;
 
+        if(this.isClosed){
+            return false;
+        }
+
+        if(this.isFull()){
+            return false;
+        }
+
         RemotePlayerView playerView = new RemotePlayerView(nickname, new Connection(socket, this, o, i));
         //start a separate thread waiting for client messages
         this.executor.submit(playerView.getClientConnection());
@@ -105,6 +115,7 @@ public class Lobby {
         //if it is the first player coming, he is the challenger
         if(this.playersViews.size() == 1){
             this.challengerView = playerView;
+            this.setNumPlayers(this.numPlayers);
         }
 
         return true;
@@ -116,7 +127,7 @@ public class Lobby {
         controller.onNicknameChosen(playerView, nickname);
     }
 
-    public synchronized void setNumPlayers(int numPlayers){
+    private  void setNumPlayers(int numPlayers){
         if(this.challengerView == null){
             throw new RuntimeException("There is no challanger in the lobby");
         }
@@ -124,11 +135,11 @@ public class Lobby {
         this.controller.onNumberOfPlayersChosen(this.challengerView, numPlayers);
     }
 
-    //used by PingChecker
-    private void closeLobby(){
-        executor.shutdown();
+    public synchronized int getNumPlayers(){
+        return model.getNumPlayers();
     }
 
+    //called when a client is disconnected
     public synchronized void closeConnections(){
         if(!isClosed) {
             System.out.println("A client has been disconnected, disconnecting other clients...");

@@ -38,10 +38,21 @@ public class Board implements Cloneable, Serializable {
 
         //if worker is already present, throw exception
         if(this.workers.contains(w)){
-            throw new IllegalStateException("thw worker has already been added.");
+            throw new IllegalStateException("the worker has already been added.");
         }
 
         this.workers.add(w);
+    }
+
+    public void removeWorker(Worker w){
+        //if worker is not present, throw exception
+        if(!this.workers.contains(w)){
+            throw new IllegalStateException("the worker isn't part of the board.");
+        }
+
+        Coord wPos = w.getPosition();
+        this.board[wPos.x][wPos.y].setUnoccupied();
+        this.workers.remove(w);
     }
 
     Worker[] getAllWorkers(){
@@ -300,18 +311,20 @@ public class Board implements Cloneable, Serializable {
         List<Coord> result = new ArrayList<>();
         for (int i = -1; i < 1; i++) {
             for (int j = -1; j < 1; j++) {
-                if (i==0 && j==0)
+                if (i == 0 && j == 0)
                     continue;
 
                 //if(space not occupied/dome && Rules.CheckSomething) ??
-                if(!this.board[c.x + i][c.y + j].isOccupied() &&
-                        !this.board[c.x + i][c.y + j].isDome() &&
-                        (this.board[c.x + i][c.y + j].getHeight().ordinal() - this.board[c.x][c.y].getHeight().ordinal()
-                                <= maxDiff
-                        )
-                ) {
-                    /*result.put(new Coord(c.x + i, c.y + j), this.board[c.x + i][c.y + j]);*/
-                    result.add(new Coord(c.x + i, c.y + j));
+                if (Coord.validCoord(new Coord(c.x + i, c.y + j))) {
+                    if (!this.board[c.x + i][c.y + j].isOccupied() &&
+                            !this.board[c.x + i][c.y + j].isDome() &&
+                            (this.board[c.x + i][c.y + j].getHeight().ordinal() - this.board[c.x][c.y].getHeight().ordinal()
+                                    <= maxDiff
+                            )
+                    ) {
+                        /*result.put(new Coord(c.x + i, c.y + j), this.board[c.x + i][c.y + j]);*/
+                        result.add(new Coord(c.x + i, c.y + j));
+                    }
                 }
             }
         }
@@ -333,10 +346,12 @@ public class Board implements Cloneable, Serializable {
                     continue;
 
                 //if(space not occupied/dome && Rules.CheckSomething) ??
-                if(!this.board[c.x + i][c.y + j].isOccupied() &&
-                        !this.board[c.x + i][c.y + j].isDome() ) {
+                if(Coord.validCoord(new Coord(c.x + i, c.y + j))) {
+                    if (!this.board[c.x + i][c.y + j].isOccupied() &&
+                            !this.board[c.x + i][c.y + j].isDome()) {
 
-                    result.add(new Coord(c.x + i, c.y + j));
+                        result.add(new Coord(c.x + i, c.y + j));
+                    }
                 }
             }
         }

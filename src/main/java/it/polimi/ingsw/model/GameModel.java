@@ -1,6 +1,9 @@
 package it.polimi.ingsw.model;
 
 import com.google.gson.Gson;
+import it.polimi.ingsw.exceptions.controller.IllegalPlayerException;
+import it.polimi.ingsw.exceptions.model.AlreadyExistingPlayerException;
+import it.polimi.ingsw.exceptions.model.GameFullException;
 import it.polimi.ingsw.exceptions.model.IllegalWorkerChoiceException;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.Listener;
@@ -115,10 +118,17 @@ public class GameModel implements EventSource {
     }
 
     public void addNewPlayer(Player player){
+        if(queue.size() == this.numPlayers){
+            throw new GameFullException("game is full");
+        }
+        else if(this.queue.stream().anyMatch(p -> p.getNickname().equals(player.getNickname()))){
+            throw new AlreadyExistingPlayerException("player with that nickname already exixsts");
+        }
 
         if (queue.size() == 0) {
             currentPlayer = player; // Set Challenger as currentPlayer
         }
+
         queue.add(player);
         this.board.addWorker(player.getWorker(0));
         this.board.addWorker(player.getWorker(1));
@@ -126,14 +136,23 @@ public class GameModel implements EventSource {
         Random r = new Random();
         int i = r.nextInt(colors.size());
         Color randomColor = colors.get(i);
-        setPlayerColor(player, randomColor);
+        player.setWorkerColor(randomColor);
+        colors.remove(randomColor);
+        //setPlayerColor(player, randomColor);
 
         modelListeners.forEach(l -> l.onPlayerAdded(player.getNickname(), queue.size(), numPlayers));
-        /*if(allPlayersArrived()) {
-            for (ModelEventListener listener : modelListeners) {
-                listener.onAllPlayersArrived();
-            }
-        }*/
+    }
+
+    public void removePlayer(Player player){
+        if(!this.queue.contains(player)){
+            throw new RuntimeException("Player does not exists.");
+        }
+
+        this.board.removeWorker(player.getWorker(0));
+        this.board.removeWorker(player.getWorker(1));
+
+        this.queue.remove(player);
+        this.currentPlayer = this.queue.get(0);
     }
 
     public List<God> getAvailableGods() {
@@ -157,19 +176,19 @@ public class GameModel implements EventSource {
         nextPlayer();
     }
 
-    public void setPlayerColor(Player p, Color c) throws IllegalArgumentException {
+    /*public void setPlayerColor(Player p, Color c) throws IllegalArgumentException {
         //Check that player p is part of the game
         if( !(this.queue.contains(p))){
             throw new IllegalArgumentException("Given Player is not part of the game");
         }
 
-        //If color has been choose by another player, throw exception
+        //If color has been taken by another player, throw exception
         if(!this.colors.contains(c))
             throw new IllegalArgumentException("Chosen color is not available any longer.");
 
         p.setWorkerColor(c);
         this.colors.remove(c);
-    }
+    }*/
 
     public void assignGodToPlayer(Player p, God g) throws IllegalArgumentException {
         //Check that player p is part of the game
@@ -418,7 +437,7 @@ public class GameModel implements EventSource {
         modelListeners.forEach(l -> l.onMessage(message));
     }
 
-    //INTERROGAZIONI DALLE VIEW VANNO TOLTEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE !!!!!!!!!!!!!!!!!
+
     public Board getBoard(){
         return this.board.clone();
     }

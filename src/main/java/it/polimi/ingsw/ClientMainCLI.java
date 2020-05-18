@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 //TODO: async read from server
@@ -20,6 +22,7 @@ public class ClientMainCLI
         int port = 12345;
 
         Scanner s = new Scanner(System.in);
+        Scanner ss = new Scanner(System.in);
         Socket socket = null;
         ObjectInputStream in;
         ObjectOutputStream out;
@@ -28,6 +31,7 @@ public class ClientMainCLI
 
         try {
             socket = new Socket(ip, port);
+            socket.setKeepAlive(true);
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
@@ -35,15 +39,64 @@ public class ClientMainCLI
             return;
         }
 
+        boolean finished = false;
+
+        //lobby selection
+        Map<Integer, List<String>> availableLobbies = new HashMap<>();
+        Map<Integer, Integer> availableLobbiesPlayersCount = new HashMap<>();
+
+        //entering a lobby
         boolean challenger = false;
         int numPlayers = 0;
         String nickname = "";
 
-        boolean finished = false;
         try {
             while (!finished) {
                 String message = (String) in.readObject();
                 switch (message) {
+
+                    case "lobby":
+                        List<String> playersInLobby = (List<String>) in.readObject();
+                        int maxPlayers = (int)in.readObject();
+                        int lobbyNum = (int) in.readObject();
+                        availableLobbies.put(lobbyNum, playersInLobby);
+                        availableLobbiesPlayersCount.put(lobbyNum, maxPlayers);
+                        break;
+
+                    case "?lobby":
+                        System.out.println("Choose the lobby to join (insert a number) :");
+                        System.out.println("0 - Create new lobby");
+                        //print lobby info
+                        for(Integer i: availableLobbies.keySet()){
+                            int maxP, currentP;
+                            maxP = availableLobbiesPlayersCount.get(i);
+                            currentP = availableLobbies.get(i).size();
+                            System.out.print((i+1) + " - Players (" + currentP + "/" + maxP + "): ");
+                            for(String name: availableLobbies.get(i)){
+                                System.out.print("\"" + name + "\" ");
+                            }
+                            System.out.println("");
+                        }
+                        //user choice
+                        int choice = -1;
+                        while (choice < 0) {
+                            try {
+                                choice = s.nextInt();
+                            } catch (Exception e) {
+                                System.out.println("Insert a digit.");
+                            }
+                            if(choice == 0){
+                                break;
+                            }
+                            if (choice < 0 || choice > availableLobbies.keySet().size() || availableLobbiesPlayersCount.get(choice-1) == availableLobbies.get(choice-1).size()) {
+                                System.out.println("Invalid input, try again");
+                                choice = -1;
+                            }
+                        }
+                        out.writeObject(choice);
+                        out.flush();
+                        break;
+
                     case "challenger":
                         System.out.println("You are the challenger");
                         challenger = true;
@@ -60,6 +113,7 @@ public class ClientMainCLI
                                 numPlayers = s.nextInt();
                             } catch (Exception e) {
                                 System.out.println("Insert a digit.");
+                                s.next();
                             }
                             if (numPlayers != 1 && numPlayers != 2)
                                 System.out.println("Invalid input, try again");
@@ -77,7 +131,8 @@ public class ClientMainCLI
                             nicknamesInLobby.forEach(System.out::println);
                         }
                         while (nicknamesInLobby.contains(nickname) || nickname.equals("")) {
-                            nickname = s.nextLine();
+                            s.reset();
+                            nickname = ss.nextLine();
                             if (nicknamesInLobby.contains(nickname))
                                 System.out.println("Invalid input: nickname already in the lobby.");
                             else if (nickname.equals(""))
@@ -88,8 +143,9 @@ public class ClientMainCLI
                         break;
 
                     case "fullLobby":
-                        System.out.println("The lobby is full");
-                        finished = true;
+                        System.out.println("The lobby is full, please select another one:");
+                        availableLobbies = new HashMap<>();
+                        availableLobbiesPlayersCount = new HashMap<>();
                         break;
 
                     //entro in una lobby
@@ -121,11 +177,7 @@ public class ClientMainCLI
         if(cli != null) {
             cli.stop();
         }
-        try {
-            System.out.println("Premere un tasto per continuare");
-            in.read();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        System.out.println("Press any key to continue...");
+        ss.nextLine();
     }
 }
