@@ -7,6 +7,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Random;
 
+//TODO: test di Board.equals(): se cambio qualcosina restituisce false?
 public class BoardTest {
 
     //Test getWorkerByPosition() returns the correct positions of the workers

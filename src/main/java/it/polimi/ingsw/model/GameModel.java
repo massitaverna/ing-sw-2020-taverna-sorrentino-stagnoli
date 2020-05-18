@@ -11,6 +11,7 @@ import it.polimi.ingsw.model.handler.RequestHandlerCreator;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -88,7 +89,7 @@ public class GameModel implements EventSource {
 
         System.out.println("Gods loaded: ");
         godsList.forEach(g -> System.out.println(g.getName() + ": " + g.getDescription()));
-        //System.out.println("size: " + godsList.size());
+        System.out.println("Total number of gods: " + godsList.size());
 
 
         /*
@@ -114,7 +115,7 @@ public class GameModel implements EventSource {
         return this.queue.size() == this.numPlayers;
     }
 
-    public void addNewPlayer(Player player){
+    public void addNewPlayer(Player player) {
 
         if (queue.size() == 0) {
             currentPlayer = player; // Set Challenger as currentPlayer
@@ -129,11 +130,6 @@ public class GameModel implements EventSource {
         setPlayerColor(player, randomColor);
 
         modelListeners.forEach(l -> l.onPlayerAdded(player.getNickname(), queue.size(), numPlayers));
-        /*if(allPlayersArrived()) {
-            for (ModelEventListener listener : modelListeners) {
-                listener.onAllPlayersArrived();
-            }
-        }*/
     }
 
     public List<God> getAvailableGods() {
@@ -273,6 +269,10 @@ public class GameModel implements EventSource {
             throw new IllegalWorkerChoiceException("Selected worker does not belong to the current player");
         }
 
+        if (!turn.getSelectableWorkers().contains(workerPos)) {
+            nextStep();
+            return;
+        }
         currentWorker = selected;
         turn.setInitialBoard(board.clone());
     }
@@ -418,7 +418,27 @@ public class GameModel implements EventSource {
         modelListeners.forEach(l -> l.onMessage(message));
     }
 
-    //INTERROGAZIONI DALLE VIEW VANNO TOLTEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE !!!!!!!!!!!!!!!!!
+    void removeCurrentPlayer() {
+        Player loser = currentPlayer;
+        notifyMessage(loser.getNickname() + " lost.");
+        nextPlayer();
+
+        board.remove(loser);
+        queue.remove(loser);
+        handlers.remove(loser);
+        notifyBoardChanged();
+
+        if (numPlayers == 2) {
+            modelListeners.forEach(l -> l.onMessage(currentPlayer.getNickname() + " won!"));
+            modelListeners.forEach(ModelEventListener::onEnd);
+            return;
+        }
+        numPlayers = numPlayers - 1;
+        //Commented because the loser may still want to see the game
+        //modelListeners.remove(getListenerByNickname(currentPlayer.getNickname()));
+    }
+
+    //INTERROGAZIONI DALLE VIEW VANNO TOLTEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE!!!!!!!!!!!!!!!!!
     public Board getBoard(){
         return this.board.clone();
     }
@@ -455,9 +475,9 @@ public class GameModel implements EventSource {
     }
 
 
-    List<Worker> getSelectableWorkers() {
+    List<Coord> getSelectableWorkers() {
         RequestHandler currHandler = handlers.get(currentPlayer);
-        List<Worker> selectableWorkers = new ArrayList<>();
+        List<Coord> selectableWorkers = new ArrayList<>();
         boolean selectable = false;
         for (Worker worker : currentPlayer.getWorkersList()) {
             Coord position = worker.getPosition();
@@ -485,9 +505,10 @@ public class GameModel implements EventSource {
                 }
             }
             if (selectable) {
-                selectableWorkers.add(worker);
+                selectableWorkers.add(worker.getPosition());
             }
         }
+        turn.setSelectableWorkers(selectableWorkers);
         return selectableWorkers;
     }
 

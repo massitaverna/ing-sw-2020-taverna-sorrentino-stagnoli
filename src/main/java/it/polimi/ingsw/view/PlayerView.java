@@ -371,4 +371,8 @@ public class PlayerView implements ModelEventListener, EventSource {
 
         return newBoard;
     }
+
+    public void onEnd() {
+        //TODO: remove/replace in the correct position
+    }
 }

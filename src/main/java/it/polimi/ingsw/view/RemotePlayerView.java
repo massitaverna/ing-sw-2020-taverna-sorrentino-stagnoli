@@ -223,4 +223,9 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         return this.nickname;
     }
 
+    public void onEnd() {
+        //TODO: remove/replace in the correct position
+    }
+
 }
+

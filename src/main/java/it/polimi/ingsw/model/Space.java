@@ -44,23 +44,17 @@ public class Space implements Cloneable, Serializable {
     }
 
     public void setLevel(Level level) {
-        /*
-        if(this.isOccupied()){
-            throw new SpaceOccupiedException("This space is occupied.");
-        }
-        */
+
 
         //Not sure this check should remain
         if(this.isDome()){
             throw new SpaceOccupiedException("This space contains a dome.");
         }
 
-
         if (level != Level.DOME) {
             height = level;
         } else {
             setDome();
-            //setOccupied();  occupied indica se lo space è occupato da un worker !!!!
         }
     }
 
@@ -92,5 +86,21 @@ public class Space implements Cloneable, Serializable {
         result.height = height;
 
         return result;
+    }
+
+    @Override
+    public String toString() {
+        String result = height.toString() + (hasDome ? " (DOME)" : "") +
+                (occupied ? " " : " un") + "occupied";
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Space)) return false;
+        Space that = (Space) o;
+        return this.height == that.height &&
+                this.occupied == that.occupied &&
+                this.hasDome == that.hasDome;
     }
 }

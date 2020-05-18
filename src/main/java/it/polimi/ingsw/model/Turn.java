@@ -7,6 +7,7 @@ import java.util.Map;
 
 public class Turn implements Cloneable {
 
+    private List<Coord> selectableWorkers;
     private List<Coord> movableSpaces;
     private Map<Level, List<Coord>> buildableSpaces;
     private Map<Coord, Coord> forces;
@@ -16,6 +17,7 @@ public class Turn implements Cloneable {
     private Board board;
 
     public Turn() {
+        selectableWorkers = new ArrayList<>();
         movableSpaces = new ArrayList<>();
         buildableSpaces = new HashMap<>();
         forces = new HashMap<>();
@@ -84,6 +86,14 @@ public class Turn implements Cloneable {
 
     public Board getInitialBoard() {
         return board.clone();
+    }
+
+    public void setSelectableWorkers(List<Coord> selectableWorkers) {
+        this.selectableWorkers = new ArrayList<>(selectableWorkers);
+    }
+
+    public List<Coord> getSelectableWorkers() {
+        return new ArrayList<>(selectableWorkers);
     }
 
     public Turn clone() {

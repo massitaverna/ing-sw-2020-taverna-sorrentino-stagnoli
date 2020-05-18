@@ -17,10 +17,17 @@ public class PlayerTurnState extends ModelState {
             Player currPlayer = model.getCurrentPlayer();
             String nickname = currPlayer.getNickname();
             ModelEventListener listener = model.getListenerByNickname(nickname);
-            List<Worker> selectableWorkers = model.getSelectableWorkers();
-            List<Coord> selectableCoords = selectableWorkers.stream().map(Worker::getPosition)
-                    .collect(Collectors.toList());
-            listener.onMyTurn(selectableCoords);
+            List<Coord> selectableWorkers = model.getSelectableWorkers();
+
+            if (listener == null) {
+                throw new RuntimeException("Couldn't find " + nickname + "'s listener.");
+            }
+
+            if (!selectableWorkers.isEmpty()) {
+                listener.onMyTurn(selectableWorkers);
+            } else {
+                model.removeCurrentPlayer();
+            }
         } else {
             model.nextAction();
         }

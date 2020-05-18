@@ -68,7 +68,7 @@ public class Coord implements Serializable {
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof Coord){
-            Coord other = (Coord)obj;
+            Coord other = (Coord) obj;
             return (this.x == other.x && this.y == other.y);
         }
         return false;

@@ -57,4 +57,19 @@ public class Worker implements Cloneable, Serializable {
         result.position = position;
         return result;
     }
+
+    @Override
+    public boolean equals (Object o) {
+        if (!(o instanceof Worker)) return false;
+        Worker that = (Worker) o;
+        if (this.position != null) {
+            return this.color == that.color &&
+                    this.position == that.position &&
+                    this.player.getNickname().equals(that.player.getNickname());
+        }
+
+        else {
+            return super.equals(o);
+        }
+    }
 }

@@ -196,4 +196,8 @@ public class ChallengerView implements ModelEventListener, EventSource {
         this.listener = (ChallengerViewEventListener) listener;
         view.addListener((PlayerViewEventListener) listener);
     }
+
+    public void onEnd() {
+        //TODO: remove/replace in the correct position
+    }
 }

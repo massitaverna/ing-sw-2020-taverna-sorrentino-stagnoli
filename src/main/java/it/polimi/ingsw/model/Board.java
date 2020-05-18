@@ -5,12 +5,14 @@ import it.polimi.ingsw.exceptions.model.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Board implements Cloneable, Serializable {
 
     private static final long serialVersionUID = 2L;
 
-    private static final int BOARD_SIZE = 5;
+    public static final int BOARD_SIZE = 5;
     private Space[][] board;
     private List<Worker> workers;
 
@@ -37,8 +39,8 @@ public class Board implements Cloneable, Serializable {
     void addWorker(Worker w) throws IllegalStateException {
 
         //if worker is already present, throw exception
-        if(this.workers.contains(w)){
-            throw new IllegalStateException("thw worker has already been added.");
+        if(this.workers.contains(w)) {
+            throw new IllegalStateException("The worker has already been added.");
         }
 
         this.workers.add(w);
@@ -126,6 +128,12 @@ public class Board implements Cloneable, Serializable {
         }
 
         return unoccupiedSpaces;
+    }
+
+    public List<Space> getAllSpaces() {
+        return getAllCoord().stream()
+                .map(this::getSpace)
+                .collect(Collectors.toList());
     }
 
     public List<Coord> getAllCoord() {
@@ -289,7 +297,6 @@ public class Board implements Cloneable, Serializable {
         }
     }
 
-    //potrebbero essere messe nel controller, perchè qua in mezzo ci andrà anche la logica degli effetti delle divinità
     public List<Coord> getMovableSpacesAround(Coord c, int maxDiff) throws InvalidCoordinatesException{
 
         //Check coordinates c are valid
@@ -364,6 +371,18 @@ public class Board implements Cloneable, Serializable {
         }
 
         return result;
+    }
+
+    void remove (Player player) {
+        Stream<Worker> workersToBeRemoved = workers.stream()
+                .filter(w -> w.getPlayerNickname().equals(player.getNickname()));
+
+        workersToBeRemoved
+                .map(Worker::getPosition)
+                .map(c -> board[c.x][c.y])
+                .forEach(Space::setUnoccupied);
+
+        workers.removeAll(workersToBeRemoved.collect(Collectors.toList()));
     }
 
     @Override
@@ -468,5 +487,23 @@ public class Board implements Cloneable, Serializable {
         result.workers = workers;
 
         return result;
+    }
+
+    @Override
+    public boolean equals (Object o) {
+        if (!(o instanceof Board)) return false;
+        Board that = (Board) o;
+        boolean areEqual = true;
+
+        for (int i = 0; i < BOARD_SIZE && areEqual; i++) {
+            for (int j = 0; j < BOARD_SIZE && areEqual; j++) {
+                areEqual = this.board[i][j].equals(that.board[i][j]);
+            }
+        }
+        if (areEqual) {
+            areEqual = this.workers.equals(that.workers);
+        }
+
+        return areEqual;
     }
 }

@@ -12,7 +12,7 @@ public class Player {
     private Color workerColor;
     private boolean isStartPlayer;
 
-    public Player(String nickname){
+    public Player(String nickname) {
         this.nickname = nickname;
         this.workerColor = null;
         this.workersList = new ArrayList<>();
