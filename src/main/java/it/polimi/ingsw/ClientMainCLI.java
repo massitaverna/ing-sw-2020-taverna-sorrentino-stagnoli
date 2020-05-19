@@ -151,7 +151,7 @@ public class ClientMainCLI
                     //entro in una lobby
                     case "ok":
                         finished = true;
-                        cli = new ClientCLI(new Connection(socket, out, in), challenger);
+                        cli = new ClientCLI(new Connection(socket, out, in), challenger, nickname);
                         cli.run();
                         break;
 

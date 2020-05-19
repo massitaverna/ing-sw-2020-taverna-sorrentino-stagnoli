@@ -32,10 +32,11 @@ public class ClientCLI {
     private Connection serverConnection;
 
     private boolean isChallenger;
+    private String nickname;
 
     private ExecutorService exec;
 
-    public ClientCLI(Connection serverConnection, boolean isChallenger){
+    public ClientCLI(Connection serverConnection, boolean isChallenger, String nickname){
         //initialize connection object to send/receive objects from the server
         this.serverConnection = serverConnection;
         this.serverConnection.addObserver(new MessageReceiver());
@@ -178,7 +179,9 @@ public class ClientCLI {
                 objects.add("onGodChosen");
                 objects.add(input);
                 serverConnection.asyncSend(objects);
-                outputStream.println("Waiting for other players to choose their god...");
+                if(!(gods.size() == 1)) { //if i am the last to choose, do not print
+                    outputStream.println("Waiting for other players to choose their god...");
+                }
             }
         }
     }
