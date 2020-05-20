@@ -50,168 +50,146 @@ public class MainServer {
 
             int selectedLobbyIndex = -1;
             Lobby selectedLobby = null;
+            String nickname = "";
+            int numPlayers = -1;
             boolean finished = false;
 
+            String request = "";
             while (!finished) {
-
-                //send available lobbies
-                int counter = 0;
-                selectedLobbyIndex = -1;
-                selectedLobby = null;
                 try {
-                    synchronized (lobbies) {
-                        for (Lobby l : lobbies) {
-                            out.writeObject("lobby");
-                            out.flush();
-                            out.writeObject(lobbies.get(counter).getPlayersNicknames());
-                            out.flush();
-                            out.writeObject(lobbies.get(counter).getNumPlayers());
-                            out.flush();
-                            out.writeObject(counter);
-                            out.flush();
-                            counter++;
-                        }
-                    }
-                } catch (IOException e) {
-                    System.out.println("Client disconnected while trying entering a lobby. Not registered.");
-                    break;
-                }
+                    request = (String) in.readObject();
 
-                //user is selecting an available lobby (0 to create one)
-                try {
-                    while (selectedLobbyIndex < 0) {
-                        out.writeObject("?lobby");
-                        out.flush();
-                        selectedLobbyIndex = (int) in.readObject();
-                        if (selectedLobbyIndex == 0) {
-                            break;
-                        }
-                        synchronized (lobbies) {
-                            if ((selectedLobbyIndex - 1) >= 0 && (selectedLobbyIndex - 1) < lobbies.size()) {
-                                selectedLobby = lobbies.get(selectedLobbyIndex - 1);
-                                break;
-                            } else {
-                                selectedLobbyIndex = -1;
+                    switch (request) {
+
+                        case "?lobbies":
+                            //send available lobbies
+                            selectedLobbyIndex = -1;
+                            selectedLobby = null;
+                            int counter = 0;
+                            synchronized (lobbies) {
+                                out.writeObject(lobbies.size()); //num lobbies
+                                out.flush();
+                                for (Lobby l : lobbies) {
+                                    out.writeObject(lobbies.get(counter).getPlayersNicknames());
+                                    out.flush();
+                                    out.writeObject(lobbies.get(counter).getNumPlayers());
+                                    out.flush();
+                                    out.writeObject(counter);
+                                    out.flush();
+                                    counter++;
+                                }
                             }
+                            break;
+
+                        case "lobbySelected":
+                            //user is selecting an available lobby (0 to create one)
+                            selectedLobbyIndex = -1;
+                            selectedLobby = null;
+                            selectedLobbyIndex = (int) in.readObject();
+                            if (selectedLobbyIndex == 0) {
+                                //create new lobby
+                                out.writeObject("lobbySelectedOK");
+                                out.flush();
+                                out.writeObject("challenger");
+                                out.flush();
+                                break;
+                            }
+                            synchronized (lobbies) {
+                                if ((selectedLobbyIndex - 1) >= 0 && (selectedLobbyIndex - 1) < lobbies.size()) {
+                                    //join a lobby
+                                    selectedLobby = lobbies.get(selectedLobbyIndex - 1);
+                                    out.writeObject("lobbySelectedOK");
+                                    out.flush();
+                                    out.writeObject("!challenger");
+                                    out.flush();
+                                    break;
+                                }
+                            }
+                            out.writeObject("lobbySelectedKO"); //lobby not ok
+                            out.flush();
+                            break;
+
+                        case "?nicknames":
+                        /*if(selectedLobbyIndex != 0 && selectedLobby != null) {
+                            List<String> nicknames = selectedLobby.getPlayersNicknames();
+                            out.writeObject(nicknames);
+                            out.flush();
                         }
-                    }
-                } catch (IOException | ClassNotFoundException e) {
-                    System.out.println("Client disconnected while trying entering a lobby. Not registered.");
-                    break;
-                }
-
-                //If no lobbies or all lobbies are full:
-                //if (lobbies.size() == 0 || lobbies.stream().allMatch(Lobby::isFull)) {
-
-                //lobby has been selected
-                //create new lobby
-                if (selectedLobbyIndex == 0) {
-
-                    //create one and put the client in that lobby ask him for his name and for the number of players
-                    String nickname = null;
-                    int numPlayers = -1;
-
-                    //ask the client for name and numPlayers (2 or 3)
-                    try {
-                        while (nickname == null || (numPlayers != 2 && numPlayers != 3)) {
-                            out.writeObject("challenger");
+                        else{
+                            List<String> nicknames = new ArrayList<>();
+                            out.writeObject(nicknames);
                             out.flush();
-                            out.writeObject("?nickname");
-                            out.flush();
-                            out.writeObject(new ArrayList<String>());
-                            out.flush();
+                        }*/
+                            break;
+
+                        case "nicknameSelected":
                             nickname = (String) in.readObject();
-                            out.writeObject("?numPlayers");
-                            out.flush();
-                            numPlayers = (int) in.readObject();
-                        }
+                            if (selectedLobbyIndex != 0 && selectedLobby != null) {
 
-                        out.writeObject("ok");
-                        out.flush();
-
-                        //valid name and numPlayers, create the lobby
-                        Lobby newLobby = new Lobby(server, numPlayers);
-                        synchronized (lobbies) {
-                            lobbies.add(newLobby);
-                        }
-                        //the player is the challanger
-                        newLobby.addPlayer(nickname, socket, out, in);
-                        newLobby.controllerAddPlayer(nickname);
-
-                        finished = true;
-
-                        pendingSockets.remove(this.socket);
-                    }
-                    //connection interrupted
-                    catch (IOException | ClassNotFoundException e) {
-                        System.out.println("Client disconnected while trying entering a lobby. Not registered.");
-                        break;
-                    }
-
-                }
-                //add player to the lobby
-                else {
-                    //find the first free lobby
-                    //Lobby firstFreeLobby = lobbies.stream().filter(l -> !l.isFull()).collect(Collectors.toList()).get(0);
-
-                    if (selectedLobby != null) {
-
-                        //ask the client until he choose a valid nickname
-                        String nickname = null;
-                        boolean validNickname = false;
-
-                        try {
-                            out.writeObject("!challenger");
-                            out.flush();
-                            while (nickname == null || !validNickname) {
-
-                                //another player could has been faster than this player
+                                //check if lobby is full
                                 if (selectedLobby.isFull()) {
                                     out.writeObject("fullLobby");
                                     out.flush();
                                     break;
                                 }
-                                out.writeObject("?nickname");
-                                out.flush();
-                                List<String> nicknames = selectedLobby.getPlayersNicknames();
-                                out.writeObject(nicknames);
-                                out.flush();
 
-                                nickname = (String) in.readObject();
-
-                                //if addPlayer returns false, it means that the a player with that name is already in the lobby, the name must be re-inserted
-                                //note that if two clients are trying to connect in the same moment, they could choose the same nickname
-                                //only the faster client will manage to connect
-
-                                out.flush();
-
-                                validNickname = selectedLobby.addPlayer(nickname, socket, out, in);
-
+                                boolean validNickname = selectedLobby.addPlayer(nickname, socket, out, in);
                                 if (validNickname) {
+                                    //add player to the lobby
+                                    pendingSockets.remove(this.socket);
                                     out.writeObject("ok");
                                     out.flush();
                                     finished = true;
-                                    selectedLobby.controllerAddPlayer(nickname);
+                                    selectedLobby.controllerAddPlayer(nickname); //when last player arrives, game loop starts here
                                 } else { //lobby is full
                                     out.writeObject("fullLobby");
                                     out.flush();
                                     break;
                                 }
-
-                                pendingSockets.remove(this.socket);
                             }
-
-                        }//connection interrupted
-                        catch (IOException | ClassNotFoundException e) {
-                            System.out.println("Client disconnected while trying entering a lobby. Not registered.");
                             break;
-                        }
 
-                    }//selectedLobby != null
+                        case "numPlayersSelected":
+                            numPlayers = (int) in.readObject();
 
-                }//else add to lobby
+                            //create new lobby
+                            if (selectedLobbyIndex == 0 && selectedLobby == null) {
 
-            }// main loop
+                                //if valid name and num players
+                                if ((numPlayers == 2 || numPlayers == 3) && !nickname.equals("")) {
+
+                                    //valid name and numPlayers, create the lobby
+                                    Lobby newLobby = new Lobby(server, numPlayers);
+                                    synchronized (lobbies) {
+                                        lobbies.add(newLobby);
+                                    }
+                                    //the player is the challanger
+                                    newLobby.addPlayer(nickname, socket, out, in);
+                                    newLobby.controllerAddPlayer(nickname);
+
+                                    out.writeObject("ok");
+                                    out.flush();
+
+                                    finished = true;
+                                    pendingSockets.remove(this.socket);
+                                } else { //send error message
+                                    out.writeObject("fullLobby");
+                                    out.flush();
+                                }
+                            }
+                            break;
+
+                        default:
+                            System.out.println("Message from client not recognized.");
+                            break;
+
+                    }//switch request
+                } catch (IOException | ClassNotFoundException e) {
+                    System.out.println("Client disconnected while trying entering a lobby. Not registered.");
+                    pendingSockets.remove(this.socket);
+                    break;
+                }
+            }
 
         }//void run
 
