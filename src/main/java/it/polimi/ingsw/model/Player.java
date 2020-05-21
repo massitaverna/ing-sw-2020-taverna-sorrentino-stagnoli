@@ -1,9 +1,12 @@
 package it.polimi.ingsw.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Player {
+public class Player implements Serializable {
+
+    private static final long serialVersionUID = 6L;
 
     private final String nickname;
     private God god;

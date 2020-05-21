@@ -8,6 +8,7 @@ import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.view.PlayerView;
+import it.polimi.ingsw.view.RemotePlayerView;
 
 import java.util.List;
 
@@ -20,12 +21,9 @@ public class RealController implements PlayerViewEventListener, ChallengerViewEv
         setup = new Setup(this.model);
     }
 
-
-
-
     @Override
     public void onWorkerChosen(EventSource source, Coord workerPos) {
-        String nickname = ((PlayerView) source).getNickname();
+        String nickname = ((RemotePlayerView) source).getNickname();
 
         if (!isCurrentPlayer(nickname)) {
             throw new IllegalStateException("Player " + nickname + "tried to choose a " +
@@ -38,7 +36,7 @@ public class RealController implements PlayerViewEventListener, ChallengerViewEv
 
     @Override
     public void onMoveChosen(EventSource source, Coord moveChoice) {
-        String nickname = ((PlayerView) source).getNickname();
+        String nickname = ((RemotePlayerView) source).getNickname();
 
         if (!isCurrentPlayer(nickname)) {
             throw new IllegalStateException("Player " + nickname + "tried to move not in his turn.");
@@ -50,7 +48,7 @@ public class RealController implements PlayerViewEventListener, ChallengerViewEv
 
     @Override
     public void onBuildChosen(EventSource source, Coord buildChoice, Level level) {
-        String nickname = ((PlayerView) source).getNickname();
+        String nickname = ((RemotePlayerView) source).getNickname();
 
         if (!isCurrentPlayer(nickname)) {
             throw new IllegalStateException("Player " + nickname + "tried to build not in his turn.");

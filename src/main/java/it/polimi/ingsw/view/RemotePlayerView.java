@@ -11,7 +11,6 @@ import it.polimi.ingsw.server.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class RemotePlayerView implements ModelEventListener, EventSource {
 
@@ -26,7 +25,7 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
     }
 
     private Connection clientConnection;
-    protected Object receivedObject;
+    private Object receivedObject;
 
     private String nickname;
 
@@ -54,7 +53,7 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
     }
 
     //this method is fired when an object is received from the client
-    protected void handleMessageReceived() {
+    private void handleMessageReceived() {
         List<Object> objects;
         if(receivedObject instanceof List)
             objects = (List<Object>)receivedObject;
@@ -103,7 +102,7 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
                 ((ChallengerViewEventListener)controller).onStartPlayerChosen(this, startPlayer);
                 break;
             //client ping check
-            case "onPing":
+            case "onPong":
                 //TODO: client ping succesful
                 break;
             default:
@@ -211,10 +210,9 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
     }
 
     @Override
-    public void onWin(String winner) {
+    public void onEnd() {
         List<Object> objects = new ArrayList<>();
-        objects.add("onWin");
-        objects.add(winner);
+        objects.add("onEnd");
         sendObjectToClient(objects);
     }
 
@@ -223,9 +221,6 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         return this.nickname;
     }
 
-    public void onEnd() {
-        //TODO: remove/replace in the correct position
-    }
 
 }
 

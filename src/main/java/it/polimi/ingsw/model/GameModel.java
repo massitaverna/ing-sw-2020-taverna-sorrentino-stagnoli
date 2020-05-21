@@ -1,6 +1,9 @@
 package it.polimi.ingsw.model;
 
 import com.google.gson.Gson;
+import it.polimi.ingsw.exceptions.controller.IllegalPlayerException;
+import it.polimi.ingsw.exceptions.model.AlreadyExistingPlayerException;
+import it.polimi.ingsw.exceptions.model.GameFullException;
 import it.polimi.ingsw.exceptions.model.IllegalWorkerChoiceException;
 import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.Listener;
@@ -11,7 +14,6 @@ import it.polimi.ingsw.model.handler.RequestHandlerCreator;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -115,11 +117,18 @@ public class GameModel implements EventSource {
         return this.queue.size() == this.numPlayers;
     }
 
-    public void addNewPlayer(Player player) {
+    public void addNewPlayer(Player player){
+        if(queue.size() == this.numPlayers){
+            throw new GameFullException("game is full");
+        }
+        else if(this.queue.stream().anyMatch(p -> p.getNickname().equals(player.getNickname()))){
+            throw new AlreadyExistingPlayerException("player with that nickname already exixsts");
+        }
 
         if (queue.size() == 0) {
             currentPlayer = player; // Set Challenger as currentPlayer
         }
+
         queue.add(player);
         this.board.addWorker(player.getWorker(0));
         this.board.addWorker(player.getWorker(1));
@@ -159,7 +168,7 @@ public class GameModel implements EventSource {
             throw new IllegalArgumentException("Given Player is not part of the game");
         }
 
-        //If color has been choose by another player, throw exception
+        //If color has been taken by another player, throw exception
         if(!this.colors.contains(c))
             throw new IllegalArgumentException("Chosen color is not available any longer.");
 

@@ -20,27 +20,25 @@ public class Connection extends Observable<Object> implements Runnable {
 
     private boolean active = true;
 
-    public Connection(Socket socket, Lobby lobby) {
+    public Connection(Socket socket, Lobby lobby, ObjectOutputStream o, ObjectInputStream i) {
         this.socket = socket;
         this.lobby = lobby;
-        try {
-            in = new ObjectInputStream(socket.getInputStream());
-            out = new ObjectOutputStream(socket.getOutputStream());
-        }catch (IOException e){
-            e.printStackTrace();
-            this.active = false;
-        }
+        this.out = o;
+        this.in = i;
     }
 
-    public Connection(Socket socket){
+    public Connection(Socket socket, ObjectOutputStream o, ObjectInputStream i){
         this.socket = socket;
-        try {
-            in = new ObjectInputStream(socket.getInputStream());
-            out = new ObjectOutputStream(socket.getOutputStream());
-        }catch (IOException e){
-            e.printStackTrace();
-            this.active = false;
-        }
+        this.out = o;
+        this.in = i;
+    }
+
+    public synchronized ObjectOutputStream getOutputStream(){
+        return this.out;
+    }
+
+    public synchronized ObjectInputStream getInputStream(){
+        return this.in;
     }
 
     private synchronized boolean isActive(){
@@ -48,12 +46,14 @@ public class Connection extends Observable<Object> implements Runnable {
     }
 
     private synchronized void send(Object message) {
-        try{
-            out.reset();
-            out.writeObject(message);
-            out.flush();
-        } catch(IOException e){
-            System.err.println(e.getMessage());
+        if(isActive()) {
+            try {
+                out.reset();
+                out.writeObject(message);
+                out.flush();
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
         }
     }
 
@@ -67,14 +67,18 @@ public class Connection extends Observable<Object> implements Runnable {
     }
 
     public synchronized void closeConnection() {
-        try {
-            socket.close();
-        } catch (IOException e) {
-            System.err.println("Error when closing socket!");
+        if(isActive()) {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                System.err.println("Error when closing socket!");
+            }
+            active = false;
+            System.out.println("Socket " + this.toString() + ": Closing connection");
+            /*if(lobby != null) {
+                lobby.deregisterConnection(this);
+            }*/
         }
-        active = false;
-        System.out.println("Deregistering client...");
-        lobby.deregisterConnection(this);
     }
 
     @Override
@@ -86,13 +90,18 @@ public class Connection extends Observable<Object> implements Runnable {
                 notify(received);
             }
 
-            //disconnect the client, end of the game (if in server)
-            if(lobby != null) {
+            //tell disconnection to the client, (if in server)
+            /*if(lobby != null) {
                 lobby.deregisterConnection(this);
-            }
+            }*/
 
         } catch (IOException | NoSuchElementException | ClassNotFoundException e) {
-            System.err.println("Error!" + e.getMessage());
+            //System.err.println("Error! " + e.getMessage());
+
+            //if this connection is running on the server, tell the lobby to close all the connections
+            if (lobby != null) {
+                lobby.closeConnections();
+            }
         }finally{
             closeConnection();
         }

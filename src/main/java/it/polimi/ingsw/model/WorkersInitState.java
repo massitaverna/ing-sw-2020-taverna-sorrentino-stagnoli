@@ -15,9 +15,15 @@ public class WorkersInitState extends ModelState {
     public void nextStep() {
         if (!startPlayerChosen) {
             startPlayerChosen = true;
-            String challenger = model.getCurrentPlayer().getNickname();
+
+            /*String challenger = model.getCurrentPlayer().getNickname();
             ModelEventListener challengerListener = model.getListenerByNickname(challenger);
-            challengerListener.onStartPlayerSelection(model.getPlayersNicknames());
+            challengerListener.onStartPlayerSelection(model.getPlayersNicknames());*/
+
+            //all players should receive onStartPlayerSelection:
+            for(String nickname :model.getPlayersNicknames()){
+                model.getListenerByNickname(nickname).onStartPlayerSelection(model.getPlayersNicknames());
+            }
 
             return;
         }

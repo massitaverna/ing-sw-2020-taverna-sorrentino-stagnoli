@@ -1,5 +1,7 @@
 package it.polimi.ingsw.model;
 
+import it.polimi.ingsw.listeners.ModelEventListener;
+
 public class EndState extends ModelState {
 
     public EndState(GameModel model) {
@@ -11,6 +13,9 @@ public class EndState extends ModelState {
         String winner = model.getCurrentPlayer().getNickname();
         model.getPlayersNicknames().stream()
                 .map(nickname -> model.getListenerByNickname(nickname))
-                .forEach(l -> l.onWin(winner));
+                .forEach(l -> l.onMessage(winner + " has won !!"));
+        model.getPlayersNicknames().stream()
+                .map(nickname -> model.getListenerByNickname(nickname))
+                .forEach(ModelEventListener::onEnd);
     }
 }

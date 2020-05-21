@@ -5,6 +5,7 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.God;
 import it.polimi.ingsw.model.GodSelectionState;
 import it.polimi.ingsw.view.PlayerView;
+import it.polimi.ingsw.view.RemotePlayerView;
 
 import java.util.*;
 
@@ -166,10 +167,10 @@ public class Setup {
     public void onGodChosen(EventSource source, String godName) {
         //TODO: check that the player has not chosen his god yet
         List<God> gods = model.getAvailableGods();
-        God chosenGod = gods.stream().filter(god -> god.getName().equals(godName))
+        God chosenGod = gods.stream().filter(god -> god.getName().toLowerCase().equals(godName.toLowerCase()))
                 .findFirst().orElse(null);
 
-        String nickname = ((PlayerView) source).getNickname();
+        String nickname = ((RemotePlayerView) source).getNickname();
         Player player;
         try {
             player = model.getPlayerByNickname(nickname);
@@ -206,7 +207,7 @@ public class Setup {
 
     public void onWorkerInitialization(EventSource source, Coord coord) {
         //TODO: check that the player has not initialized both workers yet
-        String nickname = ((PlayerView) source).getNickname();
+        String nickname = ((RemotePlayerView) source).getNickname();
         Player player;
         try {
             player = model.getPlayerByNickname(nickname);

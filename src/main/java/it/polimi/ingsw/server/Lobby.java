@@ -2,38 +2,79 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.controller.RealController;
 import it.polimi.ingsw.model.GameModel;
-import it.polimi.ingsw.view.RemoteChallengerView;
 import it.polimi.ingsw.view.RemotePlayerView;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class Lobby {
 
     /*private class PingChecker implements Runnable{
         @Override
         public void run() {
-
+            while(true){
+                System.out.println("Pinging " + playersViews.size() + " clients.");
+                for(RemotePlayerView view: playersViews){
+                    try {
+                        List<Object> message = new ArrayList<>();
+                        message.add("onPing");
+                        view.getClientConnection().getOutputStream().writeObject(message);
+                    } catch (IOException e) {
+                        //a client has been disconnected
+                        //tell other client to disconnect
+                        System.out.println("A client has been disconnected, disconnecting other clients...");
+                        for(RemotePlayerView other: playersViews){
+                            try {
+                                List<Object> disconnection = new ArrayList<>();
+                                disconnection.add("disconnected");
+                                other.getClientConnection().getOutputStream().writeObject(disconnection);
+                                other.getClientConnection().closeConnection();
+                            } catch (IOException ex) {  }
+                        }
+                        //stop pinging
+                        break;
+                    }
+                }
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException e) { break; }
+            }
+            System.out.println("Closing lobby...");
+            closeLobby();
         }
     }*/
 
     private GameModel model;
     private RealController controller;
+    private int numPlayers;
 
     private List<RemotePlayerView> playersViews;
     private RemotePlayerView challengerView;
 
     private ExecutorService executor = Executors.newCachedThreadPool();
-    //private ExecutorService pingExecutor = Executors.newScheduledThreadPool(1);
 
-    public Lobby(){
+    private MainServer server;
+
+    private boolean isClosed = false;
+
+    public Lobby(MainServer server, int numPlayers){
+        this.server = server;
         this.model = new GameModel();
         this.controller = new RealController(this.model);
         this.playersViews = new ArrayList<>();
+        this.numPlayers = numPlayers;
+        //new Thread(new PingChecker(), "PingChecker").start();
+    }
+
+    public synchronized boolean isFull(){
+        return this.playersViews.size() == this.numPlayers;
     }
 
     public synchronized List<String> getPlayersNicknames(){
@@ -44,7 +85,7 @@ public class Lobby {
         return result;
     }
 
-    public synchronized boolean addPlayer(String nickname, Socket socket){
+    public synchronized boolean addPlayer(String nickname, Socket socket, ObjectOutputStream o, ObjectInputStream i){
 
         //if name is null or is already present, return false
         if(nickname == null || nickname.equals("") || this.playersViews.stream().anyMatch(x -> x.getNickname().equals(nickname)) )
@@ -53,25 +94,40 @@ public class Lobby {
         if(socket.isClosed())
             return false;
 
-        RemotePlayerView playerView = new RemotePlayerView(nickname, new Connection(socket, this));
+        if(this.isClosed){
+            return false;
+        }
+
+        if(this.isFull()){
+            return false;
+        }
+
+        RemotePlayerView playerView = new RemotePlayerView(nickname, new Connection(socket, this, o, i));
+        //start a separate thread waiting for client messages
+        this.executor.submit(playerView.getClientConnection());
         //add to the list of players
         this.playersViews.add(playerView);
         //pass the controller to make the view to add it as listener
         playerView.addListener(controller);
         //the player view is a listener of the model
-        this.controller.onNicknameChosen(playerView, nickname);
-        //start a separate thread waiting for client messages
-        this.executor.submit(playerView.getClientConnection());
+        this.model.addListener(playerView);
 
         //if it is the first player coming, he is the challenger
         if(this.playersViews.size() == 1){
             this.challengerView = playerView;
+            this.setNumPlayers(this.numPlayers);
         }
 
         return true;
     }
 
-    public synchronized void setNumPlayers(int numPlayers){
+    //the controller must add the player to the model AFTER the server finished it's initial communication with the new client
+    public synchronized void controllerAddPlayer(String nickname){
+        RemotePlayerView playerView = this.playersViews.stream().filter(v -> v.getNickname().equals(nickname)).collect(Collectors.toList()).get(0);
+        controller.onNicknameChosen(playerView, nickname);
+    }
+
+    private  void setNumPlayers(int numPlayers){
         if(this.challengerView == null){
             throw new RuntimeException("There is no challanger in the lobby");
         }
@@ -79,19 +135,28 @@ public class Lobby {
         this.controller.onNumberOfPlayersChosen(this.challengerView, numPlayers);
     }
 
-    public synchronized void deregisterConnection(Connection cc){
-        //game is ended, goodbye
-        for(RemotePlayerView v: this.playersViews){
-            List<Object> message = new ArrayList<>();
-            message.add("onMessage");
-            message.add("disconnected");
-            v.sendObjectToClient(message);
-            //client has to close the game
-        }
-        //this.playersViews.clear();
+    public synchronized int getNumPlayers(){
+        return model.getNumPlayers();
     }
 
-    public synchronized boolean isFull(){
-        return this.playersViews.size() == this.model.getNumPlayers();
+    //called when a client is disconnected
+    public synchronized void closeConnections(){
+        if(!isClosed) {
+            System.out.println("A client has been disconnected, disconnecting other clients...");
+            for (RemotePlayerView view : playersViews) {
+                try {
+                    //tell the client to disconnect
+                    List<Object> disconnection = new ArrayList<>();
+                    disconnection.add("onMessage");
+                    disconnection.add("disconnected");
+                    view.getClientConnection().getOutputStream().writeObject(disconnection);
+                    //close the socket on the server connected to that client
+                    view.getClientConnection().closeConnection();
+                } catch (IOException ex) { /*do nothing*/ }
+            }
+            executor.shutdown();
+            this.server.removeLobby(this);
+            this.isClosed = true;
+        }
     }
 }

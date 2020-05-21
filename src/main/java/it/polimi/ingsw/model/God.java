@@ -19,4 +19,13 @@ public class God implements Serializable {
     public String getName() { return name; }
     public String getDescription() { return description; }
 
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof God){
+            God other = (God)o;
+            return other.getName().equals(this.getName());
+        }
+        return false;
+    }
+
 }

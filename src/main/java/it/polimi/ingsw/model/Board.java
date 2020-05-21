@@ -45,6 +45,7 @@ public class Board implements Cloneable, Serializable {
 
         this.workers.add(w);
     }
+    
 
     Worker[] getAllWorkers(){
         Worker[] allWorkers = new Worker[this.workers.size()];
@@ -307,18 +308,20 @@ public class Board implements Cloneable, Serializable {
         List<Coord> result = new ArrayList<>();
         for (int i = -1; i < 1; i++) {
             for (int j = -1; j < 1; j++) {
-                if (i==0 && j==0)
+                if (i == 0 && j == 0)
                     continue;
 
                 //if(space not occupied/dome && Rules.CheckSomething) ??
-                if(!this.board[c.x + i][c.y + j].isOccupied() &&
-                        !this.board[c.x + i][c.y + j].isDome() &&
-                        (this.board[c.x + i][c.y + j].getHeight().ordinal() - this.board[c.x][c.y].getHeight().ordinal()
-                                <= maxDiff
-                        )
-                ) {
-                    /*result.put(new Coord(c.x + i, c.y + j), this.board[c.x + i][c.y + j]);*/
-                    result.add(new Coord(c.x + i, c.y + j));
+                if (Coord.validCoord(new Coord(c.x + i, c.y + j))) {
+                    if (!this.board[c.x + i][c.y + j].isOccupied() &&
+                            !this.board[c.x + i][c.y + j].isDome() &&
+                            (this.board[c.x + i][c.y + j].getHeight().ordinal() - this.board[c.x][c.y].getHeight().ordinal()
+                                    <= maxDiff
+                            )
+                    ) {
+                        /*result.put(new Coord(c.x + i, c.y + j), this.board[c.x + i][c.y + j]);*/
+                        result.add(new Coord(c.x + i, c.y + j));
+                    }
                 }
             }
         }
@@ -340,10 +343,12 @@ public class Board implements Cloneable, Serializable {
                     continue;
 
                 //if(space not occupied/dome && Rules.CheckSomething) ??
-                if(!this.board[c.x + i][c.y + j].isOccupied() &&
-                        !this.board[c.x + i][c.y + j].isDome() ) {
+                if(Coord.validCoord(new Coord(c.x + i, c.y + j))) {
+                    if (!this.board[c.x + i][c.y + j].isOccupied() &&
+                            !this.board[c.x + i][c.y + j].isDome()) {
 
-                    result.add(new Coord(c.x + i, c.y + j));
+                        result.add(new Coord(c.x + i, c.y + j));
+                    }
                 }
             }
         }
