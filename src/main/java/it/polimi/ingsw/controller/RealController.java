@@ -66,7 +66,14 @@ public class RealController implements PlayerViewEventListener, ChallengerViewEv
     }
 
     public void skipAction(EventSource source) {
-        //TODO: implement it
+        String nickname = ((PlayerView) source).getNickname();
+
+        if (!isCurrentPlayer(nickname)) {
+            throw new IllegalStateException("Player " + nickname + "tried to skip action not in his turn.");
+        }
+
+        model.setEnd();
+        model.nextStep();
     }
 
 

@@ -150,10 +150,10 @@ public class ChallengerView implements ModelEventListener, EventSource {
             if (input.equals("1") || input.toLowerCase().equals(players.get(0).toLowerCase())){
                 valid = true;
                 listener.onStartPlayerChosen(this, players.get(0));
-            } if (input.equals("2") || input.toLowerCase().equals(players.get(1).toLowerCase())){
+            } else if (input.equals("2") || input.toLowerCase().equals(players.get(1).toLowerCase())){
                 valid = true;
                 listener.onStartPlayerChosen(this, players.get(1));
-            } if (input.equals("3") || input.toLowerCase().equals(players.get(2).toLowerCase())){
+            } else if (input.equals("3") || input.toLowerCase().equals(players.get(2).toLowerCase())){
                 valid = true;
                 listener.onStartPlayerChosen(this, players.get(2));
             } else

@@ -78,46 +78,33 @@ public class StandardGameTest extends GameRulesTest {
 
     @Test
     public void cannotMoveInOccupiedSpace() {
-        nextStep();
-        model.setWorkerChoice(Coord.convertStringToCoord("B1"));
-        nextStep();
-        setMove(Coord.convertStringToCoord("A1"));
-        Board after = model.getBoard();
-        assertEquals(before, after);
+        src = Coord.convertStringToCoord("B1");
+        dest = Coord.convertStringToCoord("A1");
+        super.cannotMoveInOccupiedSpace();
     }
 
     @Test
     public void cannotMoveToDome() {
-        nextStep();
-        model.setWorkerChoice(Coord.convertStringToCoord("B1"));
-        nextStep();
-        setMove(Coord.convertStringToCoord("C2"));
-        Board after = model.getBoard();
-        assertEquals(before, after);
+        src = Coord.convertStringToCoord("B1");
+        dest = Coord.convertStringToCoord("C2");
+        super.cannotMoveToDome();
     }
 
     @Test
     public void cannotMoveUpMoreThanOneLevel() {
-        nextStep();
-        model.setWorkerChoice(Coord.convertStringToCoord("A1"));
-        nextStep();
-        setMove(Coord.convertStringToCoord("A2"));
-        Board after = model.getBoard();
-        assertEquals(before, after);
+        src = Coord.convertStringToCoord("A1");
+        dest = Coord.convertStringToCoord("A2");
+        super.cannotMoveUpMoreThanOneLevel();
     }
 
     @Test
-    public void CannotMoveFarAway() {
+    public void cannotMoveFarAway() {
         //Playing with second player
         model.nextPlayer();
 
-        //Try to move
-        nextStep();
-        model.setWorkerChoice(Coord.convertStringToCoord("A3"));
-        nextStep();
-        setMove(Coord.convertStringToCoord("C3"));
-        Board after = model.getBoard();
-        assertEquals(before, after);
+        src = Coord.convertStringToCoord("A3");
+        dest = Coord.convertStringToCoord("C3");
+        super.cannotMoveFarAway();
     }
 
     @Test

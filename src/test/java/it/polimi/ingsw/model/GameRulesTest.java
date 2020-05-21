@@ -9,6 +9,8 @@ import static org.junit.Assert.fail;
 public class GameRulesTest {
     protected GameModel model;
     protected Board before;
+    protected Coord src;
+    protected Coord dest;
 
 
     protected void nextStep() {
@@ -48,5 +50,47 @@ public class GameRulesTest {
             after = model.getBoard();
             assertEquals(before, after);
         }
+    }
+
+
+
+
+
+
+
+    protected void cannotMoveInOccupiedSpace() {
+        nextStep();
+        model.setWorkerChoice(src);
+        nextStep();
+        setMove(dest);
+        Board after = model.getBoard();
+        assertEquals(before, after);
+    }
+
+    protected void cannotMoveToDome() {
+        nextStep();
+        model.setWorkerChoice(src);
+        nextStep();
+        setMove(dest);
+        Board after = model.getBoard();
+        assertEquals(before, after);
+    }
+
+    protected void cannotMoveUpMoreThanOneLevel() {
+        nextStep();
+        model.setWorkerChoice(src);
+        nextStep();
+        setMove(dest);
+        Board after = model.getBoard();
+        assertEquals(before, after);
+    }
+
+    protected void cannotMoveFarAway() {
+        nextStep();
+        model.setWorkerChoice(src);
+        nextStep();
+        setMove(dest);
+        Board after = model.getBoard();
+        assertEquals(before, after);
     }
 }

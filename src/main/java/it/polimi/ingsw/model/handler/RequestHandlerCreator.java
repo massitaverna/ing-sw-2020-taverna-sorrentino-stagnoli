@@ -16,8 +16,10 @@ public class RequestHandlerCreator {
     private final String god;
     private static final List<Rule> standardRules = new ArrayList<>();
     private static final Map<String, List<Rule>> godRules = new HashMap<>();
+    private static final List<Rule> standardBuildUpRules = new ArrayList<>();
 
     static {
+        initStandardBuildUpRules();
         initStandardRules();
     }
 
@@ -46,16 +48,6 @@ public class RequestHandlerCreator {
 
         return result;
     }
-
-    /*
-    private static List<Rule> getStandardRules() {
-        if (standardRules.isEmpty()) {
-            initStandardRules();
-        }
-
-        return new ArrayList<>(standardRules);
-    }
-    */
 
     private List<Rule> getGodRules() {
 
@@ -159,7 +151,11 @@ public class RequestHandlerCreator {
         List<Rule> generatedRules = new ArrayList<>();
         r.setGeneratedRules(generatedRules);
 
-        generatedRules.addAll(getStandardBuildUpRules());
+        if (standardBuildUpRules.size() == 0) {
+            throw new IllegalStateException("Trying to initialize standard rules " +
+                    "without initializing standard build-up rules before.");
+        }
+        generatedRules.addAll(standardBuildUpRules);
 
         r = new Rule();
         r.setPurpose(Purpose.VALIDATION);
@@ -232,6 +228,58 @@ public class RequestHandlerCreator {
             generatedRules.add(standardRules.get(standardRules.size() - 1));
         }
 
+        if (god.equals("Athena")) { //COMPLETE&TESTED
+            Rule r = new Rule();
+            r.setPurpose(Purpose.GENERATION);
+            r.setActionType(ActionType.MOVE);
+            r.setTarget(Target.OPPONENTS);
+            BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
+                    board.getSpace(cPair.get(1)).getHeight().ordinal() >
+                            board.getSpace(cPair.get(0)).getHeight().ordinal();
+            r.setCondition(condition);
+            result.add(r);
+
+            List<Rule> generatedRules = new ArrayList<>();
+            r.setGeneratedRules(generatedRules);
+
+            r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.MOVE);
+            r.setDecision(Decision.DENY);
+            condition = (cPair, board) ->
+                    board.getSpace(cPair.get(1)).getHeight().ordinal() >
+                            board.getSpace(cPair.get(0)).getHeight().ordinal();
+            r.setCondition(condition);
+            generatedRules.add(r);
+
+            r = new Rule();
+            r.setPurpose(Purpose.GENERATION);
+            r.setActionType(ActionType.MOVE);
+            r.setTarget(Target.MYSELF);
+            condition = (cPair, board) -> true;
+            r.setCondition(condition);
+            generatedRules.add(r);
+            r.setGeneratedRules(generatedRules);
+
+            r = new Rule();
+            r.setPurpose(Purpose.GENERATION);
+            r.setActionType(ActionType.BUILD);
+            r.setTarget(Target.MYSELF);
+            condition = (cPair, board) -> true;
+            r.setCondition(condition);
+            generatedRules.add(r);
+            r.setGeneratedRules(generatedRules);
+
+            r = new Rule();
+            r.setPurpose(Purpose.GENERATION);
+            r.setActionType(ActionType.END);
+            r.setTarget(Target.MYSELF);
+            condition = (cPair, board) -> true;
+            r.setCondition(condition);
+            generatedRules.add(r);
+            r.setGeneratedRules(generatedRules);
+        }
+
         if (god.equals("Atlas")) { // COMPLETE&TESTED
             Rule r = new Rule();
             r.setPurpose(Purpose.GENERATION);
@@ -256,18 +304,91 @@ public class RequestHandlerCreator {
             generatedRules.add(r);
         }
 
-        /*if (god.equals("Demeter")) {
-            List<Rule> result = new ArrayList<>();
+        if (god.equals("Demeter")) {
             Rule r = new Rule();
-            r.setPurpose(Purpose.VALIDATION);
-            r.setActionType(ActionType.BUILD);
-            r.setDecision(Decision.GRANT);
-            BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
-                    !board.getSpace(cPair.get(1)).isOccupied() && cPair.get(0).isNear(cPair.get(1));
+            r.setPurpose(Purpose.GENERATION);
+            r.setActionType(ActionType.MOVE);
+            r.setTarget(Target.MYSELF);
+            BiPredicate<Pair<Coord>, Board> condition = (cPair, board) -> true;
             r.setCondition(condition);
             result.add(r);
-            godRules.put("Demeter", result);
-        }*/
+
+            List<Rule> generatedRules = new ArrayList<>();
+            r.setGeneratedRules(generatedRules);
+            generatedRules.add(r);
+
+            r = new Rule();
+            r.setPurpose(Purpose.GENERATION);
+            r.setActionType(ActionType.BUILD);
+            r.setTarget(Target.MYSELF);
+            condition = (cPair, board) -> true;
+            r.setCondition(condition);
+            generatedRules.add(r);
+
+            generatedRules = new ArrayList<>();
+            r.setGeneratedRules(generatedRules);
+
+            r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.BUILD);
+            r.setDecision(Decision.DENY);
+            r.setBuildLevel(Level.GROUND);
+            TriPredicate<Pair<Coord>, Pair<Coord>, Board> symbolicCondition =
+                    (oldPair, pair, board) -> oldPair.get(1).equals(pair.get(1));
+            r.setSymbolicCondition(symbolicCondition);
+            generatedRules.add(r);
+
+            r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.BUILD);
+            r.setDecision(Decision.DENY);
+            r.setBuildLevel(Level.LVL1);
+            symbolicCondition = (oldPair, pair, board) -> oldPair.get(1).equals(pair.get(1));
+            r.setSymbolicCondition(symbolicCondition);
+            generatedRules.add(r);
+
+            r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.BUILD);
+            r.setDecision(Decision.DENY);
+            r.setBuildLevel(Level.LVL2);
+            symbolicCondition = (oldPair, pair, board) -> oldPair.get(1).equals(pair.get(1));
+            r.setSymbolicCondition(symbolicCondition);
+            generatedRules.add(r);
+
+            r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.BUILD);
+            r.setDecision(Decision.DENY);
+            r.setBuildLevel(Level.LVL3);
+            symbolicCondition = (oldPair, pair, board) -> oldPair.get(1).equals(pair.get(1));
+            r.setSymbolicCondition(symbolicCondition);
+            generatedRules.add(r);
+
+            r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.BUILD);
+            r.setDecision(Decision.DENY);
+            r.setBuildLevel(Level.DOME);
+            symbolicCondition = (oldPair, pair, board) -> oldPair.get(1).equals(pair.get(1));
+            r.setSymbolicCondition(symbolicCondition);
+            generatedRules.add(r);
+
+            generatedRules.addAll(standardBuildUpRules);
+
+            r = new Rule();
+            r.setPurpose(Purpose.GENERATION);
+            r.setActionType(ActionType.BUILD);
+            r.setTarget(Target.MYSELF);
+            condition = (cPair, board) -> true;
+            r.setCondition(condition);
+            generatedRules.add(r);
+
+            generatedRules = new ArrayList<>();
+            r.setGeneratedRules(generatedRules);
+            generatedRules.addAll(denyAll());
+            generatedRules.add(doNothingOnEnd());
+        }
 
         if (god.equals("Hephaestus")) { //COMPLETE&TESTED
             Rule r = new Rule();
@@ -335,11 +456,11 @@ public class RequestHandlerCreator {
             r.setActionType(ActionType.BUILD);
             r.setDecision(Decision.DENY);
             r.setBuildLevel(Level.DOME);
-            symbolicCondition = (oldPair, pair, board) -> !pair.get(1).equals(oldPair.get(1));
-            r.setSymbolicCondition(symbolicCondition);
+            condition = (cPair, board) -> true;
+            r.setCondition(condition);
             generatedRules.add(r);
 
-            generatedRules.addAll(getStandardBuildUpRules());
+            generatedRules.addAll(standardBuildUpRules);
 
             r = new Rule();
             r.setPurpose(Purpose.GENERATION);
@@ -369,7 +490,8 @@ public class RequestHandlerCreator {
             BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
                     board.getSpace(cPair.get(1)).isOccupied() && cPair.get(0).isNear(cPair.get(1)) &&
                             Coord.validCoord(cPair.get(1).sum(getDirection.apply(cPair.get(0), cPair.get(1)))) &&
-                            !board.getSpace(cPair.get(1).sum(getDirection.apply(cPair.get(0), cPair.get(1)))).isOccupied();
+                            !board.getSpace(cPair.get(1).sum(getDirection.apply(cPair.get(0), cPair.get(1))))
+                                    .isOccupied();
             r.setCondition(condition);
             BiFunction<Coord, Coord, Coord> forceSpaceFunction = (before, after) ->
                     after.sum(getDirection.apply(before, after));
@@ -377,11 +499,54 @@ public class RequestHandlerCreator {
             result.add(r);
         }
 
+        if (god.equals("Pan")) { //COMPLETE&TESTED
+            Rule r = new Rule();
+            r.setPurpose(Purpose.WIN);
+            r.setActionType(ActionType.MOVE);
+            BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
+                    board.getSpace(cPair.get(0)).getHeight().ordinal() -
+                            board.getSpace(cPair.get(1)).getHeight().ordinal()
+                            >= 2;
+            r.setCondition(condition);
+            result.add(r);
+        }
+
+        if (god.equals("Prometheus")) { //COMPLETE&TESTED
+            result.addAll(standardBuildUpRules);
+
+            Rule r = new Rule();
+            r.setPurpose(Purpose.GENERATION);
+            r.setActionType(ActionType.BUILD);
+            r.setTarget(Target.MYSELF);
+            BiPredicate<Pair<Coord>, Board> condition = (cPair, board) -> true;
+            r.setCondition(condition);
+            result.add(r);
+
+            List<Rule> generatedRules = new ArrayList<>();
+            r.setGeneratedRules(generatedRules);
+
+            r = new Rule();
+            r.setPurpose(Purpose.VALIDATION);
+            r.setActionType(ActionType.MOVE);
+            r.setDecision(Decision.DENY);
+            condition = (cPair, board) ->
+                    board.getSpace(cPair.get(1)).getHeight().ordinal() >
+                            board.getSpace(cPair.get(0)).getHeight().ordinal();
+            r.setCondition(condition);
+            generatedRules.add(r);
+            generatedRules.addAll(standardRules);
+        }
+
         godRules.put(god, result);
     }
 
 
-    private static List<Rule> getStandardBuildUpRules() {
+    private static void initStandardBuildUpRules() {
+        if (standardBuildUpRules.size() != 0) {
+            throw new IllegalStateException("Trying to initialize standard build-up " +
+                    "rules when already initialized.");
+        }
+
         List<Rule> result = new ArrayList<>();
 
         BiPredicate<Pair<Coord>, Board> conditionOnProximity = (cPair, board) ->
@@ -431,7 +596,7 @@ public class RequestHandlerCreator {
 
         }
 
-        return result;
+        standardBuildUpRules.addAll(result);
     }
 
     private BiPredicate<Pair<Coord>, Board> getBuildUpConditionFrom(Level level) {
