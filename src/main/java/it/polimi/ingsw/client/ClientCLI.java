@@ -45,6 +45,7 @@ public class ClientCLI {
         this.s = new Scanner(System.in);
 
         this.isChallenger = isChallenger;
+        this.nickname = nickname;
 
         exec = Executors.newFixedThreadPool(1);
     }
@@ -86,7 +87,7 @@ public class ClientCLI {
                 break;
 
             case "onMessage":
-                String message = (String)((List<Object>) receivedObject).get(2);
+                String message = (String)((List<Object>) receivedObject).get(1);
                 outputStream.println(message);
                 break;
 
@@ -137,11 +138,11 @@ public class ClientCLI {
                 break;
 
             //LOBBY MESSAGES
-            case "onPing":
+            /*case "onPing":
                 List<Object> response = new ArrayList<>();
                 response.add("onPong");
                 this.serverConnection.asyncSend(response);
-                break;
+                break;*/
 
             case "disconnected":
                 // the game is no more valid, client must disconnect

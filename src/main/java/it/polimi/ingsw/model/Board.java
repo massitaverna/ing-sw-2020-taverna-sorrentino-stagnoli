@@ -379,15 +379,16 @@ public class Board implements Cloneable, Serializable {
     }
 
     void remove (Player player) {
-        Stream<Worker> workersToBeRemoved = workers.stream()
-                .filter(w -> w.getPlayerNickname().equals(player.getNickname()));
+        List<Worker> workersToBeRemoved = workers.stream()
+                .filter(w -> w.getPlayerNickname().equals(player.getNickname()))
+                .collect(Collectors.toList());
 
-        workersToBeRemoved
+        workersToBeRemoved.stream()
                 .map(Worker::getPosition)
                 .map(c -> board[c.x][c.y])
                 .forEach(Space::setUnoccupied);
 
-        workers.removeAll(workersToBeRemoved.collect(Collectors.toList()));
+        workers.removeAll(workersToBeRemoved);
     }
 
     @Override
