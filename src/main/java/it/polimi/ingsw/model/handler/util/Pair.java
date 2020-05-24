@@ -20,4 +20,8 @@ public class Pair<T> {
         throw new IllegalArgumentException("A pair does not have the " + x + "-th element.");
     }
 
+    @Override
+    public String toString() {
+        return "(" + first.toString() + ", " + second.toString() + ")";
+    }
 }

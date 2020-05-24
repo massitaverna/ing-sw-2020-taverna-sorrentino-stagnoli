@@ -1,20 +1,22 @@
 package it.polimi.ingsw;
 
 import it.polimi.ingsw.controller.RealController;
+import it.polimi.ingsw.exceptions.model.handler.RuleParserException;
 import it.polimi.ingsw.model.GameModel;
+import it.polimi.ingsw.model.handler.util.RuleParser;
 import it.polimi.ingsw.view.ChallengerView;
 import it.polimi.ingsw.view.PlayerView;
 
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class App {
     public static void main(String[] args) {
 
-        boolean simulation = true;
-
+        boolean simulation = false;
 
 
 

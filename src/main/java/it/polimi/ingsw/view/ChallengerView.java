@@ -199,7 +199,7 @@ public class ChallengerView implements ModelEventListener, EventSource {
         }
 
         this.listener = (ChallengerViewEventListener) listener;
-        view.addListener((PlayerViewEventListener) listener);
+        view.addListener(listener);
     }
 
 }

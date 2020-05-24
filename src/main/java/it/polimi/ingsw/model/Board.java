@@ -70,6 +70,11 @@ public class Board implements Cloneable, Serializable {
         throw new WorkerNotFoundException("There is no worker in the selected position.");
    }
 
+   public Worker getWorkerCopy (Coord pos) {
+        return getWorkerByPosition(pos).clone();
+   }
+
+
     void initializeWorker(Player player, Coord coord) throws IllegalArgumentException, IllegalStateException {
 
         Worker worker = workers.stream()
@@ -163,20 +168,14 @@ public class Board implements Cloneable, Serializable {
             throw new IllegalWorkerActionException("The worker is not initialized.");
         }
 
-        /*
-        //Check that worker w is near newPos
-        if(!(w.getPosition().isNear(newPos))){
-            throw new IllegalWorkerActionException("Cannot move here from that position.");
-        }
-        */
 
         Space currentSpace, newSpace;
         currentSpace = this.board[w.getPosition().x][w.getPosition().y];
         newSpace = this.board[newPos.x][newPos.y];
 
-        //not space occupied
+        //Space not occupied
         if ( !newSpace.isOccupied() ) {
-            //not space full
+            //Space not full
             if ( !(newSpace.isDome()) ) {
 
                 w.setPosition(newPos);
@@ -191,8 +190,6 @@ public class Board implements Cloneable, Serializable {
             throw new SpaceOccupiedException("Space occupied by another worker.");
         }
 
-        //TODO : Check for Winning
-        boolean win = checkForWin(currentSpace, newSpace);
     }
 
     void workerMove(Coord src, Coord dest) throws
@@ -234,15 +231,8 @@ public class Board implements Cloneable, Serializable {
         currentSpace.setUnoccupied();
         newSpace.setOccupied();
         forceSpace.setOccupied();
-
-
-        //TODO : Check for Winning
-        boolean win = checkForWin(currentSpace, newSpace);
     }
 
-    private boolean checkForWin(Space beforeSpace, Space afterSpace){
-        return (afterSpace.getHeight() == Level.LVL3) && (beforeSpace.getHeight() == Level.LVL2);
-    }
 
     void workerBuild(Worker w, Coord buildPos, Level level) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException{
         //Check buildPos is valid
@@ -379,15 +369,16 @@ public class Board implements Cloneable, Serializable {
     }
 
     void remove (Player player) {
-        Stream<Worker> workersToBeRemoved = workers.stream()
-                .filter(w -> w.getPlayerNickname().equals(player.getNickname()));
+        List<Worker> workersToBeRemoved = workers.stream()
+                .filter(w -> w.getPlayerNickname().equals(player.getNickname()))
+                .collect(Collectors.toList());
 
-        workersToBeRemoved
+        workersToBeRemoved.stream()
                 .map(Worker::getPosition)
                 .map(c -> board[c.x][c.y])
                 .forEach(Space::setUnoccupied);
 
-        workers.removeAll(workersToBeRemoved.collect(Collectors.toList()));
+        workers.removeAll(workersToBeRemoved);
     }
 
     @Override

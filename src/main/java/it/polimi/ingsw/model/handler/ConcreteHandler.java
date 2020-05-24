@@ -7,7 +7,7 @@ rules.size() > 0
 
 package it.polimi.ingsw.model.handler;
 
-import it.polimi.ingsw.exceptions.UndeterminedSpaceException;
+import it.polimi.ingsw.exceptions.model.handler.UndeterminedSpaceException;
 import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.handler.util.Pair;

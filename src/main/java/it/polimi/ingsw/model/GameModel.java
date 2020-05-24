@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model;
 
 import com.google.gson.Gson;
-import it.polimi.ingsw.exceptions.controller.IllegalPlayerException;
 import it.polimi.ingsw.exceptions.model.AlreadyExistingPlayerException;
 import it.polimi.ingsw.exceptions.model.GameFullException;
 import it.polimi.ingsw.exceptions.model.IllegalWorkerChoiceException;

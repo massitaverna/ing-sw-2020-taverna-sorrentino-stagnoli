@@ -49,6 +49,7 @@ public class Worker implements Cloneable, Serializable {
         return this.player.getNickname();
     }
 
+    @Override
     public Worker clone() {
 
         Worker result = new Worker(new Player(player.getNickname()));

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.model.handler;
 
-import it.polimi.ingsw.exceptions.UndeterminedSpaceException;
+import it.polimi.ingsw.exceptions.model.handler.UndeterminedSpaceException;
 
 public abstract class BaseHandler implements RuleHandler {
     RuleHandler next;

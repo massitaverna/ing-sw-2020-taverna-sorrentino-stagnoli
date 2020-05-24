@@ -196,7 +196,11 @@ public class RequestHandlerCreator {
             r.setActionType(ActionType.MOVE);
             r.setDecision(Decision.GRANT);
             BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
-                    board.getSpace(cPair.get(1)).isOccupied() && cPair.get(0).isNear(cPair.get(1));
+                    board.getSpace(cPair.get(1)).isOccupied() &&
+                            cPair.get(0).isNear(cPair.get(1)) &&
+                            !board.getWorkerCopy(cPair.get(1)).getPlayerNickname().equals(
+                                    board.getWorkerCopy(cPair.get(0)).getPlayerNickname()
+                            );
             r.setCondition(condition);
             BiFunction<Coord, Coord, Coord> forceSpaceFunction = (before, after) ->
                     before;
@@ -488,7 +492,11 @@ public class RequestHandlerCreator {
             BiFunction<Coord, Coord, Coord> getDirection = (before, after) ->
                     new Coord(after.x - before.x, after.y - before.y);
             BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
-                    board.getSpace(cPair.get(1)).isOccupied() && cPair.get(0).isNear(cPair.get(1)) &&
+                    board.getSpace(cPair.get(1)).isOccupied() &&
+                            cPair.get(0).isNear(cPair.get(1)) &&
+                            !board.getWorkerCopy(cPair.get(1)).getPlayerNickname().equals(
+                                    board.getWorkerCopy(cPair.get(0)).getPlayerNickname()
+                            ) &&
                             Coord.validCoord(cPair.get(1).sum(getDirection.apply(cPair.get(0), cPair.get(1)))) &&
                             !board.getSpace(cPair.get(1).sum(getDirection.apply(cPair.get(0), cPair.get(1))))
                                     .isOccupied();

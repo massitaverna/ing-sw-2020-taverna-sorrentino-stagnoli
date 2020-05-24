@@ -1,6 +1,5 @@
 package it.polimi.ingsw.view;
 
-import it.polimi.ingsw.exceptions.controller.IllegalPlayerException;
 import it.polimi.ingsw.listeners.*;
 import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
@@ -27,7 +26,7 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
     private Connection clientConnection;
     private Object receivedObject;
 
-    private String nickname;
+    private final String nickname;
 
     protected PlayerViewEventListener controller;
 
@@ -68,9 +67,7 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
             //player events
             case "onGodChosen":
                 String god = (String) objects.get(1);
-                try{
-                    controller.onGodChosen(this, god);
-                }catch (IllegalPlayerException e){ System.out.println("Illegal Player"); }
+                controller.onGodChosen(this, god);
                 break;
             case "onWorkerInitialization":
                 Coord choice = (Coord) objects.get(1);
@@ -103,7 +100,7 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
                 break;
             //client ping check
             case "onPong":
-                //TODO: client ping succesful
+                //TODO: client ping successful
                 break;
             default:
                 System.out.println("Event message not recognized.");
