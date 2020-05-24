@@ -124,15 +124,15 @@ public class MainServer {
 
                         case "nicknameSelected":
                             nickname = (String) in.readObject();
-                            if (selectedLobbyIndex != 0 && selectedLobby != null) {
 
+                            //if entering a lobby
+                            if (selectedLobbyIndex != 0 && selectedLobby != null) {
                                 //check if lobby is full
                                 if (selectedLobby.isFull()) {
                                     out.writeObject("fullLobby");
                                     out.flush();
                                     break;
                                 }
-
                                 boolean validNickname = selectedLobby.addPlayer(nickname, socket, out, in);
                                 if (validNickname) {
                                     //add player to the lobby
@@ -158,6 +158,9 @@ public class MainServer {
                                 //if valid name and num players
                                 if ((numPlayers == 2 || numPlayers == 3) && !nickname.equals("")) {
 
+                                    out.writeObject("ok");
+                                    out.flush();
+
                                     //valid name and numPlayers, create the lobby
                                     Lobby newLobby = new Lobby(server, numPlayers);
                                     synchronized (lobbies) {
@@ -167,15 +170,12 @@ public class MainServer {
                                     newLobby.addPlayer(nickname, socket, out, in);
                                     newLobby.controllerAddPlayer(nickname);
 
-                                    out.writeObject("ok");
-                                    out.flush();
-
                                     finished = true;
                                     pendingSockets.remove(this.socket);
-                                } else { //send error message
+                                } /*else { //send error message
                                     out.writeObject("fullLobby");
                                     out.flush();
-                                }
+                                }*/
                             }
                             break;
 

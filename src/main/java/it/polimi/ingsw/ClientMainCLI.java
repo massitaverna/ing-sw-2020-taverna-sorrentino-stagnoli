@@ -1,7 +1,6 @@
 package it.polimi.ingsw;
 
 import it.polimi.ingsw.client.ClientCLI;
-import it.polimi.ingsw.gui.ClientMainGUI;
 import it.polimi.ingsw.server.Connection;
 
 import java.io.IOException;
@@ -59,116 +58,6 @@ public class ClientMainCLI
             try {
 
                 while (!finished) {
-                    /*String message = (String) in.readObject();
-                    switch (message) {
-
-                        case "lobby":
-                            List<String> playersInLobby = (List<String>) in.readObject();
-                            int maxPlayers = (int) in.readObject();
-                            int lobbyNum = (int) in.readObject();
-                            availableLobbies.put(lobbyNum, playersInLobby);
-                            availableLobbiesMaxPlayers.put(lobbyNum, maxPlayers);
-                            break;
-
-                        case "?lobby":
-                            System.out.println("Choose the lobby to join (insert a number) :");
-                            System.out.println("0 - Create new lobby");
-                            //print lobby info
-                            for (Integer i : availableLobbies.keySet()) {
-                                int maxP, currentP;
-                                maxP = availableLobbiesMaxPlayers.get(i);
-                                currentP = availableLobbies.get(i).size();
-                                System.out.print((i + 1) + " - Players (" + currentP + "/" + maxP + "): ");
-                                for (String name : availableLobbies.get(i)) {
-                                    System.out.print("\"" + name + "\" ");
-                                }
-                                System.out.println("");
-                            }
-                            //user choice
-                            int lobbyChoice = -1;
-                            while (lobbyChoice < 0) {
-                                try {
-                                    lobbyChoice = s.nextInt();
-                                } catch (Exception e) {
-                                    System.out.println("Insert a digit.");
-                                }
-                                if (lobbyChoice == 0) {
-                                    break;
-                                }
-                                if (lobbyChoice < 0 || lobbyChoice > availableLobbies.keySet().size() || availableLobbiesMaxPlayers.get(lobbyChoice - 1) == availableLobbies.get(lobbyChoice - 1).size()) {
-                                    System.out.println("Invalid input, try again");
-                                    lobbyChoice = -1;
-                                }
-                            }
-                            out.writeObject(lobbyChoice);
-                            out.flush();
-                            break;
-
-                        case "challenger":
-                            System.out.println("You are the challenger");
-                            challenger = true;
-                            break;
-
-                        case "!challenger":
-                            challenger = false;
-                            break;
-
-                        case "?numPlayers":
-                            System.out.println("Insert the number of opponents (1 or 2):");
-                            while (numPlayers != 1 && numPlayers != 2) {
-                                try {
-                                    numPlayers = s.nextInt();
-                                } catch (Exception e) {
-                                    System.out.println("Insert a digit.");
-                                    s.next();
-                                }
-                                if (numPlayers != 1 && numPlayers != 2)
-                                    System.out.println("Invalid input, try again");
-                            }
-                            numPlayers++;
-                            out.writeObject(numPlayers);
-                            out.flush();
-                            break;
-
-                        case "?nickname":
-                            List<String> nicknamesInLobby = (List<String>) in.readObject();
-                            System.out.println("What's your nickname?");
-                            if (nicknamesInLobby.size() > 0) {
-                                System.out.println("Players already in the lobby: ");
-                                nicknamesInLobby.forEach(System.out::println);
-                            }
-                            while (nicknamesInLobby.contains(nickname) || nickname.equals("")) {
-                                s.reset();
-                                nickname = ss.nextLine();
-                                if (nicknamesInLobby.contains(nickname))
-                                    System.out.println("Invalid input: nickname already in the lobby.");
-                                else if (nickname.equals(""))
-                                    System.out.println("Invalid input: nickname can't be an empty string.");
-                            }
-                            out.writeObject(nickname);
-                            out.flush();
-                            break;
-
-                        case "fullLobby":
-                            System.out.println("The lobby is full, please select another one:");
-                            availableLobbies = new HashMap<>();
-                            availableLobbiesMaxPlayers = new HashMap<>();
-                            break;
-
-                        //entering a lobby
-                        case "ok":
-                            finished = true;
-                            cli = new ClientCLI(new Connection(socket, out, in), challenger, nickname);
-                            cli.run();
-                            break;
-
-                        default:
-                            System.out.println("Something went wrong. Bye!");
-                            finished = true;
-                            break;
-
-                    }
-                }*/
 
                     //lobby selection
                     Map<Integer, List<String>> availableLobbies = new HashMap<>();
@@ -244,6 +133,7 @@ public class ClientMainCLI
                     }//lobby selection loop
 
                     //entering lobby
+
                     if (challenger) { //create lobby
                         List<String> nicknamesInLobby = availableLobbies.get(lobbyChoice - 1);
                         nickname = askForNickname(nicknamesInLobby);

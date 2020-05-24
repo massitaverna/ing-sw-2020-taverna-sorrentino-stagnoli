@@ -1,9 +1,12 @@
 package it.polimi.ingsw.gui;
 
-import it.polimi.ingsw.model.Player;
-import javafx.event.ActionEvent;
+import it.polimi.ingsw.server.Connection;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
@@ -25,24 +28,15 @@ import java.util.ResourceBundle;
 
 public class Home implements Initializable {
 
-    private String lobbyToString(int maxNumPlayers, List<String> players, int number){
-            String rep = number + " - ";
-            for (String p: players){
-                rep += "\"" + p + "\" ";
-            }
-            rep += "(" + players.size() + "/" + maxNumPlayers + ")";
-            return rep;
-    }
-
     public AnchorPane homePane, numPlayersPane, nicknamePane, lobbyListPane;
     public Label numPlayersError;
     public TextField numPlayersTextField, nicknameTextField;
     public ListView<String> lobbyList;
-    public ImageView lobbyListNext;
+    public ImageView lobbyListNext, numPlayersNextBtn;
 
-    private boolean createGame = false;
-    Map<Integer, List<String>> availableLobbies = new HashMap<>();
-    Map<Integer, Integer> availableLobbiesMaxPlayers = new HashMap<>();
+    private boolean challenger = false;
+    Map<Integer, List<String>> availableLobbies = new HashMap<>(); //lobby index and list of players
+    Map<Integer, Integer> availableLobbiesMaxPlayers = new HashMap<>(); //lobby index and max num players
     String nickname;
     int numPlayers;
 
@@ -51,7 +45,17 @@ public class Home implements Initializable {
     ObjectInputStream in;
     private boolean isConnected;
 
-    public Home(){
+    Parent root;
+    FXMLLoader loader;
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/board.fxml"));
+        try {
+            root = loader.load();
+        } catch (IOException e) { e.printStackTrace(); }
+
         try {
             socket = new Socket("127.0.0.1", 12345);
             socket.setKeepAlive(true);
@@ -78,14 +82,29 @@ public class Home implements Initializable {
 
     @FXML
     public void createGame(MouseEvent event){
-        this.createGame = true;
-        this.homePane.setVisible(false);
-        this.nicknamePane.setVisible(true);
+        try {
+            out.writeObject("lobbySelected");
+            out.flush();
+            out.writeObject(0);
+            out.flush();
+            String res = (String) in.readObject();
+            if(res.equals("lobbySelectedOK")){
+                //go to nickname selection
+                this.challenger = true;
+                this.homePane.setVisible(false);
+                this.nicknamePane.setVisible(true);
+            }
+        } catch (IOException | ClassNotFoundException e) {
+           close();
+        }
     }
 
     @FXML
     public void joinGame(MouseEvent event){
-        this.createGame = false;
+        availableLobbies.clear();
+        availableLobbiesMaxPlayers.clear();
+
+        this.challenger = false;
         this.homePane.setVisible(false);
         this.lobbyListPane.setVisible(true);
         this.lobbyList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -120,24 +139,28 @@ public class Home implements Initializable {
     public void lobbyListNext(MouseEvent event){
         if(availableLobbies.size() > 0) {
 
-            int lobbyIndex = this.lobbyList.getSelectionModel().getSelectedIndex() + 1;
-            try {
-                out.writeObject("lobbySelected");
-                out.flush();
-                out.writeObject(lobbyIndex);
-                out.flush();
-                String res = (String)in.readObject();
-                if(res.equals("lobbySelectedOK")){
-                    this.createGame = false;
-                    this.homePane.setVisible(false);
-                    this.lobbyListPane.setVisible(false);
-                    this.nicknamePane.setVisible(true);
+            int lobbyIndex = this.lobbyList.getSelectionModel().getSelectedIndex();
+            if(availableLobbiesMaxPlayers.get(lobbyIndex) > availableLobbies.get(lobbyIndex).size()) {
+                lobbyIndex++;
+                try {
+                    out.writeObject("lobbySelected");
+                    out.flush();
+                    out.writeObject(lobbyIndex);
+                    out.flush();
+                    String res = (String) in.readObject();
+                    if (res.equals("lobbySelectedOK")) {
+                        //go to nickname selection
+                        this.challenger = false;
+                        this.homePane.setVisible(false);
+                        this.lobbyListPane.setVisible(false);
+                        this.nicknamePane.setVisible(true);
+                    }
+                    //only the confirm (!challenger)
+                    res = (String) in.readObject();
+
+                } catch (IOException | ClassNotFoundException e) {
+                    close();
                 }
-                //only the confirm
-                res = (String)in.readObject();
-                res.toLowerCase();
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -148,10 +171,13 @@ public class Home implements Initializable {
         if(!nickname.equals("")){
             this.nicknamePane.setVisible(false);
 
-            if(this.createGame){
+            //if challenger, ask for num players
+            if(this.challenger){
                 this.numPlayersPane.setVisible(true);
                 return;
             }
+
+            //if not challenger, join the game
             try {
                 out.writeObject("nicknameSelected");
                 out.flush();
@@ -161,17 +187,18 @@ public class Home implements Initializable {
                 String res = (String)in.readObject();
                 if(res.equals("ok")){
                     System.out.println("lobby joined from GUI");
+                    showBoardWindow();
                 }
-                else{ //lobby is full
-                    this.createGame = false;
+                else{ //lobby is full, return to main menu
+                    this.challenger = false;
                     this.homePane.setVisible(true);
                     this.nicknamePane.setVisible(false);
                 }
             } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
+                close();
             }
         }else{
-            //TODO SHow error
+            //TODO SHow error (no empty nickname)
         }
 
     }
@@ -188,13 +215,70 @@ public class Home implements Initializable {
             numPlayersError.setVisible(false);
             num++;
             numPlayers = num;
-            //TODO: create the lobby
+
+            //create the lobby
+            numPlayersNextBtn.setVisible(false);
+            try {
+                String res;
+                out.writeObject("lobbySelected");
+                out.flush();
+                out.writeObject(0);
+                out.flush();
+                res = (String)in.readObject(); //lobbySelectedOk
+                assert res.equals("lobbySelectedOK");
+                res = (String)in.readObject(); //challenger
+                assert res.equals("challenger");
+                out.writeObject("nicknameSelected");
+                out.flush();
+                out.writeObject(nickname);
+                out.flush();
+                out.writeObject("numPlayersSelected");
+                out.flush();
+                out.writeObject(numPlayers);
+                out.flush();
+                res = (String)in.readObject(); //ok
+                res = (String)in.readObject(); //ok
+                if(res.equals("ok")){
+                    System.out.println("lobby created from GUI");
+                    showBoardWindow();
+                }
+            } catch (IOException | ClassNotFoundException e) {
+                close();
+            }
+
         }
 
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    private String lobbyToString(int maxNumPlayers, List<String> players, int number){
+        String rep = number + " - ";
+        for (String p: players){
+            rep += "\"" + p + "\" ";
+        }
+        rep += "(" + players.size() + "/" + maxNumPlayers + ")";
+        return rep;
+    }
 
+    public void showBoardWindow() {
+        ((Board)loader.getController()).setParameters(new Connection(socket, out, in), challenger, nickname);
+
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.sizeToScene();
+        stage.setResizable(false);
+        stage.setTitle("Santorini Game");
+        ((Stage) homePane.getScene().getWindow()).close();
+
+        //set close event for board window: (close socket and streams, exit application)
+        stage.setOnCloseRequest(windowEvent -> {
+            try {
+                socket.close();
+                in.close();
+                out.close();
+            } catch (IOException e) { e.printStackTrace(); }
+            Platform.exit();
+            System.exit(0);
+        });
+        stage.show();
     }
 }

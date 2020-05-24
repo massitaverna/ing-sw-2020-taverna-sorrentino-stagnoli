@@ -423,7 +423,7 @@ public class GameModel implements EventSource {
     }
 
     private void notifyMessage(String message) {
-        modelListeners.forEach(l -> l.onMessage(message));
+        modelListeners.stream().forEach(l -> l.onMessage(message));
     }
 
     void removeCurrentPlayer() {
