@@ -3,6 +3,7 @@ package it.polimi.ingsw.gui;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.observer.Observer;
 import it.polimi.ingsw.server.Connection;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -130,10 +132,12 @@ public class Board implements Initializable {
     public AnchorPane boardWindow;
     public ImageView moveBtnOn, moveBtnOff, buildBtnOn, buildBtnOff, skipBtnOn, skipBtnOff, backBtn;
     public ImageView redBanner, blueBanner, yellowBanner;
+    public Label redLabel, blueLabel, yellowLabel;
     public TextArea messageBox;
     private Image lvl1Image, lvl2Image, lvl3Image, domeImage, emptyImage;
     private Map<Color, Image> workersTokens;
     private int cellStep = 106, intialX = 384, initialY = 109, cellDim = 90, domeOffset = 10;
+    private int bannerCounter = 0;
 
     public Board(){
         //initialize board
@@ -169,7 +173,6 @@ public class Board implements Initializable {
         this.isChallenger = isChallenger;
         this.nickname = nickname;
 
-        this.serverConnection.addObserver(new MessageReceiver());
         exec = Executors.newFixedThreadPool(1);
         exec.submit(serverConnection);
         System.out.println("You have entered the lobby.");
@@ -187,6 +190,9 @@ public class Board implements Initializable {
                 boardWindow.getChildren().add(board[i][j].getWorkerImage());
             }
         }
+        this.blueBanner.setVisible(false);
+        this.redBanner.setVisible(false);
+        this.yellowBanner.setVisible(false);
     }
 
     //called when clicking on a cell (can be clicked only if the cell was enabled)
@@ -302,7 +308,7 @@ public class Board implements Initializable {
     //used to show a message in the text area
     private void showMessage(String message){
         this.messageBox.appendText(message);
-        this.messageBox.appendText("---");
+        this.messageBox.appendText("\n---\n");
     }
 
     //enable move button
@@ -380,18 +386,63 @@ public class Board implements Initializable {
     }
 
     //to add player banner (when game is ready)
-    private void addPlayerBanner(Map<String, Color> playerColorMap){
-
+    private void addPlayerBanner(String player, Color color){
+        this.playersColors.put(player, color);
+        switch (color){
+            case BLUE:
+                this.blueBanner.setVisible(true);
+                this.blueLabel.setVisible(true);
+                this.blueLabel.setText(player);
+                break;
+            case RED:
+                this.redBanner.setVisible(true);
+                this.redLabel.setVisible(true);
+                this.redLabel.setText(player);
+                break;
+            case YELLOW:
+                this.yellowBanner.setVisible(true);
+                this.yellowLabel.setVisible(true);
+                this.redLabel.setText(player);
+                break;
+        }
     }
 
     //to remove a player banner (when he looses)
     private void removePlayerBanner(String nickname){
-
+        Color c = this.playersColors.get(nickname);
+        switch (c){
+            case BLUE:
+                this.blueBanner.setVisible(false);
+                this.blueLabel.setVisible(false);
+                break;
+            case RED:
+                this.redBanner.setVisible(false);
+                this.redLabel.setVisible(false);
+                break;
+            case YELLOW:
+                this.yellowBanner.setVisible(false);
+                this.yellowLabel.setVisible(false);
+                break;
+        }
     }
 
     //to highlight a player banner during it's turn
     private void highlightPlayerBanner(String nickname){
-
+        Color c = this.playersColors.get(nickname);
+        this.blueBanner.setScaleX(1);
+        this.redBanner.setScaleX(1);
+        this.yellowBanner.setScaleX(1);
+        switch (c){
+            case BLUE:
+                this.blueBanner.setScaleX(1.3);
+                break;
+            case RED:
+                this.redBanner.setScaleX(1.3);
+                break;
+            case YELLOW:
+                this.yellowBanner.setScaleX(1.3);
+                break;
+        }
     }
 
     //to ask challenger to choose gods for the game
@@ -457,169 +508,184 @@ public class Board implements Initializable {
         return 0;
     }
 
+    private Level levelSelectionPopup(){
+        return null;
+    }
+
     //called when receiving a message from the server
     private void handleMessageReceived() {
-        List<Object> objs;
-        if (receivedObject instanceof List)
-            objs = (List<Object>) receivedObject;
-        else {
-            System.out.println("Something went wrong in handling received message");
-            return;
-        }
-        String event = (String) objs.get(0);
-
-        switch (event) {
-            //MODEL MESSAGES
-            case "onBoardChanged":
-                disableAll();
-                it.polimi.ingsw.model.Board b = (it.polimi.ingsw.model.Board)objs.get(1);
-                System.out.println(b.toString());
-                this.updateBoard(b);
-                break;
-
-            case "onGameReady":
-                disableAll();
-                System.out.println("Set up phase is done!");
-                this.showMessage("Set up phase is done!");
-                break;
-
-            case "onGodsChosen":
-                disableAll();
-                List<String> selectedGods = (List<String>) objs.get(1);
-                System.out.println("Challenger has chosen the playable gods");
-                this.showMessage("Challenger has chosen the playable gods");
-                break;
-
-            case "onPlayerAdded":
-                disableAll();
-                String nickname = (String) objs.get(1);
-                int numCurr = (int) objs.get(2);
-                int numTot = (int) objs.get(3);
-                System.out.println(nickname + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
-                this.showMessage(nickname + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
-                //TODO: add player banner
-                break;
-
-            case "onGodSelection":
-                disableAll();
-                List<String> godsForSelection = (List<String>) objs.get(1);
-                //TODO: make a popup window appear to select a god from the list
-                break;
-
-            case "onGodsSelection":
-                disableAll();
-                if(isChallenger){
-                    List<String> allGods = (List<String>) objs.get(1);
-                    int numPlayers = (int) objs.get(2);
-                    //TODO: make a popup window appear to make the challenger choose gods for the game
-                }else{
-                    System.out.println("The challenger is choosing the gods");
-                    this.showMessage("The challenger is choosing the gods");
-                }
-                break;
-
-            case "onStartPlayerSelection":
-                disableAll();
-                if(isChallenger){
-                    List<String> players = (List<String>) objs.get(1);
-                    //TODO: make a popup windows appear to make the challenger choose the start player
-                }
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                List<Object> objs;
+                if (receivedObject instanceof List)
+                    objs = (List<Object>) receivedObject;
                 else {
-                    System.out.println("Challenger is choosing the starting player");
-                    this.showMessage("Challenger is choosing the starting player");
+                    System.out.println("Something went wrong in handling received message");
+                    return;
                 }
-                break;
+                String event = (String) objs.get(0);
 
-            case "onMyInitialization":
-                disableAll();
-                List<Coord> freeSpaces = (List<Coord>) objs.get(1);
-                this.clickableCells.clear();
-                this.clickableCells = freeSpaces;
-                this.state = State.INITIALIZINGWORKERS;
-                this.enableBoard(true);
-                //a questo punto la board è abilitata e verrà selezionato lo spazio dove posizionare il worker
-                break;
+                switch (event) {
+                    //MODEL MESSAGES
+                    case "onBoardChanged":
+                        disableAll();
+                        it.polimi.ingsw.model.Board b = (it.polimi.ingsw.model.Board)objs.get(1);
+                        System.out.println(b.toString());
+                        updateBoard(b);
+                        break;
 
-            case "onMyTurn":
-                disableAll();
-                List<Coord> selectableWorkers = (List<Coord>) objs.get(1);
-                this.clickableCells.clear();
-                this.clickableCells.addAll(selectableWorkers);
-                this.state = State.SELECTINGWORKER;
-                enableBoard(true);
-                //a questo punto la board è abilitata e verrà selezionato il worker per il turno
-                break;
+                    case "onGameReady":
+                        disableAll();
+                        System.out.println("Set up phase is done!");
+                        showMessage("Set up phase is done!");
+                        break;
 
-            case "onMyAction":
-                disableAll();
-                this.canMove = false;
-                this.canBuild = false;
-                this.canSkip = false;
-                List<Coord> movableSpaces = (List<Coord>) objs.get(1);
-                this.buildableSpaces = (Map<Level, List<Coord>>) objs.get(2);
-                boolean canEndTurn = (boolean) objs.get(3);
-                this.clickableCells.clear();
-                this.clickableCells.addAll(movableSpaces);
-                boolean thereAreBuilds = false;
-                for(Level l:this.buildableSpaces.keySet()){
-                    this.clickableCells.addAll(this.buildableSpaces.get(l));
-                    if(this.buildableSpaces.get(l).size() > 0)
-                        thereAreBuilds = true;
+                    case "onGodsChosen":
+                        disableAll();
+                        List<String> selectedGods = (List<String>) objs.get(1);
+                        System.out.println("Challenger has chosen the playable gods");
+                        showMessage("Challenger has chosen the playable gods");
+                        break;
+
+                    case "onPlayerAdded":
+                        disableAll();
+                        String nickname = (String) objs.get(1);
+                        int numCurr = (int) objs.get(2);
+                        int numTot = (int) objs.get(3);
+                        System.out.println(nickname + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
+                        showMessage(nickname + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
+                        //TODO: FIX COLOR
+                        addPlayerBanner(nickname, Color.RED);
+                        break;
+
+                    case "onGodSelection":
+                        disableAll();
+                        List<String> godsForSelection = (List<String>) objs.get(1);
+                        String godSelected = godSelectionPopup(godsForSelection);
+                        showMessage("Selected god: " + godSelected);
+                        break;
+
+                    case "onGodsSelection":
+                        disableAll();
+                        if(isChallenger){
+                            List<String> allGods = (List<String>) objs.get(1);
+                            int numPlayers = (int) objs.get(2);
+                            List<String> godsSelected = godsSelectionPopup(numPlayers);
+                            List<Object> objects = new ArrayList<>();
+                            objects.add("onGodsChosen");
+                            objects.add(godsSelected);
+                            serverConnection.asyncSend(objects);
+                        }else{
+                            System.out.println("The challenger is choosing the gods");
+                            showMessage("The challenger is choosing the gods");
+                        }
+                        break;
+
+                    case "onStartPlayerSelection":
+                        disableAll();
+                        if(isChallenger){
+                            List<String> players = (List<String>) objs.get(1);
+                            //TODO: make a popup windows appear to make the challenger choose the start player
+                        }
+                        else {
+                            System.out.println("Challenger is choosing the starting player");
+                            showMessage("Challenger is choosing the starting player");
+                        }
+                        break;
+
+                    case "onMyInitialization":
+                        disableAll();
+                        List<Coord> freeSpaces = (List<Coord>) objs.get(1);
+                        clickableCells.clear();
+                        clickableCells = freeSpaces;
+                        state = State.INITIALIZINGWORKERS;
+                        enableBoard(true);
+                        //a questo punto la board è abilitata e verrà selezionato lo spazio dove posizionare il worker
+                        break;
+
+                    case "onMyTurn":
+                        disableAll();
+                        List<Coord> selectableWorkers = (List<Coord>) objs.get(1);
+                        clickableCells.clear();
+                        clickableCells.addAll(selectableWorkers);
+                        state = State.SELECTINGWORKER;
+                        enableBoard(true);
+                        //a questo punto la board è abilitata e verrà selezionato il worker per il turno
+                        break;
+
+                    case "onMyAction":
+                        disableAll();
+                        canMove = false;
+                        canBuild = false;
+                        canSkip = false;
+                        List<Coord> movableSpaces = (List<Coord>) objs.get(1);
+                        buildableSpaces = (Map<Level, List<Coord>>) objs.get(2);
+                        boolean canEndTurn = (boolean) objs.get(3);
+                        clickableCells.clear();
+                        clickableCells.addAll(movableSpaces);
+                        boolean thereAreBuilds = false;
+                        for(Level l:buildableSpaces.keySet()){
+                            clickableCells.addAll(buildableSpaces.get(l));
+                            if(buildableSpaces.get(l).size() > 0)
+                                thereAreBuilds = true;
+                        }
+                        if(canEndTurn){
+                            enableSkip(true);
+                            canSkip = true;
+                        }
+                        if(movableSpaces.size() > 0) {
+                            enableMove(true);
+                            canMove = true;
+                        }
+                        if(thereAreBuilds) {
+                            enableBuild(true);
+                            canBuild = true;
+                        }
+                        state = State.NONE;
+                        //a questo punto un button tra move e build verrà premuto, e la board verrà abilitata
+                        break;
+
+                    case "onEnd":
+                        disableAll();
+                        System.out.println("Game Ended");
+                        break;
+
+                    case "onMessage":
+                        disableAll();
+                        String message = (String)((List<Object>) receivedObject).get(1);
+                        System.out.println(message);
+                        break;
+
+                    case "disconnected":
+                        disableAll();
+                        // the game is no more valid, client must disconnect
+                        System.out.println("A client disconnected from the game, disconnecting...");
+                        //Close socket, streams
+                        serverConnection.closeConnection();
+                        //Close this windows and show main menu window
+                        FXMLLoader loader = new FXMLLoader();
+                        loader.setLocation(getClass().getResource("/home.fxml"));
+                        Parent root = null;
+                        try {
+                            root = loader.load();
+                        } catch (IOException e) { e.printStackTrace(); }
+                        Stage stage = new Stage();
+                        stage.setScene(new Scene(root));
+                        stage.setResizable(false);
+                        stage.sizeToScene();
+                        stage.setTitle("Santorini Game");
+                        stage.show();
+                        ((Stage) boardWindow.getScene().getWindow()).close();
+                        break;
+
+                    default:
+                        disableAll();
+                        System.out.println("Event message not recognized.");
+                        break;
                 }
-                if(canEndTurn){
-                    this.enableSkip(true);
-                    this.canSkip = true;
-                }
-                if(movableSpaces.size() > 0) {
-                    this.enableMove(true);
-                    this.canMove = true;
-                }
-                if(thereAreBuilds) {
-                    this.enableBuild(true);
-                    this.canBuild = true;
-                }
-                this.state = State.NONE;
-                //a questo punto un button tra move e build verrà premuto, e la board verrà abilitata
-                break;
-
-            case "onEnd":
-                disableAll();
-                System.out.println("Game Ended");
-                break;
-
-            case "onMessage":
-                disableAll();
-                String message = (String)((List<Object>) receivedObject).get(1);
-                System.out.println(message);
-                break;
-
-            case "disconnected":
-                disableAll();
-                // the game is no more valid, client must disconnect
-                System.out.println("A client disconnected from the game, disconnecting...");
-                //Close socket, streams
-                this.serverConnection.closeConnection();
-                //Close this windows and show main menu window
-                FXMLLoader loader = new FXMLLoader();
-                loader.setLocation(getClass().getResource("/home.fxml"));
-                Parent root = null;
-                try {
-                    root = loader.load();
-                } catch (IOException e) { e.printStackTrace(); }
-                Stage stage = new Stage();
-                stage.setScene(new Scene(root));
-                stage.setResizable(false);
-                stage.sizeToScene();
-                stage.setTitle("Santorini Game");
-                stage.show();
-                ((Stage) boardWindow.getScene().getWindow()).close();
-                break;
-
-            default:
-                disableAll();
-                System.out.println("Event message not recognized.");
-                break;
-        }
+            }
+        });
     }
 
     public void closeConnection(){

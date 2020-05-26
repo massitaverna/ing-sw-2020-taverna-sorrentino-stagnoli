@@ -96,8 +96,7 @@ public class Connection extends Observable<Object> implements Runnable {
             }*/
 
         } catch (IOException | NoSuchElementException | ClassNotFoundException e) {
-            //System.err.println("Error! " + e.getMessage());
-
+            //System.out.println("Error! " + e.getMessage());
             //if this connection is running on the server, tell the lobby to close all the connections
             if (lobby != null) {
                 lobby.closeConnections();
