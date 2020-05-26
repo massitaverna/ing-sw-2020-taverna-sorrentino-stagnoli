@@ -104,6 +104,7 @@ public class Home implements Initializable {
         availableLobbies.clear();
         availableLobbiesMaxPlayers.clear();
 
+        this.lobbyList.getItems().clear();
         this.challenger = false;
         this.homePane.setVisible(false);
         this.lobbyListPane.setVisible(true);
@@ -189,6 +190,7 @@ public class Home implements Initializable {
                     System.out.println("lobby joined from GUI");
                     showBoardWindow();
                 }
+                // manca il caso in cui metti un nome già presente in lobby
                 else{ //lobby is full, return to main menu
                     this.challenger = false;
                     this.homePane.setVisible(true);
@@ -198,7 +200,7 @@ public class Home implements Initializable {
                 close();
             }
         }else{
-            //TODO SHow error (no empty nickname)
+            //TODO Show error (no empty nickname)
         }
 
     }
