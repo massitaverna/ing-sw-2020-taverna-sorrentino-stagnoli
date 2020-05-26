@@ -1,19 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.Cursor?>
-<?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 
-
-<AnchorPane prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gui.GodPopup">
+<AnchorPane prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gui.GodPopup">
    <children>
       <GridPane prefHeight="622.0" prefWidth="1273.0">
         <columnConstraints>
@@ -27,12 +19,12 @@
          <children>
             <Pane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <ImageView fitHeight="317.0" fitWidth="262.0" layoutX="118.0" layoutY="122.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="godImg1" fitHeight="317.0" fitWidth="262.0" layoutX="118.0" layoutY="122.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@GodCard/01.png" />
+                        <Image url="@GodCard/Apollo.png" />
                      </image>
                   </ImageView>
-                  <RadioButton alignment="BOTTOM_CENTER" layoutX="115.0" layoutY="121.0" mnemonicParsing="false" prefHeight="352.0" prefWidth="189.0" text="RadioButton">
+                  <RadioButton fx:id="radioGod1" alignment="BOTTOM_CENTER" layoutX="115.0" layoutY="121.0" mnemonicParsing="false" prefHeight="352.0" prefWidth="189.0" text="RadioButton">
                      <toggleGroup>
                         <ToggleGroup fx:id="group" />
                      </toggleGroup>
@@ -44,12 +36,12 @@
             </Pane>
             <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
                <children>
-                  <ImageView fitHeight="317.0" fitWidth="262.0" layoutX="118.0" layoutY="122.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="godImg2" fitHeight="317.0" fitWidth="262.0" layoutX="118.0" layoutY="122.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@GodCard/01.png" />
+                        <Image url="@GodCard/Apollo.png" />
                      </image>
                   </ImageView>
-                  <RadioButton alignment="BOTTOM_CENTER" layoutX="118.0" layoutY="122.0" mnemonicParsing="false" prefHeight="352.0" prefWidth="189.0" text="RadioButton" toggleGroup="$group">
+                  <RadioButton fx:id="radioGod2" alignment="BOTTOM_CENTER" layoutX="118.0" layoutY="122.0" mnemonicParsing="false" prefHeight="352.0" prefWidth="189.0" text="RadioButton" toggleGroup="$group">
                      <tooltip>
                         <Tooltip text="Empty Tooltip" />
                      </tooltip>
@@ -58,12 +50,12 @@
             </Pane>
             <Pane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2">
                <children>
-                  <ImageView fitHeight="317.0" fitWidth="262.0" layoutX="118.0" layoutY="122.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="godImg3" fitHeight="317.0" fitWidth="262.0" layoutX="118.0" layoutY="122.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@GodCard/01.png" />
+                        <Image url="@GodCard/Apollo.png" />
                      </image>
                   </ImageView>
-                  <RadioButton alignment="BOTTOM_CENTER" layoutX="118.0" layoutY="122.0" mnemonicParsing="false" prefHeight="352.0" prefWidth="189.0" text="RadioButton" toggleGroup="$group">
+                  <RadioButton fx:id="radioGod3" alignment="BOTTOM_CENTER" layoutX="118.0" layoutY="122.0" mnemonicParsing="false" prefHeight="352.0" prefWidth="189.0" text="RadioButton" toggleGroup="$group">
                      <tooltip>
                         <Tooltip text="Empty Tooltip" />
                      </tooltip>
@@ -72,7 +64,7 @@
             </Pane>
          </children>
       </GridPane>
-      <ImageView fx:id="okBtn" fitHeight="40.0" fitWidth="158.0" layoutX="581.0" layoutY="636.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="okBtn" fitHeight="40.0" fitWidth="158.0" layoutX="581.0" layoutY="636.0" onMouseClicked="#confirm" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@GodsSelection/ok_btn.png" />
          </image>

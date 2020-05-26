@@ -3,6 +3,7 @@ package it.polimi.ingsw.gui;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.observer.Observer;
 import it.polimi.ingsw.server.Connection;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -14,7 +15,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 import java.net.URL;
@@ -392,13 +395,61 @@ public class Board implements Initializable {
     }
 
     //to ask challenger to choose gods for the game
-    private List<God> godsSelectionPopup(int numPlayers){
-        return null;
+    private List<String> godsSelectionPopup(int numPlayers){
+
+        final List<String>[] gods = new List[]{new ArrayList<>()};
+
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/GodsPopup.fxml"));
+        Parent root = null;
+        try {
+            root = loader.load();
+            Stage stage = new Stage();
+
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.sizeToScene();
+            stage.setTitle("Choose the playable gods");
+            stage.initOwner(boardWindow.getScene().getWindow());
+            stage.initModality(Modality.APPLICATION_MODAL);
+            ((GodsPopup) loader.getController()).setNumPlayers(numPlayers);
+            stage.setOnCloseRequest(windowEvent -> gods[0] = ((GodsPopup) loader.getController()).getChoices());
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return gods[0];
+
     }
 
     //to ask a player for his god
-    private God godSelectionPopup(List<God> availableGods){
-        return null;
+    private String godSelectionPopup(List<String> availableGods){
+
+        final String[] god = new String[1];
+
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/GodPopup.fxml"));
+        Parent root = null;
+        try {
+            root = loader.load();
+            Stage stage = new Stage();
+
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setResizable(false);
+            stage.sizeToScene();
+            stage.setTitle("Choose the playable gods");
+            stage.initOwner(boardWindow.getScene().getWindow());
+            stage.initModality(Modality.APPLICATION_MODAL);
+            ((GodPopup) loader.getController()).setGods(availableGods);
+            stage.setOnCloseRequest(windowEvent -> god[0] = ((GodPopup) loader.getController()).getChoice());
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return god[0];
     }
 
     //to ask challenger for starting player

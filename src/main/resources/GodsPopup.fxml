@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.Cursor?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.Tooltip?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gui.GodsPopup">
+<AnchorPane fx:id="pane" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gui.GodsPopup">
    <children>
       <GridPane prefHeight="626.0" prefWidth="1280.0">
         <columnConstraints>
@@ -30,10 +24,10 @@
                <children>
                   <ImageView fitHeight="227.0" fitWidth="163.0" layoutX="60.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@GodCard/06.png" />
+                        <Image url="@GodCard/Hephaestus.png" />
                      </image>
                   </ImageView>
-                  <CheckBox fx:id="hephaestusCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" prefHeight="250.0" prefWidth="136.0" text="Hephaestus   ">
+                  <CheckBox fx:id="hephaestusCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="250.0" prefWidth="136.0" text="Hephaestus   ">
                      <tooltip>
                         <Tooltip text="Empty Tooltip" />
                      </tooltip>
@@ -44,10 +38,10 @@
                <children>
                   <ImageView fitHeight="227.0" fitWidth="163.0" layoutX="60.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../../../Santorini%20UI%20design/godCards/01.png" />
+                        <Image url="@GodCard/Apollo.png" />
                      </image>
                   </ImageView>
-                  <CheckBox fx:id="apolloCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" prefHeight="250.0" prefWidth="136.0" text="Apollo    ">
+                  <CheckBox fx:id="apolloCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="250.0" prefWidth="136.0" text="Apollo    ">
                      <tooltip>
                         <Tooltip text="Empty Tooltip" />
                      </tooltip>
@@ -58,10 +52,10 @@
                <children>
                   <ImageView fitHeight="227.0" fitWidth="163.0" layoutX="60.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@GodCard/02.png" />
+                        <Image url="@GodCard/Artemis.png" />
                      </image>
                   </ImageView>
-                  <CheckBox fx:id="artemisCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" prefHeight="250.0" prefWidth="136.0" text="Artemis  ">
+                  <CheckBox fx:id="artemisCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="250.0" prefWidth="136.0" text="Artemis  ">
                      <tooltip>
                         <Tooltip text="Empty Tooltip" />
                      </tooltip>
@@ -72,10 +66,10 @@
                <children>
                   <ImageView fitHeight="227.0" fitWidth="163.0" layoutX="60.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@GodCard/05.png" />
+                        <Image url="@GodCard/Demeter.png" />
                      </image>
                   </ImageView>
-                  <CheckBox fx:id="demeterCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" prefHeight="250.0" prefWidth="136.0" text="Demeter   ">
+                  <CheckBox fx:id="demeterCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="250.0" prefWidth="136.0" text="Demeter   ">
                      <tooltip>
                         <Tooltip text="Empty Tooltip" />
                      </tooltip>
@@ -86,10 +80,10 @@
                <children>
                   <ImageView fitHeight="227.0" fitWidth="163.0" layoutX="60.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@GodCard/04.png" />
+                        <Image url="@GodCard/Atlas.png" />
                      </image>
                   </ImageView>
-                  <CheckBox fx:id="atlasCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" prefHeight="250.0" prefWidth="136.0" text="Atlas   ">
+                  <CheckBox fx:id="atlasCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="250.0" prefWidth="136.0" text="Atlas   ">
                      <tooltip>
                         <Tooltip text="Empty Tooltip" />
                      </tooltip>
@@ -100,10 +94,10 @@
                <children>
                   <ImageView fitHeight="227.0" fitWidth="163.0" layoutX="60.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@GodCard/03.png" />
+                        <Image url="@GodCard/Athena.png" />
                      </image>
                   </ImageView>
-                  <CheckBox fx:id="athenaCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" prefHeight="250.0" prefWidth="136.0" text="Athena   ">
+                  <CheckBox fx:id="athenaCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="250.0" prefWidth="136.0" text="Athena   ">
                      <tooltip>
                         <Tooltip text="Empty Tooltip" />
                      </tooltip>
@@ -114,10 +108,10 @@
                <children>
                   <ImageView fitHeight="227.0" fitWidth="163.0" layoutX="60.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@GodCard/08.png" />
+                        <Image url="@GodCard/Minotaur.png" />
                      </image>
                   </ImageView>
-                  <CheckBox fx:id="minotaurCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" prefHeight="250.0" prefWidth="136.0" text="Minotaur   ">
+                  <CheckBox fx:id="minotaurCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="250.0" prefWidth="136.0" text="Minotaur   ">
                      <tooltip>
                         <Tooltip text="Empty Tooltip" />
                      </tooltip>
@@ -128,10 +122,10 @@
                <children>
                   <ImageView fitHeight="227.0" fitWidth="163.0" layoutX="60.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@GodCard/09.png" />
+                        <Image url="@GodCard/Pan.png" />
                      </image>
                   </ImageView>
-                  <CheckBox fx:id="panCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" prefHeight="250.0" prefWidth="136.0" text="Pan      ">
+                  <CheckBox fx:id="panCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="250.0" prefWidth="136.0" text="Pan      ">
                      <tooltip>
                         <Tooltip text="Empty Tooltip" />
                      </tooltip>
@@ -142,10 +136,10 @@
                <children>
                   <ImageView fitHeight="227.0" fitWidth="163.0" layoutX="60.0" layoutY="32.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@GodCard/10.png" />
+                        <Image url="@GodCard/Prometheus.png" />
                      </image>
                   </ImageView>
-                  <CheckBox fx:id="prometeusCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" prefHeight="250.0" prefWidth="136.0" text="Prometeus   ">
+                  <CheckBox fx:id="prometheusCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="250.0" prefWidth="136.0" text="Prometheus   ">
                      <tooltip>
                         <Tooltip text="Empty Tooltip" />
                      </tooltip>
