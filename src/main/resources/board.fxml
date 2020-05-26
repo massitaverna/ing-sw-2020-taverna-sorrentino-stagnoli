@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
@@ -58,5 +59,21 @@
                </cursor></ImageView>
          </children>
       </Pane>
+      <ImageView fx:id="blueBanner" fitHeight="150.0" fitWidth="200.0" layoutY="250.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../Santorini%20UI%20design/board/blue_player.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="redBanner" fitHeight="150.0" fitWidth="200.0" layoutY="405.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../Santorini%20UI%20design/board/red_player.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="yellowBanner" fitHeight="150.0" fitWidth="200.0" layoutY="327.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../Santorini%20UI%20design/board/yellow_player.png" />
+         </image>
+      </ImageView>
+      <TextArea fx:id="messageBox" editable="false" layoutX="14.0" layoutY="499.0" opacity="0.68" prefHeight="185.0" prefWidth="321.0" />
    </children>
 </AnchorPane>

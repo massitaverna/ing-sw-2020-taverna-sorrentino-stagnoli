@@ -381,6 +381,14 @@ public class Board implements Cloneable, Serializable {
         workers.removeAll(workersToBeRemoved);
     }
 
+    public List<Worker> getWorkers(){
+        List<Worker> res = new ArrayList<>();
+        for(Worker w: this.workers){
+            res.add(w.clone());
+        }
+        return res;
+    }
+
     @Override
     public String toString() {
 

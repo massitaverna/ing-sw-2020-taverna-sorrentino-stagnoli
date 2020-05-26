@@ -101,9 +101,11 @@ public class Home implements Initializable {
 
     @FXML
     public void joinGame(MouseEvent event){
-        availableLobbies.clear();
-        availableLobbiesMaxPlayers.clear();
+        this.availableLobbies.clear();
+        this.availableLobbiesMaxPlayers.clear();
+        this.lobbyList.getItems().clear();
 
+        this.lobbyList.getItems().clear();
         this.challenger = false;
         this.homePane.setVisible(false);
         this.lobbyListPane.setVisible(true);
@@ -189,6 +191,7 @@ public class Home implements Initializable {
                     System.out.println("lobby joined from GUI");
                     showBoardWindow();
                 }
+                // manca il caso in cui metti un nome già presente in lobby
                 else{ //lobby is full, return to main menu
                     this.challenger = false;
                     this.homePane.setVisible(true);
@@ -198,7 +201,7 @@ public class Home implements Initializable {
                 close();
             }
         }else{
-            //TODO SHow error (no empty nickname)
+            //TODO Show error (no empty nickname)
         }
 
     }
@@ -271,11 +274,7 @@ public class Home implements Initializable {
 
         //set close event for board window: (close socket and streams, exit application)
         stage.setOnCloseRequest(windowEvent -> {
-            try {
-                socket.close();
-                in.close();
-                out.close();
-            } catch (IOException e) { e.printStackTrace(); }
+            ((Board)loader.getController()).closeConnection();
             Platform.exit();
             System.exit(0);
         });

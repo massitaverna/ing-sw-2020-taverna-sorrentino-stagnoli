@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gui;
+package it.polimi.ingsw;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -27,5 +27,6 @@ public class BoardGUI extends Application{
         primaryStage.sizeToScene();
         primaryStage.setTitle("Santorini Game");
         primaryStage.show();
+
     }
 }
