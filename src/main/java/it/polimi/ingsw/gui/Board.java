@@ -1,19 +1,22 @@
 package it.polimi.ingsw.gui;
 
-import it.polimi.ingsw.model.Color;
-import it.polimi.ingsw.model.Coord;
-import it.polimi.ingsw.model.God;
-import it.polimi.ingsw.model.Level;
+import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.observer.Observer;
 import it.polimi.ingsw.server.Connection;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -36,7 +39,7 @@ public class Board implements Initializable {
         private ImageView level, dome, worker;
         private boolean enabled;
         private Coord coord;
-        public Cell(int x, int  y){
+        public Cell(int x, int y){
             this.level = new ImageView();
             this.dome = new ImageView();
             this.worker = new ImageView();
@@ -74,13 +77,10 @@ public class Board implements Initializable {
         public void setWorkerImage(Image worker){
             this.worker.setImage(worker);
         }
-        public void removeWorkerImage(){
-            this.worker.setImage(emptyImage);
-        }
         public void resetImages(){
-            this.level.setImage(null);
-            this.dome.setImage(null);
-            this.worker.setImage(null);
+            this.level.setImage(emptyImage);
+            this.dome.setImage(emptyImage);
+            this.worker.setImage(emptyImage);
         }
         public void enable(){
             this.enabled = true;
@@ -101,6 +101,7 @@ public class Board implements Initializable {
         }
     }
 
+    //used to store the state of the gui
     private enum State{
         NONE, MOVE, BUILD, INITIALIZINGWORKERS, SELECTINGWORKER;
     }
@@ -117,12 +118,16 @@ public class Board implements Initializable {
     private Map<String, God> playersGods;
     private Cell[][] board;
     private State state = State.NONE;
+    private Map<Level, List<Coord>> buildableSpaces;
 
     private List<Coord> clickableCells;
+    private boolean canMove, canBuild, canSkip;
 
     //resources and window components
     public AnchorPane boardWindow;
-    public ImageView moveBtnOn, moveBtnOff, buildBtnOn, buildBtnOff, skipBtnOn, skipBtnOff;
+    public ImageView moveBtnOn, moveBtnOff, buildBtnOn, buildBtnOff, skipBtnOn, skipBtnOff, backBtn;
+    public ImageView redBanner, blueBanner, yellowBanner;
+    public TextArea messageBox;
     private Image lvl1Image, lvl2Image, lvl3Image, domeImage, emptyImage;
     private Map<Color, Image> workersTokens;
     private int cellStep = 106, intialX = 384, initialY = 109, cellDim = 90, domeOffset = 10;
@@ -161,9 +166,10 @@ public class Board implements Initializable {
         this.isChallenger = isChallenger;
         this.nickname = nickname;
 
+        this.serverConnection.addObserver(new MessageReceiver());
         exec = Executors.newFixedThreadPool(1);
-        System.out.println("You have entered the lobby.");
         exec.submit(serverConnection);
+        System.out.println("You have entered the lobby.");
     }
 
     //Initializes the board
@@ -184,34 +190,60 @@ public class Board implements Initializable {
     private void onCellClicked(Coord clickedCell){
         switch (this.state){
             case MOVE:
-                //TODO: player has chose to move in clickedCell
-
-                //if cella selezionata non è in this.clickableCells:
-                //TODO: show error label / message
+                //player has chose to move in clickedCell
+                if(clickableCells.contains(clickedCell)){
+                    List<Object> action = new ArrayList<>();
+                    action.add("onMoveChosen");
+                    action.add(clickedCell);
+                    serverConnection.asyncSend(action);
+                    this.state=State.NONE;
+                    this.disableAll();
+                }else{
+                    this.showMessage("Invalid move.");
+                }
                 break;
 
             case BUILD:
-                //TODO: player has chose to build in clickedCell
-
-                //if cella selezionata non è in this.clickableCells:
-                //TODO: show error label / message
+                //player has chose to build in clickedCell
+                if(clickableCells.contains(clickedCell)){
+                    List<Object> action = new ArrayList<>();
+                    action.add("onBuildChosen");
+                    action.add(clickedCell);
+                    //TODO: add gui elements to choose the level for building
+                    serverConnection.asyncSend(action);
+                    this.state=State.NONE;
+                    this.disableAll();
+                }else{
+                    this.showMessage("Invalid build.");
+                }
                 break;
 
             case INITIALIZINGWORKERS:
-                //TODO: worker initialization
-                //if(cella selezionata va bene (è libera)
-                //crea la lista di object, metti stringa onWorkerQualcosa.., metti coordinate selezionate
-                //this.serverConnection.send( lista di object )
-
-                //if cella selezionata non è in this.clickableCells:
-                //TODO: show error label / message
+                //worker initialization
+                if(clickableCells.contains(clickedCell)){
+                    List<Object> action = new ArrayList<>();
+                    action.add("onWorkerInitialization");
+                    action.add(clickedCell);
+                    serverConnection.asyncSend(action);
+                    this.state=State.NONE;
+                    this.disableAll();
+                }else{
+                    this.showMessage("Invalid selection.");
+                }
                 break;
 
             case SELECTINGWORKER:
-                //TODO: player has chose where to place his worker
-
-                //if cella selezionata non è in this.clickableCells:
-                //TODO: show error label / message
+                //player has chose where to place his worker
+                if(clickableCells.contains(clickedCell)){
+                    List<Object> action = new ArrayList<>();
+                    action.add("onWorkerChosen");
+                    action.add(clickedCell);
+                    serverConnection.asyncSend(action);
+                    this.state=State.NONE;
+                    this.disableAll();
+                }else{
+                    this.showMessage("Invalid selection.");
+                }
                 break;
 
             default:
@@ -234,46 +266,63 @@ public class Board implements Initializable {
 
     //used to update the graphics when the onBoardChanged event arrives
     private void updateBoard(it.polimi.ingsw.model.Board b){
-        //TODO: update the board
-        //reset the board
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                //reset the board
+                board[i][j].resetImages();
+                //draw the board
+                switch (b.getSpace(new Coord(i, j)).getHeight()){
+                    case GROUND:
+                        this.board[i][j].setLevelImage(this.emptyImage);
+                        break;
+                    case LVL1:
+                        this.board[i][j].setLevelImage(this.lvl1Image);
+                        break;
+                    case LVL2:
+                        this.board[i][j].setLevelImage(this.lvl2Image);
+                        break;
+                    case LVL3:
+                        this.board[i][j].setLevelImage(this.lvl3Image);
+                        break;
+                }
+                if(b.getSpace(new Coord(i, j)).isDome()){
+                    this.board[i][j].setDomeImage();
+                }
+            }
+        }
+        //draw worker
+        for(Worker w: b.getWorkers()){
+            board[w.getPosition().x][w.getPosition().y].setWorkerImage(workersTokens.get(w.getColor()));
+        }
+    }
 
-        //draw the board
+    //used to show a message in the text area
+    private void showMessage(String message){
+        this.messageBox.appendText(message);
+        this.messageBox.appendText("---");
     }
 
     //enable move button
     private void enableMove(boolean enable){
-        if(enable){
-            this.moveBtnOff.setVisible(false);
-            this.moveBtnOn.setVisible(true);
-        }
-        else{
-            this.moveBtnOff.setVisible(true);
-            this.moveBtnOn.setVisible(false);
-        }
+        this.moveBtnOff.setVisible(!enable);
+        this.moveBtnOn.setVisible(enable);
     }
 
     //enable build button
     private void enableBuild(boolean enable){
-        if(enable){
-            this.buildBtnOff.setVisible(false);
-            this.buildBtnOn.setVisible(true);
-        }
-        else{
-            this.buildBtnOff.setVisible(true);
-            this.buildBtnOn.setVisible(false);
-        }
+        this.buildBtnOff.setVisible(!enable);
+        this.buildBtnOn.setVisible(enable);
     }
 
     //enable skip button
     private void enableSkip(boolean enable){
-        if(enable){
-            this.skipBtnOff.setVisible(false);
-            this.skipBtnOn.setVisible(true);
-        }
-        else{
-            this.skipBtnOff.setVisible(true);
-            this.skipBtnOn.setVisible(false);
-        }
+        this.skipBtnOff.setVisible(!enable);
+        this.skipBtnOn.setVisible(enable);
+    }
+
+    //enable back button
+    private void enableBack(boolean enable){
+        this.backBtn.setVisible(enable);
     }
 
     //disable board and all buttons
@@ -282,6 +331,7 @@ public class Board implements Initializable {
         this.enableMove(false);
         this.enableBuild(false);
         this.enableSkip(false);
+        this.enableBack(false);
     }
 
     //called when the move button is clicked
@@ -290,6 +340,7 @@ public class Board implements Initializable {
         this.disableAll();
         this.enableBoard(true);
         this.state = State.MOVE;
+        this.enableBack(true);
     }
 
     //called when the move button is clicked
@@ -298,6 +349,7 @@ public class Board implements Initializable {
         this.disableAll();
         this.enableBoard(true);
         this.state = State.BUILD;
+        this.enableBack(true);
     }
 
     //called when the move button is clicked
@@ -305,7 +357,53 @@ public class Board implements Initializable {
     public void skipAction(MouseEvent event){
         this.disableAll();
         this.state = State.NONE;
-        //TODO: send a message to the server, player want to skip
+        //send a message to the server, player wants to skip
+        List<Object> objects = new ArrayList<>();
+        objects.add("skipAction");
+        serverConnection.asyncSend(objects);
+    }
+
+    //called when the back button is clicked
+    @FXML
+    public void goBack(){
+        disableAll();
+        this.state = State.NONE;
+        if(canSkip)
+            enableSkip(true);
+        if(canMove)
+            enableMove(true);
+        if(canBuild)
+            enableBuild(true);
+    }
+
+    //to add player banner (when game is ready)
+    private void addPlayerBanner(Map<String, Color> playerColorMap){
+
+    }
+
+    //to remove a player banner (when he looses)
+    private void removePlayerBanner(String nickname){
+
+    }
+
+    //to highlight a player banner during it's turn
+    private void highlightPlayerBanner(String nickname){
+
+    }
+
+    //to ask challenger to choose gods for the game
+    private List<God> godsSelectionPopup(int numPlayers){
+        return null;
+    }
+
+    //to ask a player for his god
+    private God godSelectionPopup(List<God> availableGods){
+        return null;
+    }
+
+    //to ask challenger for starting player
+    private int startPlayerSelectionPopup(List<String> players){
+        return 0;
     }
 
     //called when receiving a message from the server
@@ -331,14 +429,14 @@ public class Board implements Initializable {
             case "onGameReady":
                 disableAll();
                 System.out.println("Set up phase is done!");
-                //TODO: make a message appear on the window
+                this.showMessage("Set up phase is done!");
                 break;
 
             case "onGodsChosen":
                 disableAll();
                 List<String> selectedGods = (List<String>) objs.get(1);
                 System.out.println("Challenger has chosen the playable gods");
-                //TODO: make a message appear on the window
+                this.showMessage("Challenger has chosen the playable gods");
                 break;
 
             case "onPlayerAdded":
@@ -347,7 +445,8 @@ public class Board implements Initializable {
                 int numCurr = (int) objs.get(2);
                 int numTot = (int) objs.get(3);
                 System.out.println(nickname + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
-                //TODO: make a message appear on the window
+                this.showMessage(nickname + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
+                //TODO: add player banner
                 break;
 
             case "onGodSelection":
@@ -364,7 +463,7 @@ public class Board implements Initializable {
                     //TODO: make a popup window appear to make the challenger choose gods for the game
                 }else{
                     System.out.println("The challenger is choosing the gods");
-                    //TODO: make a message appear on the window
+                    this.showMessage("The challenger is choosing the gods");
                 }
                 break;
 
@@ -376,7 +475,7 @@ public class Board implements Initializable {
                 }
                 else {
                     System.out.println("Challenger is choosing the starting player");
-                    //TODO: make a message appear on the window
+                    this.showMessage("Challenger is choosing the starting player");
                 }
                 break;
 
@@ -388,7 +487,6 @@ public class Board implements Initializable {
                 this.state = State.INITIALIZINGWORKERS;
                 this.enableBoard(true);
                 //a questo punto la board è abilitata e verrà selezionato lo spazio dove posizionare il worker
-                //TODO: completare onCellClicked()
                 break;
 
             case "onMyTurn":
@@ -399,31 +497,38 @@ public class Board implements Initializable {
                 this.state = State.SELECTINGWORKER;
                 enableBoard(true);
                 //a questo punto la board è abilitata e verrà selezionato il worker per il turno
-                //TODO: completare onCellClicked()
                 break;
 
             case "onMyAction":
                 disableAll();
+                this.canMove = false;
+                this.canBuild = false;
+                this.canSkip = false;
                 List<Coord> movableSpaces = (List<Coord>) objs.get(1);
-                Map<Level, List<Coord>> buildableSpaces = (Map<Level, List<Coord>>) objs.get(2);
+                this.buildableSpaces = (Map<Level, List<Coord>>) objs.get(2);
                 boolean canEndTurn = (boolean) objs.get(3);
                 this.clickableCells.clear();
                 this.clickableCells.addAll(movableSpaces);
                 boolean thereAreBuilds = false;
-                for(Level l:buildableSpaces.keySet()){
-                    this.clickableCells.addAll(buildableSpaces.get(l));
-                    if(buildableSpaces.get(l).size() > 0)
+                for(Level l:this.buildableSpaces.keySet()){
+                    this.clickableCells.addAll(this.buildableSpaces.get(l));
+                    if(this.buildableSpaces.get(l).size() > 0)
                         thereAreBuilds = true;
                 }
-                if(canEndTurn)
+                if(canEndTurn){
                     this.enableSkip(true);
-                if(movableSpaces.size() > 0)
+                    this.canSkip = true;
+                }
+                if(movableSpaces.size() > 0) {
                     this.enableMove(true);
-                if(thereAreBuilds)
+                    this.canMove = true;
+                }
+                if(thereAreBuilds) {
                     this.enableBuild(true);
+                    this.canBuild = true;
+                }
                 this.state = State.NONE;
                 //a questo punto un button tra move e build verrà premuto, e la board verrà abilitata
-                //TODO: completare onCellClicked()
                 break;
 
             case "onEnd":
@@ -433,7 +538,7 @@ public class Board implements Initializable {
 
             case "onMessage":
                 disableAll();
-                String message = (String)((List<Object>) receivedObject).get(2);
+                String message = (String)((List<Object>) receivedObject).get(1);
                 System.out.println(message);
                 break;
 
@@ -441,8 +546,22 @@ public class Board implements Initializable {
                 disableAll();
                 // the game is no more valid, client must disconnect
                 System.out.println("A client disconnected from the game, disconnecting...");
-                //TODO: Close socket, streams
-                //TODO: Close this windows and show main menu window
+                //Close socket, streams
+                this.serverConnection.closeConnection();
+                //Close this windows and show main menu window
+                FXMLLoader loader = new FXMLLoader();
+                loader.setLocation(getClass().getResource("/home.fxml"));
+                Parent root = null;
+                try {
+                    root = loader.load();
+                } catch (IOException e) { e.printStackTrace(); }
+                Stage stage = new Stage();
+                stage.setScene(new Scene(root));
+                stage.setResizable(false);
+                stage.sizeToScene();
+                stage.setTitle("Santorini Game");
+                stage.show();
+                ((Stage) boardWindow.getScene().getWindow()).close();
                 break;
 
             default:
@@ -450,6 +569,10 @@ public class Board implements Initializable {
                 System.out.println("Event message not recognized.");
                 break;
         }
+    }
+
+    public void closeConnection(){
+        this.serverConnection.closeConnection();
     }
 
 }

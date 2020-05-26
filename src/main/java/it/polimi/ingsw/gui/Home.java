@@ -101,8 +101,9 @@ public class Home implements Initializable {
 
     @FXML
     public void joinGame(MouseEvent event){
-        availableLobbies.clear();
-        availableLobbiesMaxPlayers.clear();
+        this.availableLobbies.clear();
+        this.availableLobbiesMaxPlayers.clear();
+        this.lobbyList.getItems().clear();
 
         this.lobbyList.getItems().clear();
         this.challenger = false;
@@ -273,11 +274,7 @@ public class Home implements Initializable {
 
         //set close event for board window: (close socket and streams, exit application)
         stage.setOnCloseRequest(windowEvent -> {
-            try {
-                socket.close();
-                in.close();
-                out.close();
-            } catch (IOException e) { e.printStackTrace(); }
+            ((Board)loader.getController()).closeConnection();
             Platform.exit();
             System.exit(0);
         });
