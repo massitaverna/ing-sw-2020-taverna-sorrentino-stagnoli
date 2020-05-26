@@ -34,7 +34,7 @@ public class SpaceTest {
         assert (!s.isOccupied());
     }
 
-    @Test (expected = SpaceOccupiedException.class)
+    @Test (expected = SpaceFullException.class)
     public void destroyDomeTest(){
         Space s = new Space();
         s.setLevel(Level.DOME);

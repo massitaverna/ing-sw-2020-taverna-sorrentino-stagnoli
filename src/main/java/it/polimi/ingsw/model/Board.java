@@ -383,7 +383,7 @@ public class Board implements Cloneable, Serializable {
 
     public List<Worker> getWorkers(){
         List<Worker> res = new ArrayList<>();
-        for(Worker w: this.workers){
+        for(Worker w : this.workers){
             res.add(w.clone());
         }
         return res;

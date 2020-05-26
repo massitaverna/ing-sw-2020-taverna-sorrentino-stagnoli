@@ -18,7 +18,7 @@
     <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>
     -->
-    <maven.compiler.release>12</maven.compiler.release>
+    <maven.compiler.release>14</maven.compiler.release>
   </properties>
 
   <dependencies>
@@ -101,8 +101,8 @@
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-compiler-plugin</artifactId>
               <configuration>
-                  <source>11</source>
-                  <target>11</target>
+                  <source>14</source>
+                  <target>14</target>
               </configuration>
           </plugin>
       </plugins>

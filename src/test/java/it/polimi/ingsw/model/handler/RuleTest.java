@@ -24,7 +24,7 @@ public class RuleTest {
         r.setTarget(Target.MYSELF);
         r.setGeneratedRules(new ArrayList<>());
         r.setForceSpaceFunction((a, b) -> a);
-        r.setSymbolicCondition((a, b, c) -> true);
+        //r.setSymbolicCondition((a, b, c) -> true);
 
     }
     @Test ( expected = java.lang.AssertionError.class )
@@ -64,6 +64,17 @@ public class RuleTest {
 
     @Test ( expected = java.lang.AssertionError.class )
     public void cannotChangeSymbolicCondition() {
+        Rule r = new Rule();
+        r.setPurpose(Purpose.VALIDATION);
+        r.setDecision(Decision.GRANT);
+        r.setActionType(ActionType.MOVE);
+        r.setBuildLevel(Level.GROUND);
+        r.setTarget(Target.MYSELF);
+        r.setGeneratedRules(new ArrayList<>());
+        r.setForceSpaceFunction((a, b) -> a);
+        r.setSymbolicCondition((a, b, c) -> true);
+        //---
+
         r.setSymbolicCondition((a, b, c) -> true);
     }
 
