@@ -4,16 +4,16 @@ The caller must clean the argument to be passed to the callee (i.e. strip() + re
 The callee can safely call parseArguments() on the argument passed by the caller
 */
 
-package it.polimi.ingsw.model.handler.util;
+package it.polimi.ingsw.model.handler;
 
 import it.polimi.ingsw.exceptions.model.handler.RuleParserException;
 import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.Level;
+import it.polimi.ingsw.model.handler.util.Pair;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.InputStream;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -23,21 +23,206 @@ import java.util.regex.Pattern;
 public class RuleParser {
     private String line;
     private int numLine;
+    private int indentationLevel;
+    private Rule rule;
+    private final Map<String, List<Rule>> generationMap;
+    private final Set<String> idSet;
+    private List<Rule> rules;
+    private final Scanner scanner;
+
     public static final Pattern coordPattern =
             Pattern.compile("coord\\x20*\\(\\x20*(-?\\d)\\x20*,\\x20*(-?\\d)\\x20*\\)");
     public static final Pattern levelPattern =
             Pattern.compile("GROUND|LVL1|LVL2|LVL3|DOME");
-    public static final Pattern booleanOperator =
-            Pattern.compile("<|<=|==|>=|>");
-    public static final Pattern arithmeticOperator =
-            Pattern.compile("[+-]");
 
-    /*public void parse() throws LambdaParserException {
-        while (indentation) {
+
+    public RuleParser(String file) {
+        numLine = 0;
+        indentationLevel = 0;
+        generationMap = new HashMap<>();
+        idSet = new HashSet<>();
+        InputStream inputStream = this.getClass().getClassLoader()
+                .getResourceAsStream("rules/example");
+        //TODO: Remember to change to file instead of rules/example
+        if (inputStream == null) {
+            throw new IllegalArgumentException("The file " + file + " does not exist.");
+        }
+        scanner = new Scanner(inputStream);
+    }
+
+    public void parse() throws RuleParserException {
+        String parameter = "", value = "";
+        BiPredicate<Pair<Coord>, Board> condition = (cPair, board) -> true;
+        boolean isParsingCondition = false;
+        int expectedIndentationLevel = 0;
+
+        if (rules == null) {
+            rules = new ArrayList<>();
+        }
+        else {
+            throw new IllegalStateException("This method has already been called and " +
+                    "can be called only once.");
+        }
+
+        while (scanner.hasNextLine()) {
+            parseLine();
+
+            if (indentationLevel == 0 && line.equals("rule:")) {
+                isParsingCondition = false;
+                rule.setCondition(condition);
+                rules.add(rule);
+                rule = new Rule();
+            }
+            else if (indentationLevel == 1) {
+                if (line.contains("=")) {
+                    isParsingCondition = false;
+                    String[] lineElements = line.split("=");
+                    parameter = lineElements[0].strip().toLowerCase();
+                    value = lineElements[1].strip().toLowerCase();
+                    setParameter(parameter, value);
+                }
+                else if (line.equals("condition:") && !isParsingCondition) {
+                    condition = (cPair, board) -> true;
+                    isParsingCondition = true;
+                }
+                else {
+                    error("Unexpected line.");
+                }
+            }
+            else if (indentationLevel == 2 && isParsingCondition) {
+                condition = condition.and(extractPredicate(line));
+            }
+            else {
+                error("Unexpected line.");
+            }
+        }
+        rule.setCondition(condition);
+        rules.add(rule);
+        scanner.close();
+
+        /*while (indentation) {
             String line = nextLine();
             extractPredicate(line);
+
+        }*/
+
+        /*
+        GENERATION ASSOCIATION
+        When a new generation rule is created:
+        if (id exists) --> rule.setGeneratedRules(generationMap.get(id))
+        else --> generationMap.put(id, new ArrayList<>)
+                 rule.setGeneratedRules(generationMap.get(id))
+                 // This means: CREATE THE ASSOCIATION
+        When a rule is 'generatedBy' ID:
+        if (ID exists) --> generationMap.get(ID).add(rule)
+        else --> generationMap.put(id, new ArrayList<>)
+                 generationMap.get(ID).add(rule)
+                 // This means: CREATE THE ASSOCIATION + ADD THE RULE
+         */
+        String id = "";
+        if (parameter.equals("id")) {
+            if (idSet.contains(value)) {
+                error("A previously defined rule has the same ID " + value);
+            }
+            idSet.add(value);
+            if (!generationMap.containsKey(value)) {
+                generationMap.put(value, new ArrayList<>());
+            }
+            rule.setGeneratedRules(generationMap.get(id));
         }
-    }*/
+
+        else if (parameter.equals("generatedBy")) {
+            if (!generationMap.containsKey(value)) {
+                generationMap.put(value, new ArrayList<>());
+            }
+            generationMap.get(value).add(rule);
+        }
+
+        /*
+        At the end of the rule, check that:
+            id != null <==> purpose == Generation
+         */
+    }
+
+    public List<Rule> getRules() {
+        if (rules == null) {
+            throw new IllegalStateException("A parsing is needed before calling this method.");
+        }
+        return rules;
+    }
+
+    private /*helper*/ void parseLine() throws RuleParserException {
+        do {
+            line = scanner.nextLine();
+            numLine++;
+        } while (scanner.hasNextLine() && line.strip().equals(""));
+
+        if (line.matches("\\S+.*")) {
+            indentationLevel = 0;
+        }
+        else if (line.matches("\\t\\S+.*")) {
+            indentationLevel = 1;
+        }
+        else if (line.matches("\\t\\t\\S+.*")) {
+            indentationLevel = 2;
+        }
+        else {
+            error("Incorrect indentation.");
+        }
+
+        line = line.substring(indentationLevel);
+        line = line.strip();
+    }
+
+    private /*helper*/ void setParameter(String parameter, String value) throws RuleParserException {
+        switch (parameter) {
+            case "purpose": {
+                try {
+                    rule.setPurpose(Purpose.valueOf(value));
+                }
+                catch (IllegalArgumentException e) {
+                    error("Value " + value + " is invalid for " + parameter + " parameter.");
+                }
+                break;
+            }
+            case "actiontype": {
+                try {
+                    rule.setActionType(ActionType.valueOf(value));
+                }
+                catch (IllegalArgumentException e) {
+                    error("Value " + value + " is invalid for " + parameter + " parameter.");
+                }
+                break;
+            }
+            case "decision": {
+                try {
+                    rule.setDecision(Decision.valueOf(value));
+                }
+                catch (IllegalArgumentException e) {
+                    error("Value " + value + " is invalid for " + parameter + " parameter.");
+                }
+                break;
+            }
+            case "target": {
+                try {
+                    rule.setTarget(Target.valueOf(value));
+                }
+                catch (IllegalArgumentException e) {
+                    error("Value " + value + " is invalid for " + parameter + " parameter.");
+                }
+                break;
+            }
+            case "buildlevel": {
+                try {
+                    rule.setBuildLevel(Level.valueOf(value));
+                }
+                catch (IllegalArgumentException e) {
+                    error("Value " + value + " is invalid for " + parameter + " parameter.");
+                }
+                break;
+            }
+        }
+    }
 
     public BiPredicate<Pair<Coord>, Board> extractPredicate(String line) throws RuleParserException {
         BiPredicate<Pair<Coord>, Board> condition = null;

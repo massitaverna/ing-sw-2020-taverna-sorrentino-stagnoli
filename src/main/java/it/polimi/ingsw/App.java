@@ -3,20 +3,36 @@ package it.polimi.ingsw;
 import it.polimi.ingsw.controller.RealController;
 import it.polimi.ingsw.exceptions.model.handler.RuleParserException;
 import it.polimi.ingsw.model.GameModel;
-import it.polimi.ingsw.model.handler.util.RuleParser;
+import it.polimi.ingsw.model.handler.RuleParser;
 import it.polimi.ingsw.view.ChallengerView;
 import it.polimi.ingsw.view.PlayerView;
 
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.function.BiPredicate;
 
 
 public class App {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RuleParserException {
 
         boolean simulation = false;
+
+        /*Scanner s = new Scanner(App.class.getClassLoader().getResourceAsStream("rules/example"));
+        String line = s.nextLine();
+        System.out.println(line.matches(".*: "));*/
+        /*
+        class Rule {
+            public BiPredicate<Integer, Integer> condition;
+            public void setCondition(BiPredicate<Integer, Integer> condition) {
+                this.condition = condition;
+            }
+        }
+        Rule r = new Rule();
+        BiPredicate<Integer, Integer> c = (a,b) -> true;
+        r.setCondition(c);
+        c = (a,b) -> false;
+        System.out.println(r.condition.test(1,2));
+        */
 
 
 

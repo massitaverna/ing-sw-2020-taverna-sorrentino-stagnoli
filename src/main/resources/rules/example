@@ -1,0 +1,7 @@
+rule:
+    purpose = generation
+    actionType = move
+    id = ABC
+    condition:
+        occupied(after)
+rule:
