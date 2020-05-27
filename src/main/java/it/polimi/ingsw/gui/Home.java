@@ -191,7 +191,6 @@ public class Home implements Initializable {
                     System.out.println("lobby joined from GUI");
                     showBoardWindow();
                 }
-                // manca il caso in cui metti un nome già presente in lobby
                 else{ //lobby is full, return to main menu
                     this.challenger = false;
                     this.homePane.setVisible(true);
@@ -263,14 +262,11 @@ public class Home implements Initializable {
     }
 
     public void showBoardWindow() {
-        ((Board)loader.getController()).setParameters(new Connection(socket, out, in), challenger, nickname);
-
         Stage stage = new Stage();
         stage.setScene(new Scene(root));
         stage.sizeToScene();
         stage.setResizable(false);
         stage.setTitle("Santorini Game");
-        ((Stage) homePane.getScene().getWindow()).close();
 
         //set close event for board window: (close socket and streams, exit application)
         stage.setOnCloseRequest(windowEvent -> {
@@ -279,5 +275,8 @@ public class Home implements Initializable {
             System.exit(0);
         });
         stage.show();
+
+        ((Board)loader.getController()).setParameters(new Connection(socket, out, in), challenger, nickname);
+        ((Stage) homePane.getScene().getWindow()).close();
     }
 }

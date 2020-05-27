@@ -158,9 +158,6 @@ public class MainServer {
                                 //if valid name and num players
                                 if ((numPlayers == 2 || numPlayers == 3) && !nickname.equals("")) {
 
-                                    out.writeObject("ok");
-                                    out.flush();
-
                                     //valid name and numPlayers, create the lobby
                                     Lobby newLobby = new Lobby(server, numPlayers);
                                     synchronized (lobbies) {
@@ -169,6 +166,9 @@ public class MainServer {
                                     //the player is the challanger
                                     newLobby.addPlayer(nickname, socket, out, in);
                                     newLobby.controllerAddPlayer(nickname);
+
+                                    out.writeObject("ok");
+                                    out.flush();
 
                                     finished = true;
                                     pendingSockets.remove(this.socket);
