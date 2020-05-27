@@ -1,7 +1,25 @@
 rule:
-    purpose = generation
+    purpose = validation
     actionType = move
-    id = ABC
     condition:
         occupied(after)
+        near(before, after)
+        occupied(sum(after, (1,0)))
+        compareLevels(before, after, <)
+
 rule:
+    purpose = generation
+    id = ABC
+    actionType = move
+    target = myself
+
+rule:
+    purpose = validation
+    actionType = build
+    decision = grant
+    generatedBy = ABC
+    condition:
+        near(before, after)
+
+
+condition:"occupied(after)"

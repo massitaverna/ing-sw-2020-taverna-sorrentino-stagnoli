@@ -3,6 +3,7 @@ package it.polimi.ingsw;
 import it.polimi.ingsw.controller.RealController;
 import it.polimi.ingsw.exceptions.model.handler.RuleParserException;
 import it.polimi.ingsw.model.GameModel;
+import it.polimi.ingsw.model.handler.Purpose;
 import it.polimi.ingsw.model.handler.RuleParser;
 import it.polimi.ingsw.view.ChallengerView;
 import it.polimi.ingsw.view.PlayerView;
@@ -33,6 +34,7 @@ public class App {
         c = (a,b) -> false;
         System.out.println(r.condition.test(1,2));
         */
+
 
 
 
