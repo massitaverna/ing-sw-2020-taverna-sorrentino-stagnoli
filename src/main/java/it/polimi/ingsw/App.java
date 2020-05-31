@@ -18,23 +18,6 @@ public class App {
 
         boolean simulation = false;
 
-        /*Scanner s = new Scanner(App.class.getClassLoader().getResourceAsStream("rules/example"));
-        String line = s.nextLine();
-        System.out.println(line.matches(".*: "));*/
-        /*
-        class Rule {
-            public BiPredicate<Integer, Integer> condition;
-            public void setCondition(BiPredicate<Integer, Integer> condition) {
-                this.condition = condition;
-            }
-        }
-        Rule r = new Rule();
-        BiPredicate<Integer, Integer> c = (a,b) -> true;
-        r.setCondition(c);
-        c = (a,b) -> false;
-        System.out.println(r.condition.test(1,2));
-        */
-
 
 
 

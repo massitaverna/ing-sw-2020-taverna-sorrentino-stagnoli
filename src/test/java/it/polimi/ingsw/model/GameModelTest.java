@@ -56,7 +56,7 @@ public class GameModelTest {
         assert m.getCurrentPlayer().getNickname().equals("AA");
 
         //assert gods set correctly
-        ArrayList<String> gods = new ArrayList<String>();
+        ArrayList<String> gods = new ArrayList<>();
         gods.add("Athena");
         gods.add("Demeter");
         gods.add("Artemis");

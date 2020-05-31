@@ -121,7 +121,7 @@ public class Rule {
 
     void setCondition(BiPredicate<Pair<Coord>, Board> condition) {
         assert this.condition == null;
-        assert this.symbolicCondition == null; // Recently added
+        assert this.symbolicCondition == null;
         this.condition = condition;
     }
 
@@ -142,7 +142,7 @@ public class Rule {
 
     void setSymbolicCondition(TriPredicate<Pair<Coord>, Pair<Coord>, Board> symbolicCondition) {
         assert this.symbolicCondition == null;
-        assert this.condition == null; // Recently added
+        assert this.condition == null;
         this.symbolicCondition = symbolicCondition;
     }
 

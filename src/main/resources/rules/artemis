@@ -1,0 +1,16 @@
+rule:
+	Purpose = GENERATION
+	Target = MYSELF
+	ActionType = MOVE
+	id = unique
+
+secondary rule:
+	Purpose = VALIDATION
+	Decision = DENY
+	ActionType = MOVE
+	symbolicCondition:
+		equalCoordinates(oldBefore, after)
+	generatedBy = unique
+
+            generatedRules.add(standardRules.get(0));
+            generatedRules.add(standardRules.get(standardRules.size() - 1));

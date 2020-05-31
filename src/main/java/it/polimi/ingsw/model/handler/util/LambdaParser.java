@@ -4,15 +4,13 @@ The caller must clean the argument to be passed to the callee (i.e. strip() + re
 The callee can safely call parseArguments() on the argument passed by the caller
 */
 
-package it.polimi.ingsw.model.handler;
+package it.polimi.ingsw.model.handler.util;
 
 import it.polimi.ingsw.exceptions.model.handler.RuleParserException;
 import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.Level;
-import it.polimi.ingsw.model.handler.util.Pair;
-import it.polimi.ingsw.model.handler.util.TriFunction;
-import it.polimi.ingsw.model.handler.util.TriPredicate;
+
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -23,19 +21,12 @@ public class LambdaParser {
 
     public static final Pattern coordPattern =
             Pattern.compile("coord\\x20*\\(\\x20*(-?\\d)\\x20*,\\x20*(-?\\d)\\x20*\\)");
-    public static final Pattern levelPattern =
-            Pattern.compile("level\\x20*\\(\\x20*(.+)\\x20*\\)");
 
     public static TriPredicate<Pair<Coord>, Pair<Coord>, Board> extractPredicate(String line) throws RuleParserException {
 
-        TriPredicate<Pair<Coord>, Pair<Coord>, Board> condition = null;
+        TriPredicate<Pair<Coord>, Pair<Coord>, Board> condition;
         String function = getFunction(line);
         String argument = getArgument(line);
-
-        if (!Pattern.matches("\\(.+\\)", argument)) {
-            throw new RuleParserException("Argument format of " + function.toUpperCase() +
-                    " operation is not correct.");
-        }
         argument = reduceParentheses(argument);
 
         switch (function) {
@@ -65,14 +56,23 @@ public class LambdaParser {
 
                 condition = (oldPair, cPair, board) -> coords.get(0).apply(oldPair, cPair)
                         .isNear(coords.get(1).apply(oldPair, cPair));
-                // START_TEST
-                BiFunction<Pair<Coord>, Pair<Coord>, Pair<Coord>> f = (oldPair, cPair) ->
-                        new Pair<>(coords.get(0).apply(oldPair, cPair), coords.get(1).apply(oldPair, cPair));
-                BiFunction<Pair<Coord>, Pair<Coord>, Boolean> g = (oldPair, cPair) ->
-                        coords.get(0).apply(oldPair, cPair).isNear(coords.get(1).apply(oldPair, cPair));
-                Pair<Coord> pair = new Pair<>(new Coord(3,3), new Coord(4,4));
-                System.out.println("Coordinates: " + f.apply(null, pair) + "\nNear? " + g.apply(null, pair));
-                // END_TEST
+                break;
+            }
+
+            case "equalCoordinates": {
+                List<String> arguments = parseArguments(argument);
+                if (arguments.size() != 2) {
+                    throw new RuleParserException(function.toUpperCase() + " takes exactly 2 " +
+                            "arguments, " + arguments.size() + " passed.");
+                }
+
+                List<BiFunction<Pair<Coord>, Pair<Coord>, Coord>> coords = new ArrayList<>();
+                for (String arg : arguments) {
+                    coords.add(fromCoordToSymbolicFunction(arg));
+                }
+
+                condition = (oldPair, cPair, board) -> coords.get(0).apply(oldPair, cPair)
+                        .equals(coords.get(1).apply(oldPair, cPair));
                 break;
             }
 
@@ -111,23 +111,21 @@ public class LambdaParser {
                 levels.add(fromLevelToSymbolicFunction(arguments.get(1)));
                 String comparator = arguments.get(2);
 
-                if (comparator.equals("<")) {
-                    condition = (oldPair, cPair, board) ->
-                            levels.get(0).apply(oldPair, cPair, board).ordinal() <
-                                    levels.get(1).apply(oldPair, cPair, board).ordinal();
-                } else if (comparator.equals("=")) {
-                    condition = (oldPair, cPair, board) ->
-                            levels.get(0).apply(oldPair, cPair, board).ordinal() ==
-                                    levels.get(1).apply(oldPair, cPair, board).ordinal();
-                } else if (comparator.equals(">")) {
-                    condition = (oldPair, cPair, board) ->
-                            levels.get(0).apply(oldPair, cPair, board).ordinal() >
-                                    levels.get(1).apply(oldPair, cPair, board).ordinal();
-                } else if (comparator.matches("\\d")) {
+                if (comparator.matches("=\\d")) {
                     condition = (oldPair, cPair, board) ->
                             levels.get(1).apply(oldPair, cPair, board).ordinal() -
                                     levels.get(0).apply(oldPair, cPair, board).ordinal() ==
-                                    Integer.parseInt(arguments.get(2));
+                                    Integer.parseInt(arguments.get(2).substring(1));
+                } else if (comparator.matches("<\\d")) {
+                    condition = (oldPair, cPair, board) ->
+                            levels.get(1).apply(oldPair, cPair, board).ordinal() -
+                                    levels.get(0).apply(oldPair, cPair, board).ordinal() <
+                                    Integer.parseInt(arguments.get(2).substring(1));
+                } else if (comparator.matches(">\\d")) {
+                    condition = (oldPair, cPair, board) ->
+                            levels.get(1).apply(oldPair, cPair, board).ordinal() -
+                                    levels.get(0).apply(oldPair, cPair, board).ordinal() >
+                                    Integer.parseInt(arguments.get(2).substring(1));
                 } else {
                     throw new RuleParserException("Incorrect comparator: " + comparator);
                 }
@@ -173,13 +171,13 @@ public class LambdaParser {
 
     //-----------------------------HELPER METHODS------------------------------
 
-    private static List<String> /*helper*/ parseArguments(String source) throws RuleParserException {
+    static List<String> /*helper*/ parseArguments(String source) throws RuleParserException {
 
         /*COMMAS IDENTIFICATION*/
         List<String> splitsOnComma = Arrays.asList(source.split(","));
         splitsOnComma = new ArrayList<>(splitsOnComma);
 
-        if (splitsOnComma.contains("")) {
+        if (splitsOnComma.stream().anyMatch(s -> s.matches("\\s*"))) {
             throw new RuleParserException("Found empty argument(s) (,,) in " + source);
         }
 
@@ -196,7 +194,7 @@ public class LambdaParser {
 
             if (count == 0) {
                 String arg = splitsOnComma.subList(start, i + 1).stream()
-                        .map(s -> s + ",").reduce(String::concat).orElse(piece);
+                        .map(s -> s + ",").reduce(String::concat).orElseThrow(); // before: .orElse(piece)
                 arg = arg.substring(0, arg.length() - 1);
                 arg = arg.strip();
                 arg = reduceParentheses(arg);
@@ -207,19 +205,22 @@ public class LambdaParser {
         return arguments;
     }
 
-    private static String /*helper*/ getFunction(String line) {
+    static String /*helper*/ getFunction(String line) {
         String function = line.split("\\(", 2)[0];
         function = function.strip();
         return function;
     }
 
-    private static String /*helper*/ getArgument(String line) {
+    static String /*helper*/ getArgument(String line) throws RuleParserException {
+        if (!line.matches(".*\\(.+\\)")) {
+            throw new RuleParserException("Argument format is incorrect.");
+        }
         String argument = "(" + line.split("\\(", 2)[1];
         argument = argument.strip();
         return argument;
     }
 
-    private static String /*helper*/ reduceParentheses(String source) {
+    static String /*helper*/ reduceParentheses(String source) {
         while (Pattern.matches("\\(.+\\)", source)) {
             boolean canReduce = false;
             int count = 0;
@@ -246,9 +247,9 @@ public class LambdaParser {
         return source;
     }
 
-    private static /*helper*/ BiFunction<Pair<Coord>, Pair<Coord>, Coord> fromCoordToSymbolicFunction(String c)
+    static /*helper*/ BiFunction<Pair<Coord>, Pair<Coord>, Coord> fromCoordToSymbolicFunction(String c)
             throws RuleParserException {
-        BiFunction<Pair<Coord>, Pair<Coord>, Coord> result = null;
+        BiFunction<Pair<Coord>, Pair<Coord>, Coord> result;
         Matcher m = coordPattern.matcher(c);
 
         if (c.equals("before")) {
@@ -281,27 +282,28 @@ public class LambdaParser {
         return result;
     }
 
-    private static TriFunction<Pair<Coord>, Pair<Coord>, Board, Level> /*helper*/ fromLevelToSymbolicFunction(String level)
+    static /*helper*/ TriFunction<Pair<Coord>, Pair<Coord>, Board, Level> fromLevelToSymbolicFunction(String level)
             throws RuleParserException {
 
-        TriFunction<Pair<Coord>, Pair<Coord>, Board, Level> result = null;
-        Matcher m = levelPattern.matcher(level);
+        TriFunction<Pair<Coord>, Pair<Coord>, Board, Level> result;
 
         if (level.toUpperCase().matches("GROUND|LVL1|LVL2|LVL3|DOME")) {
             result = (oldPair, cPair, board) -> Level.valueOf(level.toUpperCase());
-        } else if (m.matches()) {
-            String levelArg = m.group(1);
-            BiFunction<Pair<Coord>, Pair<Coord>, Coord> coord = fromCoordToSymbolicFunction(levelArg);
-            result = (oldPair, cPair, board) -> board.getSpace(coord.apply(oldPair, cPair)).getHeight();
         } else {
-            throw new RuleParserException("A level can only be 'before', 'after', or a constant like " +
-                    "GROUND, LVLn, DOME. Provided: " + level);
+            try {
+                BiFunction<Pair<Coord>, Pair<Coord>, Coord> coord = fromCoordToSymbolicFunction(level);
+                result = (oldPair, cPair, board) -> board.getSpace(coord.apply(oldPair, cPair)).getHeight();
+            }
+            catch (RuleParserException e) {
+                throw new RuleParserException("A level can only be a constant like GROUND, LVLn, DOME or " +
+                        "referenced through its coordinate. Provided: " + level);
+            }
         }
         return result;
     }
 
 
-    private static BiFunction<Pair<Coord>, Pair<Coord>, Coord> /*helper*/ getSumFunction(String argument)
+    static /*helper*/ BiFunction<Pair<Coord>, Pair<Coord>, Coord> getSumFunction(String argument)
             throws RuleParserException {
 
         List<String> arguments = parseArguments(argument);
@@ -324,7 +326,7 @@ public class LambdaParser {
         return sumFunction;
     }
 
-    private static BiFunction<Pair<Coord>, Pair<Coord>, Coord> /*helper*/ getDiffFunction(String argument)
+    static /*helper*/ BiFunction<Pair<Coord>, Pair<Coord>, Coord> getDiffFunction(String argument)
             throws RuleParserException {
 
         List<String> arguments = parseArguments(argument);

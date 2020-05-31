@@ -1,0 +1,9 @@
+rule:
+	Purpose = VALIDATION
+	ActionType = MOVE
+	Decision = GRANT
+	condition:
+		occupied(after)
+		near(before, after)
+		not(samePlayer(before, after))
+	forceSpaceFunction = before

@@ -70,7 +70,7 @@ public class Board implements Cloneable, Serializable {
         throw new WorkerNotFoundException("There is no worker in the selected position.");
    }
 
-   public Worker getWorkerCopy (Coord pos) {
+    public Worker getWorkerCopy (Coord pos) {
         return getWorkerByPosition(pos).clone();
    }
 

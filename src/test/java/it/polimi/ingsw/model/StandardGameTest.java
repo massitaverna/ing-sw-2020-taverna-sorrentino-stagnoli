@@ -16,7 +16,7 @@ public class StandardGameTest extends GameRulesTest {
     @Before
     public void setInitialSituation() {
         try {
-            model = TestUtils.prepareModel("base_test_1");
+            model = TestUtils.prepareModel("base_test");
             before = model.getBoard();
         }
         catch (PrepareModelException e) {
