@@ -404,14 +404,14 @@ public class Board implements Cloneable, Serializable {
         String lvl2Line;
         String lvl1Line;
 
-        for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
 
             workerLine = "  |";
-            lvl3Line = (char) ('A'+i) + " |";
+            lvl3Line = (char) ('A'+j) + " |";
             lvl2Line = "  |";
             lvl1Line = "  |";
 
-            for (int j = 0; j < 5; j++) {
+            for (int i = 0; i < 5; i++) {
                 if (board[i][j].isOccupied()) {
                     try {
                         Worker workerInSpace = this.getWorkerByPosition(new Coord(i ,j));
@@ -486,9 +486,9 @@ public class Board implements Cloneable, Serializable {
         }
         Board result = new Board();
         result.board = board;
-        List<Worker> workers = new ArrayList<>();
-        this.workers.forEach(w -> workers.add(w.clone()));
-        result.workers = workers;
+        for(Worker w: this.workers){
+            result.workers.add(w.clone());
+        }
 
         return result;
     }

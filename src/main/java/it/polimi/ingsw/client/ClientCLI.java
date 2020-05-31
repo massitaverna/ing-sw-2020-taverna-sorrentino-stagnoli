@@ -89,6 +89,10 @@ public class ClientCLI {
             case "onMessage":
                 String message = (String)((List<Object>) receivedObject).get(1);
                 outputStream.println(message);
+                if(message.equals("disconnected")){
+                    System.out.println("A client disconnected from the game, disconnecting...");
+                    this.stop();
+                }
                 break;
 
             case "onGodSelection":
@@ -143,12 +147,6 @@ public class ClientCLI {
                 response.add("onPong");
                 this.serverConnection.asyncSend(response);
                 break;*/
-
-            case "disconnected":
-                // the game is no more valid, client must disconnect
-                System.out.println("A client disconnected from the game, disconnecting...");
-                this.stop();
-                break;
 
             default:
                 outputStream.println("Event message not recognized.");

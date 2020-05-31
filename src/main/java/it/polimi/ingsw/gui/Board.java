@@ -4,13 +4,14 @@ import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.observer.Observer;
 import it.polimi.ingsw.server.Connection;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
@@ -19,7 +20,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 import java.net.URL;
@@ -33,7 +33,7 @@ public class Board implements Initializable {
     private class MessageReceiver implements Observer<Object> {
         @Override
         public void update(Object message) {
-            //System.out.println("Received: " + message.toString());
+            System.out.println("Received: " + message.toString());
             receivedObject = message;
             handleMessageReceived();
         }
@@ -58,8 +58,8 @@ public class Board implements Initializable {
             this.level.setFitHeight(cellDim);
             this.dome.setFitWidth(cellDim/1.30);
             this.dome.setFitHeight(cellDim/1.30);
-            this.worker.setFitWidth(cellDim/1.30);
-            this.worker.setFitHeight(cellDim/1.30);
+            this.worker.setFitWidth(cellDim/1.50);
+            this.worker.setFitHeight(cellDim/1.50);
             this.coord = new Coord(x, y);
             this.enabled = false;
 
@@ -83,9 +83,9 @@ public class Board implements Initializable {
             this.worker.setImage(worker);
         }
         public void resetImages(){
-            this.level.setImage(emptyImage);
-            this.dome.setImage(emptyImage);
-            this.worker.setImage(emptyImage);
+            this.level.setImage(null);
+            this.dome.setImage(null);
+            this.worker.setImage(null);
         }
         public void enable(){
             this.enabled = true;
@@ -215,10 +215,23 @@ public class Board implements Initializable {
             case BUILD:
                 //player has chose to build in clickedCell
                 if(clickableCells.contains(clickedCell)){
+                    Level buildLevel;
+                    List<Level> possibleLevels = new ArrayList<>();
+                    for (Level key : buildableSpaces.keySet()){
+                        List<Coord> list = buildableSpaces.get(key);
+                        if (list.contains(clickedCell)) {
+                            possibleLevels.add(key);
+                        }
+                    }
+                    if(possibleLevels.size() > 1){
+                        buildLevel = levelSelectionPopup(possibleLevels);
+                    }else{
+                        buildLevel = possibleLevels.get(0);
+                    }
                     List<Object> action = new ArrayList<>();
                     action.add("onBuildChosen");
                     action.add(clickedCell);
-                    //TODO: add gui elements to choose the level for building
+                    action.add(buildLevel);
                     serverConnection.asyncSend(action);
                     this.state=State.NONE;
                     this.disableAll();
@@ -301,7 +314,9 @@ public class Board implements Initializable {
         }
         //draw worker
         for(Worker w: b.getWorkers()){
-            board[w.getPosition().x][w.getPosition().y].setWorkerImage(workersTokens.get(w.getColor()));
+            if(w.getPosition() != null) {
+                board[w.getPosition().x][w.getPosition().y].setWorkerImage(workersTokens.get(w.getColor()));
+            }
         }
     }
 
@@ -463,10 +478,10 @@ public class Board implements Initializable {
             stage.sizeToScene();
             stage.setTitle("Choose the playable gods");
             stage.initOwner(boardWindow.getScene().getWindow());
-            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initModality(Modality.WINDOW_MODAL);
             ((GodsPopup) loader.getController()).setNumPlayers(numPlayers);
-            stage.setOnCloseRequest(windowEvent -> gods[0] = ((GodsPopup) loader.getController()).getChoices());
-            stage.show();
+            stage.showAndWait();
+            gods[0] = ((GodsPopup) loader.getController()).getChoices();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -493,10 +508,10 @@ public class Board implements Initializable {
             stage.sizeToScene();
             stage.setTitle("Choose the playable gods");
             stage.initOwner(boardWindow.getScene().getWindow());
-            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initModality(Modality.WINDOW_MODAL);
             ((GodPopup) loader.getController()).setGods(availableGods);
-            stage.setOnCloseRequest(windowEvent -> god[0] = ((GodPopup) loader.getController()).getChoice());
-            stage.show();
+            stage.showAndWait();
+            god[0] = ((GodPopup) loader.getController()).getChoice();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -504,32 +519,45 @@ public class Board implements Initializable {
     }
 
     //to ask challenger for starting player
-    private int startPlayerSelectionPopup(List<String> players){
-        return 0;
+    private String startPlayerSelectionPopup(List<String> players){
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(players.get(0), players);
+        dialog.setTitle("Choose Start Player");
+        dialog.setHeaderText("Choose Start Player");
+
+        dialog.initModality(Modality.WINDOW_MODAL);
+        Optional<String> result = dialog.showAndWait();
+        return result.orElse("");
     }
 
-    private Level levelSelectionPopup(){
-        return null;
+    //to ask which level to build in case of multiple options (atlas)
+    private Level levelSelectionPopup(List<Level> levels){
+        ChoiceDialog<Level> dialog = new ChoiceDialog<>(levels.get(0), levels);
+        dialog.setTitle("Choose Level to Build");
+        dialog.setHeaderText("Choose Level to Build");
+
+        dialog.initModality(Modality.WINDOW_MODAL);
+        Optional<Level> result = dialog.showAndWait();
+        return result.orElse(levels.get(0));
     }
 
     //called when receiving a message from the server
     private void handleMessageReceived() {
+        List<Object> objs;
+        if (receivedObject instanceof List)
+            objs = (List<Object>) receivedObject;
+        else {
+            System.out.println("Something went wrong in handling received message");
+            return;
+        }
+        String event = (String) objs.get(0);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                List<Object> objs;
-                if (receivedObject instanceof List)
-                    objs = (List<Object>) receivedObject;
-                else {
-                    System.out.println("Something went wrong in handling received message");
-                    return;
-                }
-                String event = (String) objs.get(0);
-
+                List<Object> objects;
                 switch (event) {
                     //MODEL MESSAGES
                     case "onBoardChanged":
-                        disableAll();
+                        //disableAll();
                         it.polimi.ingsw.model.Board b = (it.polimi.ingsw.model.Board)objs.get(1);
                         System.out.println(b.toString());
                         updateBoard(b);
@@ -539,6 +567,8 @@ public class Board implements Initializable {
                         disableAll();
                         System.out.println("Set up phase is done!");
                         showMessage("Set up phase is done!");
+                        //TODO: Adjust server messages
+                        //addPlayerBanner(nickname, Color.RED); for each player
                         break;
 
                     case "onGodsChosen":
@@ -555,15 +585,20 @@ public class Board implements Initializable {
                         int numTot = (int) objs.get(3);
                         System.out.println(nickname + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
                         showMessage(nickname + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
-                        //TODO: FIX COLOR
-                        addPlayerBanner(nickname, Color.RED);
                         break;
 
                     case "onGodSelection":
                         disableAll();
                         List<String> godsForSelection = (List<String>) objs.get(1);
-                        String godSelected = godSelectionPopup(godsForSelection);
+                        String godSelected = "";
+                        while(godSelected.equals("")) {
+                            godSelected = godSelectionPopup(godsForSelection);
+                        }
                         showMessage("Selected god: " + godSelected);
+                        objects = new ArrayList<>();
+                        objects.add("onGodChosen");
+                        objects.add(godSelected);
+                        serverConnection.asyncSend(objects);
                         break;
 
                     case "onGodsSelection":
@@ -571,8 +606,11 @@ public class Board implements Initializable {
                         if(isChallenger){
                             List<String> allGods = (List<String>) objs.get(1);
                             int numPlayers = (int) objs.get(2);
-                            List<String> godsSelected = godsSelectionPopup(numPlayers);
-                            List<Object> objects = new ArrayList<>();
+                            List<String> godsSelected = new ArrayList<>();
+                            while(godsSelected.size() < numPlayers) {
+                                godsSelected = godsSelectionPopup(numPlayers);
+                            }
+                            objects = new ArrayList<>();
                             objects.add("onGodsChosen");
                             objects.add(godsSelected);
                             serverConnection.asyncSend(objects);
@@ -586,7 +624,14 @@ public class Board implements Initializable {
                         disableAll();
                         if(isChallenger){
                             List<String> players = (List<String>) objs.get(1);
-                            //TODO: make a popup windows appear to make the challenger choose the start player
+                            String startPlayer = "";
+                            while (startPlayer.equals("")){
+                                startPlayer = startPlayerSelectionPopup(players);
+                            }
+                            objects = new ArrayList<>();
+                            objects.add("onStartPlayerChosen");
+                            objects.add(startPlayer);
+                            serverConnection.asyncSend(objects);
                         }
                         else {
                             System.out.println("Challenger is choosing the starting player");
@@ -619,14 +664,21 @@ public class Board implements Initializable {
                         canMove = false;
                         canBuild = false;
                         canSkip = false;
+                        //movable spaces
                         List<Coord> movableSpaces = (List<Coord>) objs.get(1);
                         buildableSpaces = (Map<Level, List<Coord>>) objs.get(2);
                         boolean canEndTurn = (boolean) objs.get(3);
                         clickableCells.clear();
                         clickableCells.addAll(movableSpaces);
+                        //buildable spaces
                         boolean thereAreBuilds = false;
                         for(Level l:buildableSpaces.keySet()){
-                            clickableCells.addAll(buildableSpaces.get(l));
+                            //clickableCells.addAll(buildableSpaces.get(l));
+                            for(Coord c : buildableSpaces.get(l)){
+                                if(!clickableCells.contains(c)){
+                                    clickableCells.add(c);
+                                }
+                            }
                             if(buildableSpaces.get(l).size() > 0)
                                 thereAreBuilds = true;
                         }
@@ -655,28 +707,14 @@ public class Board implements Initializable {
                         disableAll();
                         String message = (String)((List<Object>) receivedObject).get(1);
                         System.out.println(message);
-                        break;
-
-                    case "disconnected":
-                        disableAll();
-                        // the game is no more valid, client must disconnect
-                        System.out.println("A client disconnected from the game, disconnecting...");
-                        //Close socket, streams
-                        serverConnection.closeConnection();
-                        //Close this windows and show main menu window
-                        FXMLLoader loader = new FXMLLoader();
-                        loader.setLocation(getClass().getResource("/home.fxml"));
-                        Parent root = null;
-                        try {
-                            root = loader.load();
-                        } catch (IOException e) { e.printStackTrace(); }
-                        Stage stage = new Stage();
-                        stage.setScene(new Scene(root));
-                        stage.setResizable(false);
-                        stage.sizeToScene();
-                        stage.setTitle("Santorini Game");
-                        stage.show();
-                        ((Stage) boardWindow.getScene().getWindow()).close();
+                        if(message.equals(("disconnected"))){
+                            disableAll();
+                            // the game is no more valid, client must disconnect
+                            System.out.println("A client disconnected from the game, disconnecting...");
+                            showMessage("A client disconnected from the game, disconnecting...");
+                            //Close socket, streams, return to main menu
+                            closeConnection();
+                        }
                         break;
 
                     default:
@@ -689,7 +727,22 @@ public class Board implements Initializable {
     }
 
     public void closeConnection(){
+        this.exec.shutdown();
         this.serverConnection.closeConnection();
+        //Close this windows and show main menu window
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getResource("/home.fxml"));
+        Parent root = null;
+        try {
+            root = loader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.sizeToScene();
+            stage.setTitle("Santorini Game");
+            stage.show();
+            ((Stage) boardWindow.getScene().getWindow()).close();
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
 }

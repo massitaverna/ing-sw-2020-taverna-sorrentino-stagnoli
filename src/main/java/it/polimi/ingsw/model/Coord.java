@@ -55,8 +55,8 @@ public class Coord implements Serializable {
         if (input.length() != 2)
             throw new IllegalArgumentException();
         input = input.toUpperCase();
-        int x = (input.charAt(0) - 'A');
-        int y = (input.charAt(1) - '1');
+        int y = (input.charAt(0) - 'A');
+        int x = (input.charAt(1) - '1');
 
         Coord result = new Coord(x, y);
         if (!validCoord(result)) {

@@ -51,10 +51,11 @@ public class Worker implements Cloneable, Serializable {
 
     @Override
     public Worker clone() {
-
         Worker result = new Worker(new Player(player.getNickname()));
         result.color = color;
-        result.position = position;
+        if(this.position != null) {
+            result.position = new Coord(position.x, position.y);
+        }
         return result;
     }
 
