@@ -18,7 +18,7 @@ secondary rule:
 	decision = DENY
 	buildLevel = GROUND
 	symbolicCondition:
-		equalCoordinates(oldAfter, after)
+		negate(equalCoordinates(oldAfter, after))
 	generatedBy = gen_build
 
 secondary rule:
@@ -27,7 +27,7 @@ secondary rule:
 	decision = DENY
 	buildLevel = LVL1
 	symbolicCondition:
-		equalCoordinates(oldAfter, after)
+		negate(equalCoordinates(oldAfter, after))
 	generatedBy = gen_build
 
 secondary rule:
@@ -36,7 +36,7 @@ secondary rule:
 	decision = DENY
 	buildLevel = LVL2
 	symbolicCondition:
-		equalCoordinates(oldAfter, after)
+		negate(equalCoordinates(oldAfter, after))
 	generatedBy = gen_build
 
 secondary rule:
@@ -45,7 +45,7 @@ secondary rule:
 	decision = DENY
 	buildLevel = LVL3
 	symbolicCondition:
-		equalCoordinates(oldAfter, after)
+		negate(equalCoordinates(oldAfter, after))
 	generatedBy = gen_build
 
 secondary rule:
@@ -54,7 +54,7 @@ secondary rule:
 	decision = DENY
 	buildLevel = DOME
 	symbolicCondition:
-		equalCoordinates(oldAfter, after)
+		negate(equalCoordinates(oldAfter, after))
 	generatedBy = gen_build
 
 secondary file:

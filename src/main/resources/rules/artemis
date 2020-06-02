@@ -2,7 +2,7 @@ rule:
 	Purpose = GENERATION
 	Target = MYSELF
 	ActionType = MOVE
-	id = unique
+	id = artemis_gen
 
 secondary rule:
 	Purpose = VALIDATION
@@ -10,7 +10,33 @@ secondary rule:
 	ActionType = MOVE
 	symbolicCondition:
 		equalCoordinates(oldBefore, after)
-	generatedBy = unique
+	generatedBy = artemis_gen
 
-            generatedRules.add(standardRules.get(0));
-            generatedRules.add(standardRules.get(standardRules.size() - 1));
+secondary rule:
+	purpose = VALIDATION
+	decision = GRANT
+	actionType = MOVE
+	condition:
+		near(before,after)
+		negate(occupied(after))
+		negate(dome(after))
+		compareLevels(before, after, <2)
+	generatedBy = artemis_gen
+
+secondary rule:
+	purpose = WIN
+	actionType = MOVE
+	condition:
+		compareLevels(before, LVL2, =0)
+		compareLevels(after, LVL3, =0)
+
+secondary rule:
+	purpose = GENERATION
+	actionType = MOVE
+	target = MYSELF
+	generatedBy = artemis_gen
+	id = gen_move
+
+secondary file:
+	source = rules/standard_build
+	generatedBy = gen_move

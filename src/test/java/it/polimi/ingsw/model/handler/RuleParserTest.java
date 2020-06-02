@@ -1,20 +1,11 @@
 package it.polimi.ingsw.model.handler;
-/*
-1. Correct parameters DONE
-2. Generation tree DONE
-3. Cross-generation DONE
-4. Auto-generation DONE
-5. SymbolicCondition is present DONE
-6. secondary must have 'generatedBy' DONE
-7. Test generation with no id DONE
-8. Test non-generation with id DONE
- */
 
 import it.polimi.ingsw.exceptions.model.handler.RuleParserException;
 import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.handler.util.Pair;
 import it.polimi.ingsw.model.handler.util.TriPredicate;
+
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -22,12 +13,29 @@ import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.function.BiPredicate;
+import java.util.regex.Pattern;
 
 public class RuleParserTest {
 
-    @Test (expected = FileNotFoundException.class)
-    public void fileDoesntExistTest() throws FileNotFoundException {
-        new RuleParser("nonExistingFile");
+    @Test
+    public void fileDoesntExistTest() {
+        try {
+            new RuleParser("nonExistingFile");
+        } catch (FileNotFoundException ignored) {}
+        RuleParser ruleParser = null;
+        try {
+            ruleParser = new RuleParser("rules/load_nonExistingFile");
+        } catch (FileNotFoundException e) {
+            fail();
+        }
+        try {
+            ruleParser.parse();
+            fail();
+        }
+        catch (RuleParserException e) {
+            assert e.getMessage().contains("nonExistingFile");
+        }
+
     }
 
     @Test (expected = IllegalStateException.class)
@@ -43,7 +51,7 @@ public class RuleParserTest {
     }
 
     @Test (expected = IllegalStateException.class)
-    public void cannotGetRulesBeforeParsingTest() throws RuleParserException {
+    public void cannotGetRulesBeforeParsingTest() {
         RuleParser ruleParser = null;
         try {
             ruleParser = new RuleParser("rules/setParameters");
@@ -53,8 +61,8 @@ public class RuleParserTest {
         ruleParser.getRules();
     }
 
-    @Test (expected = AssertionError.class)
-    public void unexpectedLineTest() throws RuleParserException {
+    @Test
+    public void unexpectedLineTest() {
         RuleParser ruleParser = null;
         try {
             ruleParser = new RuleParser("rules/unexpected");
@@ -66,13 +74,14 @@ public class RuleParserTest {
             fail();
         } catch (RuleParserException e) {
             String error = e.getMessage();
-            assert error.matches(".*Line\\s+3.*");
+            Pattern p = Pattern.compile(".*Line\\s+3.*", Pattern.DOTALL);
+            assert p.matcher(error).matches();
             assert error.contains("unexpected line");
         }
     }
 
-    @Test (expected = AssertionError.class)
-    public void unexpectedLineTest_2() throws RuleParserException {
+    @Test
+    public void unexpectedLineTest_2() {
         RuleParser ruleParser = null;
         try {
             ruleParser = new RuleParser("rules/unexpected2");
@@ -84,13 +93,15 @@ public class RuleParserTest {
             fail();
         } catch (RuleParserException e) {
             String error = e.getMessage();
-            assert error.matches(".*Line\\s+7.*");
+            System.out.println(error);
+            Pattern p = Pattern.compile(".*Line\\s+7.*", Pattern.DOTALL);
+            assert p.matcher(error).matches();
             assert error.contains("unexpected line");
         }
     }
 
-    @Test (expected = AssertionError.class)
-    public void invalidParameterTest() throws RuleParserException {
+    @Test
+    public void invalidParameterTest() {
         RuleParser ruleParser = null;
         try {
             ruleParser = new RuleParser("rules/invalid_parameter");
@@ -102,7 +113,8 @@ public class RuleParserTest {
             fail();
         } catch (RuleParserException e) {
             String error = e.getMessage();
-            assert error.matches(".*Line\\s+4.*");
+            Pattern p = Pattern.compile(".*Line\\s+4.*", Pattern.DOTALL);
+            assert p.matcher(error).matches();
             assert error.contains("invalid = value");
         }
     }
@@ -118,8 +130,8 @@ public class RuleParserTest {
         ruleParser.parse();
     }
 
-    @Test (expected = AssertionError.class)
-    public void errorInConditionTest() throws RuleParserException {
+    @Test
+    public void errorInConditionTest() {
         RuleParser ruleParser = null;
         try {
             ruleParser = new RuleParser("rules/condition_error");
@@ -131,7 +143,8 @@ public class RuleParserTest {
             fail();
         } catch (RuleParserException e) {
             String error = e.getMessage();
-            assert error.matches(".*Line\\s+4.*");
+            Pattern p = Pattern.compile(".*Line\\s+4.*", Pattern.DOTALL);
+            assert p.matcher(error).matches();
             assert error.contains("compareLevels(error, before, =0)");
         }
     }
@@ -154,10 +167,11 @@ public class RuleParserTest {
         assertEquals(Decision.GRANT, r.getDecision());
         assertNotNull(r.getCondition());
         assertNull(getSymbolicCondition(r));
+        assertNotNull(r.getForceSpaceFunction());
     }
 
     @Test
-    public void invalidEnumerationValuesTest() throws RuleParserException {
+    public void invalidEnumerationValuesTest() {
         RuleParser ruleParser = null;
         try {
             ruleParser = new RuleParser("rules/invalid_purpose");
@@ -403,6 +417,121 @@ public class RuleParserTest {
             fail();
         }
         ruleParser.parse();
+    }
+
+    @Test
+    public void secondaryFileRulesNotGeneratedByAnyoneTest() {
+        RuleParser ruleParser = null;
+        try {
+            ruleParser = new RuleParser("rules/secondary_file_no_generated");
+        } catch (FileNotFoundException e) {
+            fail();
+        }
+        try {
+            ruleParser.parse();
+            fail();
+        } catch (RuleParserException e) {
+            String error = e.getMessage();
+            Pattern p = Pattern.compile(".*Line\\s+3.*", Pattern.DOTALL);
+            assert p.matcher(error).matches();
+        }
+    }
+
+    @Test
+    public void secondaryFileThenRulesTest() throws RuleParserException {
+        RuleParser ruleParser = null;
+        try {
+            ruleParser = new RuleParser("rules/secondary_file_then_rules");
+        } catch (FileNotFoundException e) {
+            fail();
+        }
+        ruleParser.parse();
+        List<Rule> rules = ruleParser.getRules();
+        assertEquals(2, rules.size());
+        assertEquals(Purpose.VALIDATION, rules.get(0).getPurpose());
+        assertEquals(Purpose.GENERATION, rules.get(1).getPurpose());
+        rules = rules.get(1).getGeneratedRules(null);
+        assertEquals(1, rules.size());
+        Rule r = rules.get(0);
+        assertEquals(Purpose.VALIDATION, r.getPurpose());
+        assertEquals(ActionType.MOVE, r.getActionType());
+        assertEquals(Decision.GRANT, r.getDecision());
+        assertNotNull(r.getForceSpaceFunction());
+    }
+
+    @Test
+    public void ruleThenFileTest() throws RuleParserException {
+        RuleParser ruleParser = null;
+        try {
+            ruleParser = new RuleParser("rules/rule_then_file");
+        } catch (FileNotFoundException e) {
+            fail();
+        }
+        ruleParser.parse();
+        List<Rule> rules = ruleParser.getRules();
+        assertEquals(2, rules.size());
+        Rule r = rules.get(1);
+        assertEquals(Purpose.VALIDATION, r.getPurpose());
+        assertEquals(ActionType.MOVE, r.getActionType());
+        assertEquals(Decision.GRANT, r.getDecision());
+        assertNotNull(r.getForceSpaceFunction());
+    }
+
+    @Test
+    public void ruleThenSecondaryFileTest() throws RuleParserException {
+        RuleParser ruleParser = null;
+        try {
+            ruleParser = new RuleParser("rules/rule_then_secondary_file");
+        } catch (FileNotFoundException e) {
+            fail();
+        }
+        ruleParser.parse();
+        List<Rule> rules = ruleParser.getRules();
+        assertEquals(1, rules.size());
+        rules = rules.get(0).getGeneratedRules(null);
+        assertEquals(1, rules.size());
+        Rule r = rules.get(0);
+        assertEquals(Purpose.VALIDATION, r.getPurpose());
+        assertEquals(ActionType.MOVE, r.getActionType());
+        assertEquals(Decision.GRANT, r.getDecision());
+        assertNotNull(r.getForceSpaceFunction());
+    }
+
+    @Test
+    public void invalidFileParameterTest() {
+        RuleParser ruleParser = null;
+        try {
+            ruleParser = new RuleParser("rules/invalid_file_parameter");
+        } catch (FileNotFoundException e) {
+            fail();
+        }
+        try {
+            ruleParser.parse();
+            fail();
+        } catch (RuleParserException e) {
+            String error = e.getMessage();
+            Pattern p = Pattern.compile(".*Line\\s+2.*", Pattern.DOTALL);
+            assert p.matcher(error).matches();
+            assert error.contains("invalid = value");
+        }
+    }
+
+    @Test
+    public void primaryFileTest() throws RuleParserException {
+        RuleParser ruleParser = null;
+        try {
+            ruleParser = new RuleParser("rules/primary_file");
+        } catch (FileNotFoundException e) {
+            fail();
+        }
+        ruleParser.parse();
+        List<Rule> rules = ruleParser.getRules();
+        assertEquals(1, rules.size());
+        Rule r = rules.get(0);
+        assertEquals(Purpose.VALIDATION, r.getPurpose());
+        assertEquals(ActionType.MOVE, r.getActionType());
+        assertEquals(Decision.GRANT, r.getDecision());
+        assertNotNull(r.getForceSpaceFunction());
     }
 
     private /*helper*/ TriPredicate getSymbolicCondition(Rule r)

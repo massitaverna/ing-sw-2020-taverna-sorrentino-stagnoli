@@ -27,10 +27,12 @@ public class RuleParser {
     private boolean isGeneration;
     private boolean isGenerated;
     private boolean secondary;
+    private boolean isFile;
     private final Map<String, List<Rule>> generationMap;
     private final Set<String> idSet;
     private boolean idAdded;
     private List<Rule> rules;
+    private List<Rule> rulesFromFile;
     private final Scanner scanner;
 
 
@@ -66,17 +68,45 @@ public class RuleParser {
             if (indentationLevel == 0 && line.equals("rule:")) { // If new rule
                 if (rule != null) {
                     setCondition();
-                    addRule();
+                    if (!secondary) {
+                        addRule();
+                    }
                 }
+                checkAndReset();
                 rule = new Rule();
-                secondary = false;
             }
             else if (indentationLevel == 0 && line.matches("secondary\\x20+rule:")) { // If new rule
                 if (rule != null) {
                     setCondition();
-                    addRule();
+                    if (!secondary) {
+                        addRule();
+                    }
                 }
+                checkAndReset();
                 rule = new Rule();
+                secondary = true;
+            }
+            else if (indentationLevel == 0 && line.equals("file:")) {
+                if (rule != null) {
+                    setCondition();
+                    if (!secondary) {
+                        addRule();
+                    }
+                }
+                checkAndReset();
+                rule = null;
+                isFile = true;
+            }
+            else if (indentationLevel == 0 && line.equals("secondary file:")) {
+                if (rule != null) {
+                    setCondition();
+                    if (!secondary) {
+                        addRule();
+                    }
+                }
+                checkAndReset();
+                rule = null;
+                isFile = true;
                 secondary = true;
             }
             else if (indentationLevel == 1) {
@@ -84,9 +114,13 @@ public class RuleParser {
                     String[] lineElements = line.split("=");
                     String parameter = lineElements[0].strip();
                     String value = lineElements[1].strip();
-                    setParameter(parameter, value);
+                    if (!isFile) {
+                        setParameter(parameter, value);
+                    } else {
+                        setFileParameter(parameter, value);
+                    }
                 }
-                else if (line.matches("(condition|symbolicCondition):")) { // If beginning a condition
+                else if (!isFile && line.matches("(condition|symbolicCondition):")) { // If beginning a condition
                     condition = (oldPair, cPair, board) -> true;
                     isParsingCondition = true;
                     if (line.equals("symbolicCondition:")) isSymbolic = true;
@@ -114,8 +148,14 @@ public class RuleParser {
 
 
         }
-        setCondition();
-        addRule();
+
+        if (rule != null) {
+            setCondition();
+            if (!secondary) {
+                addRule();
+            }
+        }
+        checkAndReset();
         scanner.close();
 
     }
@@ -256,6 +296,37 @@ public class RuleParser {
         }
     }
 
+    private /*helper*/ void setFileParameter(String parameter, String value) throws RuleParserException {
+        switch (parameter) {
+            case "source": {
+                RuleParser ruleParser;
+                try {
+                    ruleParser = new RuleParser(value);
+                    ruleParser.parse();
+                    rulesFromFile = ruleParser.getRules();
+                    if (!secondary) {
+                        rules.addAll(rulesFromFile);
+                    }
+                } catch (FileNotFoundException e) {
+                    error("File " + value + " doesn't exist.");
+                }
+                break;
+            }
+            case "generatedBy": {
+                if (!generationMap.containsKey(value)) {
+                    generationMap.put(value, new ArrayList<>());
+                }
+                generationMap.get(value).addAll(rulesFromFile);
+                isGenerated = true;
+                break;
+            }
+
+            default: {
+                error("Parameter " + parameter + " is invalid.");
+            }
+        }
+    }
+
     private /*helper*/ void setCondition() throws RuleParserException {
         if (!isSymbolic) { // If 'condition'
             TriPredicate<Pair<Coord>, Pair<Coord>, Board> finalCondition = condition;
@@ -282,18 +353,18 @@ public class RuleParser {
         else if (!idAdded && isGeneration) {
             error("End of generation rule without an ID.");
         }
+        rules.add(rule);
+    }
 
+    private /*helper*/ void checkAndReset() throws RuleParserException {
         if(secondary && !isGenerated) {
-            error("End of non-primary rule that is not generated by any other rule");
-        }
-
-        if (!secondary) {
-            rules.add(rule);
+            error("End of non-primary rule (or 'file' tag) that is not generated by any other rule");
         }
         idAdded = false;
         isGeneration = false;
         secondary = false;
         isGenerated = false;
+        isFile = false;
     }
 
     private /*helper*/ void error(String message) throws RuleParserException {

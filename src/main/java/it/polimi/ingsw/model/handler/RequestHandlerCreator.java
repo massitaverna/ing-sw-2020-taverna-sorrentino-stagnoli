@@ -219,6 +219,7 @@ public class RequestHandlerCreator {
 
             List<Rule> generatedRules = new ArrayList<>();
             r.setGeneratedRules(generatedRules);
+
             r = new Rule();
             r.setPurpose(Purpose.VALIDATION);
             r.setDecision(Decision.DENY);
@@ -230,6 +231,7 @@ public class RequestHandlerCreator {
 
             generatedRules.add(standardRules.get(0));
             generatedRules.add(standardRules.get(standardRules.size() - 1));
+            generatedRules.addAll(getStandardWinRules());
         }
 
         if (god.equals("Athena")) { //COMPLETE&TESTED
@@ -478,10 +480,6 @@ public class RequestHandlerCreator {
             r.setGeneratedRules(generatedRules);
             generatedRules.addAll(denyAll());
             generatedRules.add(doNothingOnEnd());
-
-            //TODO: definire metodo getStandardBuildRules() che restituisce:
-            // getBuildUpRules() + GEN_BUILD-->[ denyAll() + doNothingOnEnd() ]
-
         }
 
         if (god.equals("Minotaur")) { //COMPLETE&TESTED
@@ -607,12 +605,6 @@ public class RequestHandlerCreator {
         standardBuildUpRules.addAll(result);
     }
 
-    private BiPredicate<Pair<Coord>, Board> getBuildUpConditionFrom(Level level) {
-        BiPredicate<Pair<Coord>, Board> conditionOnLevelUp = (cPair, board) ->
-                board.getSpace(cPair.get(1)).getHeight().ordinal() == level.ordinal() + 1;
-        return conditionOnLevelUp;
-    }
-
     private static List<Rule> denyAll() {
         List<Rule> result = new ArrayList<>();
         Rule r;
@@ -692,8 +684,6 @@ public class RequestHandlerCreator {
 
     public static List<Rule> getStandardWinRules() {
 
-        //TODO: test accurately the correct propagation of these rules
-
         Rule r = new Rule();
         r.setPurpose(Purpose.WIN);
         r.setActionType(ActionType.MOVE);
@@ -702,6 +692,11 @@ public class RequestHandlerCreator {
                         board.getSpace(cPair.get(1)).getHeight() == Level.LVL3;
         r.setCondition(condition);
 
+        List<Rule> newResult = new ArrayList<>(); // Recently added
+        newResult.add(r);
+        return newResult;
+
+        /*
         List<Rule> rulesForPropagation = Arrays.stream(ActionType.values())
                 .map(at -> {
                     Rule g = new Rule();
@@ -715,7 +710,7 @@ public class RequestHandlerCreator {
         List<Rule> generatedRules = new ArrayList<>(rulesForPropagation);
         generatedRules.add(r);
         rulesForPropagation.forEach(p -> p.setGeneratedRules(generatedRules));
-
         return generatedRules;
+         */
     }
 }
