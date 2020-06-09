@@ -7,10 +7,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 //TODO: async read from server
 
@@ -18,7 +17,7 @@ public class ClientMainCLI
 {
     public static void main( String[] args ) {
 
-        String ip = "127.0.0.1";
+        String ip = "";
         int port = 12345;
 
         Scanner s = new Scanner(System.in);
@@ -33,9 +32,26 @@ public class ClientMainCLI
             System.out.println("1. CLI");
             System.out.println("2. GUI");
             try {
-                gui = Integer.parseInt(s.next());
-            } catch (Exception e) {
+                gui = Integer.parseInt(s.nextLine());
+            } catch (NumberFormatException e) {
                 System.out.println("Insert a valid input.");
+            }
+        }
+        //s.skip(".*\n");
+
+        boolean ipCorrect = false;
+        Pattern ipPattern = Pattern.compile("(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})");
+        while (!ipCorrect) {
+            System.out.println("IP Address to connect to: ");
+            ip = s.nextLine();
+            Matcher m = ipPattern.matcher(ip);
+            if (m.matches()) {
+                ipCorrect = true;
+                for (int i = 1; i <= 4; i++) {
+                    if (!(Integer.parseInt(m.group(i)) <= 255 && Integer.parseInt(m.group(i)) >= 0)) {
+                        ipCorrect = false;
+                    }
+                }
             }
         }
 
