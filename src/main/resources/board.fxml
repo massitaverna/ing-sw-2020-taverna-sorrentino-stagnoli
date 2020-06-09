@@ -76,7 +76,7 @@
          </image>
       </ImageView>
       <TextArea fx:id="messageBox" editable="false" layoutX="14.0" layoutY="499.0" opacity="0.68" prefHeight="185.0" prefWidth="321.0" />
-      <ImageView fx:id="backBtn" fitHeight="44.0" fitWidth="134.0" layoutX="916.0" layoutY="662.0" pickOnBounds="true" preserveRatio="true" visible="false">
+      <ImageView fx:id="backBtn" fitHeight="44.0" fitWidth="134.0" layoutX="916.0" layoutY="662.0" onMouseClicked="#goBack" pickOnBounds="true" preserveRatio="true" visible="false">
          <image>
             <Image url="@Board/back_btn.png" />
          </image>

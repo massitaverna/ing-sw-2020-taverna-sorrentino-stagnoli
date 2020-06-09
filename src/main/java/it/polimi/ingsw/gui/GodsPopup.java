@@ -45,7 +45,7 @@ public class GodsPopup implements Initializable {
 
         for (CheckBox box : boxes) {
             if (box.isSelected())
-                gods.add(box.getText());
+                gods.add(box.getText().trim());
         }
 
         return gods;

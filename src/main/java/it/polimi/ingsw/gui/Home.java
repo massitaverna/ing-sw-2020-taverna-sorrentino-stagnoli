@@ -64,6 +64,7 @@ public class Home implements Initializable {
             isConnected = true;
         } catch (IOException e) {
             System.out.println("Connection to the server failed.");
+            System.exit(0);
             return;
         }
     }
@@ -77,26 +78,16 @@ public class Home implements Initializable {
             this.in.close();
             this.out.close();
             ((Stage)homePane.getScene().getWindow()).close();
+            Platform.exit();
+            System.exit(0);
         } catch (IOException e) { }
     }
 
     @FXML
     public void createGame(MouseEvent event){
-        try {
-            out.writeObject("lobbySelected");
-            out.flush();
-            out.writeObject(0);
-            out.flush();
-            String res = (String) in.readObject();
-            if(res.equals("lobbySelectedOK")){
-                //go to nickname selection
-                this.challenger = true;
-                this.homePane.setVisible(false);
-                this.nicknamePane.setVisible(true);
-            }
-        } catch (IOException | ClassNotFoundException e) {
-           close();
-        }
+        this.challenger = true;
+        this.homePane.setVisible(false);
+        this.nicknamePane.setVisible(true);
     }
 
     @FXML
@@ -239,7 +230,7 @@ public class Home implements Initializable {
                 out.writeObject(numPlayers);
                 out.flush();
                 res = (String)in.readObject(); //ok
-                res = (String)in.readObject(); //ok
+                //res = (String)in.readObject(); //ok
                 if(res.equals("ok")){
                     System.out.println("lobby created from GUI");
                     showBoardWindow();
@@ -271,8 +262,6 @@ public class Home implements Initializable {
         //set close event for board window: (close socket and streams, exit application)
         stage.setOnCloseRequest(windowEvent -> {
             ((Board)loader.getController()).closeConnection();
-            Platform.exit();
-            System.exit(0);
         });
         stage.show();
 

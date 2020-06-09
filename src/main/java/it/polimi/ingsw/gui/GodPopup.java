@@ -49,7 +49,7 @@ public class GodPopup implements Initializable {
     }
 
     public String getChoice(){
-        return ((RadioButton) group.getSelectedToggle()).getText();
+        return ((RadioButton) group.getSelectedToggle()).getText().trim();
     }
 
     public void confirm(MouseEvent mouseEvent) {

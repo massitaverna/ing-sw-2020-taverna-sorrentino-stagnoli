@@ -1,7 +1,9 @@
 package it.polimi.ingsw;
 
+import it.polimi.ingsw.gui.Board;
 import it.polimi.ingsw.gui.Home;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -32,6 +34,9 @@ public class ClientMainGUI extends Application {
             primaryStage.setResizable(false);
             primaryStage.sizeToScene();
             primaryStage.setTitle("Santorini Game");
+            primaryStage.setOnCloseRequest(windowEvent -> {
+                System.exit(0);
+            });
             primaryStage.show();
         }
 
