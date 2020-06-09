@@ -90,7 +90,7 @@
       <AnchorPane fx:id="lobbyListPane" layoutY="14.0" prefHeight="720.0" prefWidth="1280.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <ListView fx:id="lobbyList" fixedCellSize="40.0" layoutX="416.0" layoutY="296.0" prefHeight="347.0" prefWidth="448.0" AnchorPane.bottomAnchor="77.0" AnchorPane.leftAnchor="416.0" AnchorPane.rightAnchor="416.0" AnchorPane.topAnchor="296.0" />
-            <ImageView fx:id="lobbyListNext" layoutX="559.0" layoutY="650.0" onMouseClicked="#lobbyListNext">
+            <ImageView fx:id="lobbyListNext" layoutX="471.0" layoutY="650.0" onMouseClicked="#lobbyListNext">
                <image>
                   <Image url="@Home/Next button.png" />
                </image>
@@ -98,7 +98,23 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </ImageView>
+            <ImageView fx:id="refreshBtn" layoutX="640.0" layoutY="650.0" onMouseClicked="#joinGame">
+               <image>
+                  <Image url="@Home/refresh_btn.png" />
+               </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </ImageView>
          </children>
       </AnchorPane>
+      <ImageView fx:id="backBtn" fitHeight="56.0" fitWidth="162.0" layoutX="15.0" layoutY="660.0" onMouseClicked="#backBtnClick" pickOnBounds="true" preserveRatio="true" visible="false">
+         <image>
+            <Image url="@Board/back_btn.png" />
+         </image>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </ImageView>
    </children>
 </AnchorPane>

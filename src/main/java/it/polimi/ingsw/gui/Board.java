@@ -114,6 +114,7 @@ public class Board implements Initializable {
     private Object receivedObject = new Object();
     private Connection serverConnection;
     private ExecutorService exec; //to listen for server messages on a separate thread
+    private String ip;
 
     //game variables
     private boolean isChallenger;
@@ -165,9 +166,10 @@ public class Board implements Initializable {
     }
 
     //used to pass connection and game parameters from the previous window (main menu)
-    public void setParameters(Connection serverConnection, boolean isChallenger, String nickname){
+    public void setParameters(Connection serverConnection, boolean isChallenger, String nickname, String ip){
         this.serverConnection = serverConnection;
         this.serverConnection.addObserver(new MessageReceiver());
+        this.ip = ip;
 
         this.isChallenger = isChallenger;
         this.nickname = nickname;
@@ -538,12 +540,11 @@ public class Board implements Initializable {
         return result.orElse(levels.get(0));
     }
 
-    private void gameEndedPopup(){
+    private void messagePopup(String header, String body){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Santorini Game");
-        alert.setHeaderText(" ' ' wins.");
-        alert.setResizable(false);
-        alert.setContentText("game ended.");
+        alert.setTitle("Santorini");
+        alert.setHeaderText(header);
+        alert.setContentText(body);
         alert.showAndWait();
         return;
     }
@@ -674,7 +675,7 @@ public class Board implements Initializable {
                             List<Coord> selectableWorkers = (List<Coord>) objs.get(2);
                             highlightPlayerBanner(currPlayerrr);
                             if (currPlayerrr.equals(nickname)) {
-                                showMessage("Your turn");
+                                showMessage("Your turn: Select the worker for this turn");
                                 clickableCells.clear();
                                 clickableCells.addAll(selectableWorkers);
                                 state = State.SELECTINGWORKER;
@@ -729,29 +730,29 @@ public class Board implements Initializable {
 
                         case "onEnd":
                             disableAll();
-                            //gameEndedPopup();
+                            messagePopup("Game ended", "Game ended.");
                             System.out.println("Game Ended");
+                            close();
                             break;
 
                         case "onMessage":
                             disableAll();
                             String message = (String) ((List<Object>) receivedObject).get(1);
-                            System.out.println(message);
-                            showMessage(message);
+                            if (!message.equals(("disconnected"))) {
+                                System.out.println(message);
+                                showMessage(message);
+                            }
+                            messagePopup(message, message);
                             if (message.equals(("disconnected"))) {
                                 disableAll();
                                 // the game is no more valid, client must disconnect
                                 System.out.println("A client disconnected from the game, disconnecting...");
                                 showMessage("A client disconnected from the game, disconnecting...");
+
+                                messagePopup("Game ended.", "Another player disconnected from the game.");
+
                                 //Close socket, streams, return to main menu
-
-                                Alert alert = new Alert(Alert.AlertType.WARNING);
-                                alert.setTitle("Santorini");
-                                alert.setHeaderText("Game ended.");
-                                alert.setContentText("Another player disconnected from the game.");
-                                alert.showAndWait();
-
-                                closeConnection();
+                                close();
                             }
                             break;
 
@@ -765,7 +766,7 @@ public class Board implements Initializable {
         });
     }
 
-    public void closeConnection(){
+    public void close(){
         this.exec.shutdown();
         this.serverConnection.closeConnection();
         //Close this windows and show main menu window
@@ -779,6 +780,7 @@ public class Board implements Initializable {
             stage.setResizable(false);
             stage.sizeToScene();
             stage.setTitle("Santorini Game");
+            ((Home)loader.getController()).connectToServer(ip);
             stage.show();
             ((Stage) boardWindow.getScene().getWindow()).close();
         } catch (IOException e) { e.printStackTrace(); }
