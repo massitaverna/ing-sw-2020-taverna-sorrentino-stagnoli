@@ -559,201 +559,204 @@ public class Board implements Initializable {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                List<Object> objects;
-                switch (event) {
-                    //MODEL MESSAGES
-                    case "onBoardChanged":
-                        //disableAll();
-                        it.polimi.ingsw.model.Board b = (it.polimi.ingsw.model.Board)objs.get(1);
-                        System.out.println(b.toString());
-                        updateBoard(b);
-                        break;
+                synchronized (this) {
+                    List<Object> objects;
+                    switch (event) {
+                        //MODEL MESSAGES
+                        case "onBoardChanged":
+                            //disableAll();
+                            it.polimi.ingsw.model.Board b = (it.polimi.ingsw.model.Board) objs.get(1);
+                            System.out.println(b.toString());
+                            updateBoard(b);
+                            break;
 
-                    case "onGameReady":
-                        disableAll();
-                        System.out.println("Set up phase is done!");
-                        showMessage("Set up phase is done!");
-                        List<Player> players = (List<Player>) objs.get(1);
-                        players.forEach(p -> addPlayerBanner(p.getNickname(), p.getWorkerColor()));
-                        break;
-
-                    case "onGodsChosen":
-                        disableAll();
-                        List<String> selectedGods = (List<String>) objs.get(1);
-                        System.out.println("Challenger has chosen the playable gods");
-                        showMessage("Challenger has chosen the playable gods");
-                        break;
-
-                    case "onPlayerAdded":
-                        disableAll();
-                        String newPlayer = (String) objs.get(1);
-                        int numCurr = (int) objs.get(2);
-                        int numTot = (int) objs.get(3);
-                        System.out.println(newPlayer + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
-                        showMessage(newPlayer + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
-                        break;
-
-                    case "onGodSelection":
-                        disableAll();
-                        String currPlayer = (String) objs.get(1);
-                        List<String> godsForSelection = (List<String>) objs.get(2);
-                        if(currPlayer.equals(nickname)) {
-                            String godSelected = "";
-                            while (godSelected.equals("")) {
-                                godSelected = godSelectionPopup(godsForSelection);
-                            }
-                            showMessage("Selected god: " + godSelected);
-                            objects = new ArrayList<>();
-                            objects.add("onGodChosen");
-                            objects.add(godSelected);
-                            serverConnection.asyncSend(objects);
-                        }else{
-                            showMessage(currPlayer + " is choosing his god...");
-                        }
-                        break;
-
-                    case "onGodsSelection":
-                        disableAll();
-                        if(isChallenger){
-                            List<String> allGods = (List<String>) objs.get(1);
-                            int numPlayers = (int) objs.get(2);
-                            List<String> godsSelected = new ArrayList<>();
-                            while(godsSelected.size() < numPlayers) {
-                                godsSelected = godsSelectionPopup(numPlayers);
-                            }
-                            objects = new ArrayList<>();
-                            objects.add("onGodsChosen");
-                            objects.add(godsSelected);
-                            serverConnection.asyncSend(objects);
-                        }else{
-                            System.out.println("The challenger is choosing the gods...");
-                            showMessage("The challenger is choosing the gods...");
-                        }
-                        break;
-
-                    case "onStartPlayerSelection":
-                        disableAll();
-                        if(isChallenger){
-                            List<String> playerss = (List<String>) objs.get(1);
-                            String startPlayer = "";
-                            while (startPlayer.equals("")){
-                                startPlayer = startPlayerSelectionPopup(playerss);
-                            }
-                            objects = new ArrayList<>();
-                            objects.add("onStartPlayerChosen");
-                            objects.add(startPlayer);
-                            serverConnection.asyncSend(objects);
-                        }
-                        else {
-                            System.out.println("Challenger is choosing the starting player...");
-                            showMessage("Challenger is choosing the starting player...");
-                        }
-                        break;
-
-                    case "onMyInitialization":
-                        disableAll();
-                        String currPlayerr = (String) objs.get(1);
-                        List<Coord> freeSpaces = (List<Coord>) objs.get(2);
-                        if(currPlayerr.equals(nickname)) {
-                            clickableCells.clear();
-                            clickableCells = freeSpaces;
-                            state = State.INITIALIZINGWORKERS;
-                            enableBoard(true);
-                            //a questo punto la board è abilitata e verrà selezionato lo spazio dove posizionare il worker
-                        }else{
-                            showMessage(currPlayerr + " is placing his workers...");
-                        }
-                        break;
-
-                    case "onMyTurn":
-                        disableAll();
-                        String currPlayerrr = (String) objs.get(1);
-                        List<Coord> selectableWorkers = (List<Coord>) objs.get(2);
-                        highlightPlayerBanner(currPlayerrr);
-                        if(currPlayerrr.equals(nickname)) {
-                            clickableCells.clear();
-                            clickableCells.addAll(selectableWorkers);
-                            state = State.SELECTINGWORKER;
-                            enableBoard(true);
-                            //a questo punto la board è abilitata e verrà selezionato il worker per il turno
-                        }else{
-                            showMessage(currPlayerrr + "'s turn...");
-                        }
-                        break;
-
-                    case "onMyAction":
-                        disableAll();
-                        canMove = false;
-                        canBuild = false;
-                        canSkip = false;
-                        String currPlayerrrr = (String) objs.get(1);
-                        //movable spaces
-                        List<Coord> movableSpaces = (List<Coord>) objs.get(2);
-                        buildableSpaces = (Map<Level, List<Coord>>) objs.get(3);
-                        boolean canEndTurn = (boolean) objs.get(4);
-                        if(currPlayerrrr.equals(nickname)) {
-                            clickableCells.clear();
-                            clickableCells.addAll(movableSpaces);
-                            //buildable spaces
-                            boolean thereAreBuilds = false;
-                            for (Level l : buildableSpaces.keySet()) {
-                                //clickableCells.addAll(buildableSpaces.get(l));
-                                for (Coord c : buildableSpaces.get(l)) {
-                                    if (!clickableCells.contains(c)) {
-                                        clickableCells.add(c);
-                                    }
-                                }
-                                if (buildableSpaces.get(l).size() > 0)
-                                    thereAreBuilds = true;
-                            }
-                            if (canEndTurn) {
-                                enableSkip(true);
-                                canSkip = true;
-                            }
-                            if (movableSpaces.size() > 0) {
-                                enableMove(true);
-                                canMove = true;
-                            }
-                            if (thereAreBuilds) {
-                                enableBuild(true);
-                                canBuild = true;
-                            }
-                            state = State.NONE;
-                            //a questo punto un button tra move e build verrà premuto, e la board verrà abilitata
-                        }
-                        break;
-
-                    case "onEnd":
-                        disableAll();
-                        gameEndedPopup();
-                        System.out.println("Game Ended");
-                        break;
-
-                    case "onMessage":
-                        disableAll();
-                        String message = (String)((List<Object>) receivedObject).get(1);
-                        System.out.println(message);
-                        if(message.equals(("disconnected"))){
+                        case "onGameReady":
                             disableAll();
-                            // the game is no more valid, client must disconnect
-                            System.out.println("A client disconnected from the game, disconnecting...");
-                            showMessage("A client disconnected from the game, disconnecting...");
-                            //Close socket, streams, return to main menu
+                            System.out.println("Set up phase is done!");
+                            showMessage("Set up phase is done!");
+                            List<Player> players = (List<Player>) objs.get(1);
+                            players.forEach(p -> addPlayerBanner(p.getNickname(), p.getWorkerColor()));
+                            break;
 
-                            Alert alert = new Alert(Alert.AlertType.WARNING);
-                            alert.setTitle("Santorini");
-                            alert.setHeaderText("Game ended.");
-                            alert.setContentText("Game ended.");
-                            alert.showAndWait();
+                        case "onGodsChosen":
+                            disableAll();
+                            List<String> selectedGods = (List<String>) objs.get(1);
+                            System.out.println("Challenger has chosen the playable gods");
+                            showMessage("Challenger has chosen the playable gods");
+                            break;
 
-                            closeConnection();
-                        }
-                        break;
+                        case "onPlayerAdded":
+                            disableAll();
+                            String newPlayer = (String) objs.get(1);
+                            int numCurr = (int) objs.get(2);
+                            int numTot = (int) objs.get(3);
+                            System.out.println(newPlayer + " has joined the game. Waiting for " + (numTot - numCurr) + " more player(s)");
+                            showMessage(newPlayer + " has joined the game. Waiting for " + (numTot - numCurr) + " more player(s)");
+                            break;
 
-                    default:
-                        disableAll();
-                        System.out.println("Event message not recognized.");
-                        break;
+                        case "onGodSelection":
+                            disableAll();
+                            String currPlayer = (String) objs.get(1);
+                            List<String> godsForSelection = (List<String>) objs.get(2);
+                            if (currPlayer.equals(nickname)) {
+                                String godSelected = "";
+                                while (godSelected.equals("")) {
+                                    godSelected = godSelectionPopup(godsForSelection);
+                                }
+                                showMessage("Selected god: " + godSelected);
+                                objects = new ArrayList<>();
+                                objects.add("onGodChosen");
+                                objects.add(godSelected);
+                                serverConnection.asyncSend(objects);
+                            } else {
+                                showMessage(currPlayer + " is choosing his god...");
+                            }
+                            break;
+
+                        case "onGodsSelection":
+                            disableAll();
+                            if (isChallenger) {
+                                List<String> allGods = (List<String>) objs.get(1);
+                                int numPlayers = (int) objs.get(2);
+                                List<String> godsSelected = new ArrayList<>();
+                                while (godsSelected.size() < numPlayers) {
+                                    godsSelected = godsSelectionPopup(numPlayers);
+                                }
+                                objects = new ArrayList<>();
+                                objects.add("onGodsChosen");
+                                objects.add(godsSelected);
+                                serverConnection.asyncSend(objects);
+                            } else {
+                                System.out.println("The challenger is choosing the gods...");
+                                showMessage("The challenger is choosing the gods...");
+                            }
+                            break;
+
+                        case "onStartPlayerSelection":
+                            disableAll();
+                            if (isChallenger) {
+                                List<String> playerss = (List<String>) objs.get(1);
+                                String startPlayer = "";
+                                while (startPlayer.equals("")) {
+                                    startPlayer = startPlayerSelectionPopup(playerss);
+                                }
+                                objects = new ArrayList<>();
+                                objects.add("onStartPlayerChosen");
+                                objects.add(startPlayer);
+                                serverConnection.asyncSend(objects);
+                            } else {
+                                System.out.println("Challenger is choosing the starting player...");
+                                showMessage("Challenger is choosing the starting player...");
+                            }
+                            break;
+
+                        case "onMyInitialization":
+                            disableAll();
+                            String currPlayerr = (String) objs.get(1);
+                            List<Coord> freeSpaces = (List<Coord>) objs.get(2);
+                            if (currPlayerr.equals(nickname)) {
+                                showMessage("Your turn: place your workers.");
+                                clickableCells.clear();
+                                clickableCells = freeSpaces;
+                                state = State.INITIALIZINGWORKERS;
+                                enableBoard(true);
+                                //a questo punto la board è abilitata e verrà selezionato lo spazio dove posizionare il worker
+                            } else {
+                                showMessage(currPlayerr + " is placing his workers...");
+                            }
+                            break;
+
+                        case "onMyTurn":
+                            disableAll();
+                            String currPlayerrr = (String) objs.get(1);
+                            List<Coord> selectableWorkers = (List<Coord>) objs.get(2);
+                            highlightPlayerBanner(currPlayerrr);
+                            if (currPlayerrr.equals(nickname)) {
+                                showMessage("Your turn");
+                                clickableCells.clear();
+                                clickableCells.addAll(selectableWorkers);
+                                state = State.SELECTINGWORKER;
+                                enableBoard(true);
+                                //a questo punto la board è abilitata e verrà selezionato il worker per il turno
+                            } else {
+                                showMessage(currPlayerrr + "'s turn...");
+                            }
+                            break;
+
+                        case "onMyAction":
+                            disableAll();
+                            canMove = false;
+                            canBuild = false;
+                            canSkip = false;
+                            String currPlayerrrr = (String) objs.get(1);
+                            //movable spaces
+                            List<Coord> movableSpaces = (List<Coord>) objs.get(2);
+                            buildableSpaces = (Map<Level, List<Coord>>) objs.get(3);
+                            boolean canEndTurn = (boolean) objs.get(4);
+                            if (currPlayerrrr.equals(nickname)) {
+                                clickableCells.clear();
+                                clickableCells.addAll(movableSpaces);
+                                //buildable spaces
+                                boolean thereAreBuilds = false;
+                                for (Level l : buildableSpaces.keySet()) {
+                                    //clickableCells.addAll(buildableSpaces.get(l));
+                                    for (Coord c : buildableSpaces.get(l)) {
+                                        if (!clickableCells.contains(c)) {
+                                            clickableCells.add(c);
+                                        }
+                                    }
+                                    if (buildableSpaces.get(l).size() > 0)
+                                        thereAreBuilds = true;
+                                }
+                                if (canEndTurn) {
+                                    enableSkip(true);
+                                    canSkip = true;
+                                }
+                                if (movableSpaces.size() > 0) {
+                                    enableMove(true);
+                                    canMove = true;
+                                }
+                                if (thereAreBuilds) {
+                                    enableBuild(true);
+                                    canBuild = true;
+                                }
+                                state = State.NONE;
+                                //a questo punto un button tra move e build verrà premuto, e la board verrà abilitata
+                            }
+                            break;
+
+                        case "onEnd":
+                            disableAll();
+                            gameEndedPopup();
+                            System.out.println("Game Ended");
+                            break;
+
+                        case "onMessage":
+                            disableAll();
+                            String message = (String) ((List<Object>) receivedObject).get(1);
+                            System.out.println(message);
+                            if (message.equals(("disconnected"))) {
+                                disableAll();
+                                // the game is no more valid, client must disconnect
+                                System.out.println("A client disconnected from the game, disconnecting...");
+                                showMessage("A client disconnected from the game, disconnecting...");
+                                //Close socket, streams, return to main menu
+
+                                Alert alert = new Alert(Alert.AlertType.WARNING);
+                                alert.setTitle("Santorini");
+                                alert.setHeaderText("Game ended.");
+                                alert.setContentText("Another player disconnected from the game.");
+                                alert.showAndWait();
+
+                                closeConnection();
+                            }
+                            break;
+
+                        default:
+                            disableAll();
+                            System.out.println("Event message not recognized.");
+                            break;
+                    }
                 }
             }
         });
