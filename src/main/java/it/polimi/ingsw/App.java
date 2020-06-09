@@ -5,14 +5,13 @@ import it.polimi.ingsw.exceptions.model.handler.RuleParserException;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.handler.Purpose;
 import it.polimi.ingsw.model.handler.RuleParser;
-import it.polimi.ingsw.view.ChallengerView;
-import it.polimi.ingsw.view.PlayerView;
+
 
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.function.BiPredicate;
 
-
+/*
 public class App {
     public static void main(String[] args) throws RuleParserException {
 
@@ -55,3 +54,4 @@ public class App {
 
     }
 }
+*/

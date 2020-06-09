@@ -9,7 +9,7 @@ import it.polimi.ingsw.listeners.Listener;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.*;
-
+/*
 public class PlayerView implements ModelEventListener, EventSource {
 
     private Scanner s;
@@ -364,19 +364,3 @@ public class PlayerView implements ModelEventListener, EventSource {
         s.close();
     }*/
 
-    private String decorateBoard(Board board, List<String> toBeAdded, int offset) {
-        String[] splitBoard = board.toString().split("\n");
-
-        for (String s : toBeAdded) {
-            splitBoard[toBeAdded.indexOf(s) + offset] += "\t\t\t" + s;
-        }
-
-        String newBoard = "";
-        for (String s : splitBoard) {
-            newBoard += s + "\n";
-        }
-
-        return newBoard;
-    }
-
-}

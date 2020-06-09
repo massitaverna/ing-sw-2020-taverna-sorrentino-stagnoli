@@ -7,7 +7,6 @@ import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.model.Player;
-import it.polimi.ingsw.view.PlayerView;
 import it.polimi.ingsw.view.RemotePlayerView;
 
 import java.util.List;
@@ -64,7 +63,7 @@ public class RealController implements PlayerViewEventListener, ChallengerViewEv
     }
 
     public void skipAction(EventSource source) {
-        String nickname = ((PlayerView) source).getNickname();
+        String nickname = ((RemotePlayerView) source).getNickname();
 
         if (!isCurrentPlayer(nickname)) {
             throw new IllegalStateException("Player " + nickname + "tried to skip action not in his turn.");

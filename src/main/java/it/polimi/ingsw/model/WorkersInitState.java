@@ -16,22 +16,12 @@ public class WorkersInitState extends ModelState {
         if (!startPlayerChosen) {
             startPlayerChosen = true;
 
-            /*String challenger = model.getCurrentPlayer().getNickname();
-            ModelEventListener challengerListener = model.getListenerByNickname(challenger);
-            challengerListener.onStartPlayerSelection(model.getPlayersNicknames());*/
-
-            //all players should receive onStartPlayerSelection:
-            for(String nickname :model.getPlayersNicknames()){
-                model.getListenerByNickname(nickname).onStartPlayerSelection(model.getPlayersNicknames());
-            }
-
+            model.getAllListeners().forEach(l -> l.onStartPlayerSelection(model.getPlayersNicknames()));
             return;
         }
 
         List<Coord> freeSpaces = model.getBoard().getUnoccupiedSpaces();
         String currPlayer = model.getCurrentPlayer().getNickname();
-        ModelEventListener currPlayerListener = model.getListenerByNickname(currPlayer);
-        currPlayerListener.onMyInitialization(freeSpaces);
-
+        model.getAllListeners().forEach(l -> l.onMyInitialization(currPlayer, freeSpaces));
     }
 }

@@ -16,15 +16,15 @@ public class PlayerTurnState extends ModelState {
         if (model.hasNewTurnBegun()) {
             Player currPlayer = model.getCurrentPlayer();
             String nickname = currPlayer.getNickname();
-            ModelEventListener listener = model.getListenerByNickname(nickname);
             List<Coord> selectableWorkers = model.getSelectableWorkers();
 
-            if (listener == null) {
-                throw new RuntimeException("Couldn't find " + nickname + "'s listener.");
+            // Caught by tests
+            if (model.getAllListeners().size() == 0) {
+                throw new RuntimeException("No listeners found.");
             }
 
             if (!selectableWorkers.isEmpty()) {
-                listener.onMyTurn(selectableWorkers);
+                model.getAllListeners().forEach(l -> l.onMyTurn(nickname, selectableWorkers));
             } else {
                 model.removeCurrentPlayer();
             }

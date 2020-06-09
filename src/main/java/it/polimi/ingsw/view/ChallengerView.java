@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+/*
 
 public class ChallengerView implements ModelEventListener, EventSource {
 
@@ -182,10 +183,6 @@ public class ChallengerView implements ModelEventListener, EventSource {
         view.onEnd();
     }
 
-    /*@Override
-    public void onWin(String winner) {
-        view.onWin(winner);
-    }*/
 
     public String getNickname() {
         return view.getNickname();
@@ -203,3 +200,4 @@ public class ChallengerView implements ModelEventListener, EventSource {
     }
 
 }
+ */

@@ -4,6 +4,7 @@ import it.polimi.ingsw.listeners.*;
 import it.polimi.ingsw.model.Board;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.Level;
+import it.polimi.ingsw.model.Player;
 import it.polimi.ingsw.observer.*;
 import it.polimi.ingsw.server.Connection;
 
@@ -123,9 +124,10 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
     }
 
     @Override
-    public void onGameReady() {
+    public void onGameReady(List<Player> players) {
         List<Object> objects = new ArrayList<>();
         objects.add("onGameReady");
+        objects.add(players);
         sendObjectToClient(objects);
     }
 
@@ -156,9 +158,10 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
     }
 
     @Override
-    public void onGodSelection(List<String> gods) {
+    public void onGodSelection(String nickname, List<String> gods) {
         List<Object> objects = new ArrayList<>();
         objects.add("onGodSelection");
+        objects.add(nickname);
         objects.add(gods);
         sendObjectToClient(objects);
     }
@@ -181,25 +184,28 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
     }
 
     @Override
-    public void onMyInitialization(List<Coord> freeSpaces) {
+    public void onMyInitialization(String nickname, List<Coord> freeSpaces) {
         List<Object> objects = new ArrayList<>();
         objects.add("onMyInitialization");
+        objects.add(nickname);
         objects.add(freeSpaces);
         sendObjectToClient(objects);
     }
 
     @Override
-    public void onMyTurn(List<Coord> selectableWorkers) {
+    public void onMyTurn(String nickname, List<Coord> selectableWorkers) {
         List<Object> objects = new ArrayList<>();
         objects.add("onMyTurn");
+        objects.add(nickname);
         objects.add(selectableWorkers);
         sendObjectToClient(objects);
     }
 
     @Override
-    public void onMyAction(List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces, boolean canEndTurn) {
+    public void onMyAction(String nickname, List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces, boolean canEndTurn) {
         List<Object> objects = new ArrayList<>();
         objects.add("onMyAction");
+        objects.add(nickname);
         objects.add(movableSpaces);
         objects.add(buildableSpaces);
         objects.add(canEndTurn);

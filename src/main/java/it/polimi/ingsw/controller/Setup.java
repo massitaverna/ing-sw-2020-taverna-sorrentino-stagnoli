@@ -4,10 +4,10 @@ import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.model.God;
 import it.polimi.ingsw.model.GodSelectionState;
-import it.polimi.ingsw.view.PlayerView;
 import it.polimi.ingsw.view.RemotePlayerView;
 
 import java.util.*;
+
 
 //TODO: Map a view on a player (security check)
 public class Setup {

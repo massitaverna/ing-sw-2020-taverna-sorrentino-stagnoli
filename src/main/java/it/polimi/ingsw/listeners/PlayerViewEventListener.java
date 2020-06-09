@@ -8,14 +8,6 @@ import it.polimi.ingsw.model.Level;
 
 
 public interface PlayerViewEventListener extends Listener {
-    /*
-    public void onBuildChosen(EventSource source, Coord position);
-    public void onColorChosen(EventSource source, Color color);
-    public void onMoveChosen(EventSource source, Coord position);
-    public void onWorkerChosen(EventSource source, String workerID);
-    public void onWorkerInitialized(EventSource source, int x, int y);
-    public void onGodChosen(EventSource source, String god);
-     */
 
     public void onNicknameChosen(EventSource source, String nickname);
     public void onGodChosen(EventSource source, String god);

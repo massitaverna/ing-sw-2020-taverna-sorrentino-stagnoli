@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Player implements Serializable {
+public class Player implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 6L;
 
@@ -72,9 +72,16 @@ public class Player implements Serializable {
         isStartPlayer = true;
     }
 
-    /*
-    public void win(){
-        hasWon = true;
+    @Override
+    public Player clone() {
+        Player result = new Player(this.nickname);
+        result.god = this.god;
+        result.workerColor = this.workerColor;
+        result.workersList = new ArrayList<>();
+        result.workersList.add(this.workersList.get(0).clone());
+        result.workersList.add(this.workersList.get(1).clone());
+        result.isStartPlayer = this.isStartPlayer;
+
+        return result;
     }
-     */
 }

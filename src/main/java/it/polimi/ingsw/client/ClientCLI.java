@@ -497,4 +497,19 @@ public class ClientCLI {
     public void stop(){
         this.exec.shutdown();
     }
+
+    private String decorateBoard(Board board, List<String> toBeAdded, int offset) {
+        String[] splitBoard = board.toString().split("\n");
+
+        for (String s : toBeAdded) {
+            splitBoard[toBeAdded.indexOf(s) + offset] += "\t\t\t" + s;
+        }
+
+        String newBoard = "";
+        for (String s : splitBoard) {
+            newBoard += s + "\n";
+        }
+
+        return newBoard;
+    }
 }

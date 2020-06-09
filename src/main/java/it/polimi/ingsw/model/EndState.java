@@ -11,11 +11,7 @@ public class EndState extends ModelState {
     @Override
     public void nextStep() {
         String winner = model.getCurrentPlayer().getNickname();
-        model.getPlayersNicknames().stream()
-                .map(nickname -> model.getListenerByNickname(nickname))
-                .forEach(l -> l.onMessage(winner + " has won !!"));
-        model.getPlayersNicknames().stream()
-                .map(nickname -> model.getListenerByNickname(nickname))
-                .forEach(ModelEventListener::onEnd);
+        model.getAllListeners().forEach(l -> l.onMessage(winner + " has won !!"));
+        model.getAllListeners().forEach(ModelEventListener::onEnd);
     }
 }

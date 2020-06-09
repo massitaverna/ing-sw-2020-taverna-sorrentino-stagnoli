@@ -19,20 +19,11 @@ public class GodSelectionState extends ModelState {
         boolean areGodsChosen = model.getAvailableGods().size() <= model.getNumPlayers() ;
 
         if (!areGodsChosen) {
-            /*String challenger = model.getCurrentPlayer().getNickname();
-            ModelEventListener challengerListener = model.getListenerByNickname(challenger);
-            challengerListener.onGodsSelection(godsNames, model.getNumPlayers());*/
-
-            //all players should receive onGodsSelection:
-            for(String nickname :model.getPlayersNicknames()){
-                model.getListenerByNickname(nickname).onGodsSelection(godsNames, model.getNumPlayers());
-            }
-
+            model.getAllListeners().forEach(l -> l.onGodsSelection(godsNames, model.getNumPlayers()));
             return;
         }
 
         String currPlayer = model.getCurrentPlayer().getNickname();
-        ModelEventListener currPlayerListener = model.getListenerByNickname(currPlayer);
-        currPlayerListener.onGodSelection(godsNames);
+        model.getAllListeners().forEach(l -> l.onGodSelection(currPlayer, godsNames));
     }
 }
