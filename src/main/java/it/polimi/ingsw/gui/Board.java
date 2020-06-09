@@ -63,6 +63,7 @@ public class Board implements Initializable {
             this.enabled = false;
 
             this.level.setOnMouseClicked(mouseEvent -> { if(this.enabled){ onCellClicked(this.coord); } } );
+            this.worker.setOnMouseClicked(mouseEvent -> { if(this.enabled){ onCellClicked(this.coord); } } );
         }
         public void setPosition(int x, int y){
             this.level.setX(x);
@@ -89,10 +90,12 @@ public class Board implements Initializable {
         public void enable(){
             this.enabled = true;
             this.level.setCursor(Cursor.HAND);
+            this.worker.setCursor(Cursor.HAND);
         }
         public void disable(){
             this.enabled = false;
             this.level.setCursor(Cursor.DEFAULT);
+            this.worker.setCursor(Cursor.DEFAULT);
         }
         public ImageView getLevelImage(){
             return this.level;
@@ -741,8 +744,8 @@ public class Board implements Initializable {
                             if (!message.equals(("disconnected"))) {
                                 System.out.println(message);
                                 showMessage(message);
+                                messagePopup(message, message);
                             }
-                            messagePopup(message, message);
                             if (message.equals(("disconnected"))) {
                                 disableAll();
                                 // the game is no more valid, client must disconnect
