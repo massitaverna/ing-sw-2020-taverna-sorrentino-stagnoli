@@ -100,9 +100,9 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
                 ((ChallengerViewEventListener)controller).onStartPlayerChosen(this, startPlayer);
                 break;
             //client ping check
-            case "onPong":
-                //TODO: client ping successful
-                break;
+            /*case "onPong":
+                //client ping successful
+                break;*/
             default:
                 System.out.println("Event message not recognized.");
                 break;

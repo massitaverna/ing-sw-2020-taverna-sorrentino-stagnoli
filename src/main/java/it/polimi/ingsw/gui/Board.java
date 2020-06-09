@@ -10,10 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -108,7 +105,7 @@ public class Board implements Initializable {
 
     //used to store the state of the gui
     private enum State{
-        NONE, MOVE, BUILD, INITIALIZINGWORKERS, SELECTINGWORKER;
+        NONE, MOVE, BUILD, INITIALIZINGWORKERS, SELECTINGWORKER
     }
 
     //connection variables
@@ -322,8 +319,7 @@ public class Board implements Initializable {
 
     //used to show a message in the text area
     private void showMessage(String message){
-        this.messageBox.appendText(message);
-        this.messageBox.appendText("\n---\n");
+        this.messageBox.appendText(message + "\n");
     }
 
     //enable move button
@@ -417,7 +413,7 @@ public class Board implements Initializable {
             case YELLOW:
                 this.yellowBanner.setVisible(true);
                 this.yellowLabel.setVisible(true);
-                this.redLabel.setText(player);
+                this.yellowLabel.setText(player);
                 break;
         }
     }
@@ -449,13 +445,13 @@ public class Board implements Initializable {
         this.yellowBanner.setScaleX(1);
         switch (c){
             case BLUE:
-                this.blueBanner.setScaleX(1.3);
+                this.blueBanner.setScaleX(1.5);
                 break;
             case RED:
-                this.redBanner.setScaleX(1.3);
+                this.redBanner.setScaleX(1.5);
                 break;
             case YELLOW:
-                this.yellowBanner.setScaleX(1.3);
+                this.yellowBanner.setScaleX(1.5);
                 break;
         }
     }
@@ -540,6 +536,16 @@ public class Board implements Initializable {
         return result.orElse(levels.get(0));
     }
 
+    private void gameEndedPopup(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Santorini Game");
+        alert.setHeaderText(" ' ' wins.");
+        alert.setResizable(false);
+        alert.setContentText("game ended.");
+        alert.showAndWait();
+        return;
+    }
+
     //called when receiving a message from the server
     private void handleMessageReceived() {
         List<Object> objs;
@@ -567,8 +573,8 @@ public class Board implements Initializable {
                         disableAll();
                         System.out.println("Set up phase is done!");
                         showMessage("Set up phase is done!");
-                        //TODO: Adjust server messages
-                        //addPlayerBanner(nickname, Color.RED); for each player
+                        List<Player> players = (List<Player>) objs.get(1);
+                        players.forEach(p -> addPlayerBanner(p.getNickname(), p.getWorkerColor()));
                         break;
 
                     case "onGodsChosen":
@@ -580,25 +586,30 @@ public class Board implements Initializable {
 
                     case "onPlayerAdded":
                         disableAll();
-                        String nickname = (String) objs.get(1);
+                        String newPlayer = (String) objs.get(1);
                         int numCurr = (int) objs.get(2);
                         int numTot = (int) objs.get(3);
-                        System.out.println(nickname + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
-                        showMessage(nickname + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
+                        System.out.println(newPlayer + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
+                        showMessage(newPlayer + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
                         break;
 
                     case "onGodSelection":
                         disableAll();
-                        List<String> godsForSelection = (List<String>) objs.get(1);
-                        String godSelected = "";
-                        while(godSelected.equals("")) {
-                            godSelected = godSelectionPopup(godsForSelection);
+                        String currPlayer = (String) objs.get(1);
+                        List<String> godsForSelection = (List<String>) objs.get(2);
+                        if(currPlayer.equals(nickname)) {
+                            String godSelected = "";
+                            while (godSelected.equals("")) {
+                                godSelected = godSelectionPopup(godsForSelection);
+                            }
+                            showMessage("Selected god: " + godSelected);
+                            objects = new ArrayList<>();
+                            objects.add("onGodChosen");
+                            objects.add(godSelected);
+                            serverConnection.asyncSend(objects);
+                        }else{
+                            showMessage(currPlayer + " is choosing his god...");
                         }
-                        showMessage("Selected god: " + godSelected);
-                        objects = new ArrayList<>();
-                        objects.add("onGodChosen");
-                        objects.add(godSelected);
-                        serverConnection.asyncSend(objects);
                         break;
 
                     case "onGodsSelection":
@@ -615,18 +626,18 @@ public class Board implements Initializable {
                             objects.add(godsSelected);
                             serverConnection.asyncSend(objects);
                         }else{
-                            System.out.println("The challenger is choosing the gods");
-                            showMessage("The challenger is choosing the gods");
+                            System.out.println("The challenger is choosing the gods...");
+                            showMessage("The challenger is choosing the gods...");
                         }
                         break;
 
                     case "onStartPlayerSelection":
                         disableAll();
                         if(isChallenger){
-                            List<String> players = (List<String>) objs.get(1);
+                            List<String> playerss = (List<String>) objs.get(1);
                             String startPlayer = "";
                             while (startPlayer.equals("")){
-                                startPlayer = startPlayerSelectionPopup(players);
+                                startPlayer = startPlayerSelectionPopup(playerss);
                             }
                             objects = new ArrayList<>();
                             objects.add("onStartPlayerChosen");
@@ -634,29 +645,40 @@ public class Board implements Initializable {
                             serverConnection.asyncSend(objects);
                         }
                         else {
-                            System.out.println("Challenger is choosing the starting player");
-                            showMessage("Challenger is choosing the starting player");
+                            System.out.println("Challenger is choosing the starting player...");
+                            showMessage("Challenger is choosing the starting player...");
                         }
                         break;
 
                     case "onMyInitialization":
                         disableAll();
-                        List<Coord> freeSpaces = (List<Coord>) objs.get(1);
-                        clickableCells.clear();
-                        clickableCells = freeSpaces;
-                        state = State.INITIALIZINGWORKERS;
-                        enableBoard(true);
-                        //a questo punto la board è abilitata e verrà selezionato lo spazio dove posizionare il worker
+                        String currPlayerr = (String) objs.get(1);
+                        List<Coord> freeSpaces = (List<Coord>) objs.get(2);
+                        if(currPlayerr.equals(nickname)) {
+                            clickableCells.clear();
+                            clickableCells = freeSpaces;
+                            state = State.INITIALIZINGWORKERS;
+                            enableBoard(true);
+                            //a questo punto la board è abilitata e verrà selezionato lo spazio dove posizionare il worker
+                        }else{
+                            showMessage(currPlayerr + " is placing his workers...");
+                        }
                         break;
 
                     case "onMyTurn":
                         disableAll();
-                        List<Coord> selectableWorkers = (List<Coord>) objs.get(1);
-                        clickableCells.clear();
-                        clickableCells.addAll(selectableWorkers);
-                        state = State.SELECTINGWORKER;
-                        enableBoard(true);
-                        //a questo punto la board è abilitata e verrà selezionato il worker per il turno
+                        String currPlayerrr = (String) objs.get(1);
+                        List<Coord> selectableWorkers = (List<Coord>) objs.get(2);
+                        highlightPlayerBanner(currPlayerrr);
+                        if(currPlayerrr.equals(nickname)) {
+                            clickableCells.clear();
+                            clickableCells.addAll(selectableWorkers);
+                            state = State.SELECTINGWORKER;
+                            enableBoard(true);
+                            //a questo punto la board è abilitata e verrà selezionato il worker per il turno
+                        }else{
+                            showMessage(currPlayerrr + "'s turn...");
+                        }
                         break;
 
                     case "onMyAction":
@@ -664,42 +686,46 @@ public class Board implements Initializable {
                         canMove = false;
                         canBuild = false;
                         canSkip = false;
+                        String currPlayerrrr = (String) objs.get(1);
                         //movable spaces
-                        List<Coord> movableSpaces = (List<Coord>) objs.get(1);
-                        buildableSpaces = (Map<Level, List<Coord>>) objs.get(2);
-                        boolean canEndTurn = (boolean) objs.get(3);
-                        clickableCells.clear();
-                        clickableCells.addAll(movableSpaces);
-                        //buildable spaces
-                        boolean thereAreBuilds = false;
-                        for(Level l:buildableSpaces.keySet()){
-                            //clickableCells.addAll(buildableSpaces.get(l));
-                            for(Coord c : buildableSpaces.get(l)){
-                                if(!clickableCells.contains(c)){
-                                    clickableCells.add(c);
+                        List<Coord> movableSpaces = (List<Coord>) objs.get(2);
+                        buildableSpaces = (Map<Level, List<Coord>>) objs.get(3);
+                        boolean canEndTurn = (boolean) objs.get(4);
+                        if(currPlayerrrr.equals(nickname)) {
+                            clickableCells.clear();
+                            clickableCells.addAll(movableSpaces);
+                            //buildable spaces
+                            boolean thereAreBuilds = false;
+                            for (Level l : buildableSpaces.keySet()) {
+                                //clickableCells.addAll(buildableSpaces.get(l));
+                                for (Coord c : buildableSpaces.get(l)) {
+                                    if (!clickableCells.contains(c)) {
+                                        clickableCells.add(c);
+                                    }
                                 }
+                                if (buildableSpaces.get(l).size() > 0)
+                                    thereAreBuilds = true;
                             }
-                            if(buildableSpaces.get(l).size() > 0)
-                                thereAreBuilds = true;
+                            if (canEndTurn) {
+                                enableSkip(true);
+                                canSkip = true;
+                            }
+                            if (movableSpaces.size() > 0) {
+                                enableMove(true);
+                                canMove = true;
+                            }
+                            if (thereAreBuilds) {
+                                enableBuild(true);
+                                canBuild = true;
+                            }
+                            state = State.NONE;
+                            //a questo punto un button tra move e build verrà premuto, e la board verrà abilitata
                         }
-                        if(canEndTurn){
-                            enableSkip(true);
-                            canSkip = true;
-                        }
-                        if(movableSpaces.size() > 0) {
-                            enableMove(true);
-                            canMove = true;
-                        }
-                        if(thereAreBuilds) {
-                            enableBuild(true);
-                            canBuild = true;
-                        }
-                        state = State.NONE;
-                        //a questo punto un button tra move e build verrà premuto, e la board verrà abilitata
                         break;
 
                     case "onEnd":
                         disableAll();
+                        gameEndedPopup();
                         System.out.println("Game Ended");
                         break;
 
@@ -713,6 +739,13 @@ public class Board implements Initializable {
                             System.out.println("A client disconnected from the game, disconnecting...");
                             showMessage("A client disconnected from the game, disconnecting...");
                             //Close socket, streams, return to main menu
+
+                            Alert alert = new Alert(Alert.AlertType.WARNING);
+                            alert.setTitle("Santorini");
+                            alert.setHeaderText("Game ended.");
+                            alert.setContentText("Game ended.");
+                            alert.showAndWait();
+
                             closeConnection();
                         }
                         break;

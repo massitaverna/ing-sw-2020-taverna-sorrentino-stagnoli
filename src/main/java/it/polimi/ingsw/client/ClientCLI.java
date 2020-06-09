@@ -32,7 +32,7 @@ public class ClientCLI {
     private Connection serverConnection;
 
     private boolean isChallenger;
-    private String nickname;
+    private String nickname = "";
 
     private ExecutorService exec;
 
@@ -80,24 +80,30 @@ public class ClientCLI {
                 break;
 
             case "onPlayerAdded":
-                String nickname = (String) objs.get(1);
+                String newPlayer = (String) objs.get(1);
                 int numCurr = (int) objs.get(2);
                 int numTot = (int) objs.get(3);
-                outputStream.println(nickname + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
+                outputStream.println(newPlayer + " has joined the game. Waiting for " + (numTot-numCurr) + " more player(s)");
                 break;
 
             case "onMessage":
                 String message = (String)((List<Object>) receivedObject).get(1);
                 outputStream.println(message);
                 if(message.equals("disconnected")){
-                    System.out.println("A client disconnected from the game, disconnecting...");
+                    outputStream.println("A client disconnected from the game, disconnecting...");
                     this.stop();
                 }
                 break;
 
             case "onGodSelection":
-                List<String> godsForSelection = (List<String>) objs.get(1);
-                onGodSelection(godsForSelection);
+                String currPlayer = (String) objs.get(1);
+                List<String> godsForSelection = (List<String>) objs.get(2);
+                if(currPlayer.equals(nickname)){
+                    onGodSelection(godsForSelection);
+                }else{
+                    outputStream.println(currPlayer + " is choosing his god...");
+                }
+
                 break;
 
             case "onGodsSelection":
@@ -110,20 +116,33 @@ public class ClientCLI {
                 break;
 
             case "onMyInitialization":
-                List<Coord> freeSpaces = (List<Coord>) objs.get(1);
-                onMyInitialization(freeSpaces);
+                String currPlayerr = (String) objs.get(1);
+                List<Coord> freeSpaces = (List<Coord>) objs.get(2);
+                if(currPlayerr.equals(nickname)) {
+                    onMyInitialization(freeSpaces);
+                }else{
+                    outputStream.println(currPlayerr + " is placing his workers...");
+                }
                 break;
 
             case "onMyTurn":
-                List<Coord> selectableWorkers = (List<Coord>) objs.get(1);
-                onMyTurn(selectableWorkers);
+                String currPlayerrr = (String) objs.get(1);
+                List<Coord> selectableWorkers = (List<Coord>) objs.get(2);
+                if(currPlayerrr.equals(nickname)) {
+                    onMyTurn(selectableWorkers);
+                }else{
+                    outputStream.println(currPlayerrr + "'s turn.");
+                }
                 break;
 
             case "onMyAction":
-                List<Coord> movableSpaces = (List<Coord>) objs.get(1);
-                Map<Level, List<Coord>> buildableSpaces = (Map<Level, List<Coord>>) objs.get(2);
-                boolean canEndTurn = (boolean) objs.get(3);
-                onMyAction(movableSpaces, buildableSpaces, canEndTurn);
+                String currPlayerrrr = (String) objs.get(1);
+                List<Coord> movableSpaces = (List<Coord>) objs.get(2);
+                Map<Level, List<Coord>> buildableSpaces = (Map<Level, List<Coord>>) objs.get(3);
+                boolean canEndTurn = (boolean) objs.get(4);
+                if(currPlayerrrr.equals(nickname)) {
+                    onMyAction(movableSpaces, buildableSpaces, canEndTurn);
+                }
                 break;
 
             case "onStartPlayerSelection":

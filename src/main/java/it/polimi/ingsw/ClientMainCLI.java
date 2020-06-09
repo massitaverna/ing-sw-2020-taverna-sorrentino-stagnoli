@@ -218,7 +218,9 @@ public class ClientMainCLI
         }
 
         else{//if gui chosen
-            ClientMainGUI.main(args);
+            String[] argss = new String[1];
+            argss[0] = ip;
+            ClientMainGUI.main(argss);
         }
     }
 

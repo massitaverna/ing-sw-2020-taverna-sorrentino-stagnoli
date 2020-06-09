@@ -55,9 +55,11 @@ public class Home implements Initializable {
         try {
             root = loader.load();
         } catch (IOException e) { e.printStackTrace(); }
+    }
 
+    public void connectToServer(String ip){
         try {
-            socket = new Socket("127.0.0.1", 12345);
+            socket = new Socket(ip, 12345);
             socket.setKeepAlive(true);
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
