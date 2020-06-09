@@ -30,9 +30,11 @@ public class Board implements Initializable {
     private class MessageReceiver implements Observer<Object> {
         @Override
         public void update(Object message) {
-            System.out.println("Received: " + message.toString());
-            receivedObject = message;
-            handleMessageReceived();
+            synchronized (receivedObject) {
+                System.out.println("Received: " + message.toString());
+                receivedObject = message;
+                handleMessageReceived();
+            }
         }
     }
 
@@ -109,7 +111,7 @@ public class Board implements Initializable {
     }
 
     //connection variables
-    private Object receivedObject;
+    private Object receivedObject = new Object();
     private Connection serverConnection;
     private ExecutorService exec; //to listen for server messages on a separate thread
 
@@ -559,7 +561,7 @@ public class Board implements Initializable {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                synchronized (this) {
+                synchronized (receivedObject) {
                     List<Object> objects;
                     switch (event) {
                         //MODEL MESSAGES
@@ -727,7 +729,7 @@ public class Board implements Initializable {
 
                         case "onEnd":
                             disableAll();
-                            gameEndedPopup();
+                            //gameEndedPopup();
                             System.out.println("Game Ended");
                             break;
 
@@ -735,6 +737,7 @@ public class Board implements Initializable {
                             disableAll();
                             String message = (String) ((List<Object>) receivedObject).get(1);
                             System.out.println(message);
+                            showMessage(message);
                             if (message.equals(("disconnected"))) {
                                 disableAll();
                                 // the game is no more valid, client must disconnect

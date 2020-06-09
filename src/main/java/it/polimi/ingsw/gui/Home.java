@@ -265,9 +265,9 @@ public class Home implements Initializable {
         stage.setOnCloseRequest(windowEvent -> {
             ((Board)loader.getController()).closeConnection();
         });
+        ((Board)loader.getController()).setParameters(new Connection(socket, out, in), challenger, nickname);
         stage.show();
 
-        ((Board)loader.getController()).setParameters(new Connection(socket, out, in), challenger, nickname);
         ((Stage) homePane.getScene().getWindow()).close();
     }
 }
