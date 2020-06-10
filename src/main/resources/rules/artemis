@@ -1,13 +1,13 @@
 rule:
-	Purpose = GENERATION
-	Target = MYSELF
-	ActionType = MOVE
+	purpose = GENERATION
+	target = MYSELF
+	actionType = MOVE
 	id = artemis_gen
 
 secondary rule:
-	Purpose = VALIDATION
-	Decision = DENY
-	ActionType = MOVE
+	purpose = VALIDATION
+	decision = DENY
+	actionType = MOVE
 	symbolicCondition:
 		equalCoordinates(oldBefore, after)
 	generatedBy = artemis_gen

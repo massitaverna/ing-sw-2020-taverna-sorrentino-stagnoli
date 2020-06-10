@@ -1,7 +1,7 @@
 rule:
-	Purpose = VALIDATION
-	ActionType = MOVE
-	Decision = GRANT
+	purpose = VALIDATION
+	actionType = MOVE
+	decision = GRANT
 	condition:
 		occupied(after)
 		near(before, after)
