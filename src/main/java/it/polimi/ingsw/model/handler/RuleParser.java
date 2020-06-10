@@ -164,7 +164,7 @@ public class RuleParser {
         if (rules == null) {
             throw new IllegalStateException("A parsing is needed before calling this method.");
         }
-        return rules;
+        return new ArrayList<>(rules);
     }
 
     //TODO: Add public method getRequestsForStandards() and add requested standard rules to god rules

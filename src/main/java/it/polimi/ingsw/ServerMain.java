@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class ServerMain {
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         try {
             MainServer server = new MainServer();
             System.out.println("Starting server...");

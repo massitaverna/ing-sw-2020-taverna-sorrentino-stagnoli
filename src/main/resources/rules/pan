@@ -1,0 +1,5 @@
+rule:
+	purpose = WIN
+	actionType = MOVE
+	condition:
+		compareLevels(after, before, >1)

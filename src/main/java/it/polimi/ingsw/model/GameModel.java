@@ -8,6 +8,7 @@ import it.polimi.ingsw.listeners.EventSource;
 import it.polimi.ingsw.listeners.Listener;
 import it.polimi.ingsw.listeners.ModelEventListener;
 import it.polimi.ingsw.model.handler.ActionType;
+import it.polimi.ingsw.model.handler.EnhancedRequestHandlerCreator;
 import it.polimi.ingsw.model.handler.RequestHandler;
 import it.polimi.ingsw.model.handler.RequestHandlerCreator;
 
@@ -20,16 +21,17 @@ public class GameModel implements EventSource {
 
     private ModelState state;
     private int numPlayers;
-    private List<Player> queue;
+    private final List<Player> queue;
     private List<God> godsList;
     private final List<Color> colors;
     private Board board;
     private Player currentPlayer;
     private Worker currentWorker;
     private Turn turn;
-    private Map<Player, RequestHandler> handlers;
+    private final Map<Player, RequestHandler> oldHandlers;
+    private final Map<Player, RequestHandler> handlers;
 
-    private List<ModelEventListener> modelListeners;
+    private final List<ModelEventListener> modelListeners;
 
     /*per sollevare un evento (esempio) :
         for(ModelEventListener l: modelListeners){
@@ -49,6 +51,7 @@ public class GameModel implements EventSource {
         this.currentPlayer = null;
         this.currentWorker = null;
         this.turn = new Turn();
+        this.oldHandlers = new HashMap<>();
         this.handlers = new HashMap<>();
         this.modelListeners = new ArrayList<>();
         loadAvailableGods();
@@ -247,8 +250,15 @@ public class GameModel implements EventSource {
     //GAME FUNCTIONS//
     void initRequestHandlers() {
         queue.forEach(p ->
-                handlers.put(p,
+                oldHandlers.put(p,
                         new RequestHandlerCreator(p.getGod().getName())
+                                .createHandler()
+                )
+        );
+
+        queue.forEach(p ->
+                handlers.put(p,
+                        new EnhancedRequestHandlerCreator(p.getGod().getName())
                                 .createHandler()
                 )
         );
@@ -302,14 +312,17 @@ public class GameModel implements EventSource {
         turn.hasMoved();
 
         //Check if this action caused the current player to win
+        RequestHandler oldHandler = oldHandlers.get(currentPlayer);
         RequestHandler handler = handlers.get(currentPlayer);
+        assert (oldHandler.checkForWin(moveChoice, ActionType.MOVE) ==
+                handler.checkForWin(moveChoice, ActionType.MOVE));
         if (handler.checkForWin(moveChoice, ActionType.MOVE)) {
             state = new EndState(this);
             return;
         }
 
+        oldHandler.generate(moveChoice, ActionType.MOVE);
         handler.generate(moveChoice, ActionType.MOVE);
-
 
     }
 
@@ -324,19 +337,27 @@ public class GameModel implements EventSource {
         turn.hasBuilt();
 
         //Check if this action caused the current player to win
+        RequestHandler oldHandler = oldHandlers.get(currentPlayer);
         RequestHandler handler = handlers.get(currentPlayer);
+
+        assert (oldHandler.checkForWin(buildChoice, ActionType.BUILD) ==
+                handler.checkForWin(buildChoice, ActionType.BUILD));
+
         if (handler.checkForWin(buildChoice, ActionType.BUILD)) {
             state = new EndState(this);
             return;
         }
 
+        oldHandler.generate(buildChoice, ActionType.BUILD);
         handler.generate(buildChoice, ActionType.BUILD);
+
     }
 
     public void setEnd() {
 
         if (turn.hasEnded()) {
             turn.reset();
+            oldHandlers.get(currentPlayer).reset();
             handlers.get(currentPlayer).reset();
             currentWorker = null;
             nextPlayer();
@@ -345,12 +366,18 @@ public class GameModel implements EventSource {
             Coord currPosition = currentWorker.getPosition();
 
             //Check if this action caused the current player to win
+            RequestHandler oldHandler = oldHandlers.get(currentPlayer);
             RequestHandler handler = handlers.get(currentPlayer);
+
+            assert (oldHandler.checkForWin(currPosition, ActionType.END) ==
+                    handler.checkForWin(currPosition, ActionType.END));
+
             if (handler.checkForWin(currPosition, ActionType.END)) {
                 state = new EndState(this);
                 return;
             }
 
+            oldHandler.generate(currPosition, ActionType.END);
             handler.generate(currPosition, ActionType.END);
         }
     }
@@ -384,12 +411,33 @@ public class GameModel implements EventSource {
     }
 
     void nextAction() {
+        RequestHandler oldCurrHandler = oldHandlers.get(currentPlayer);
         RequestHandler currHandler = handlers.get(currentPlayer);
         Coord currentPosition = currentWorker.getPosition();
         turn.clear();
         currHandler.getValidSpaces(currentPosition, board.clone(),
                 turn.getMovableSpacesReference(), turn.getBuildableSpacesReference(),
                 turn.getForcesReference());
+
+        /*START: New handler test*/
+        List<Coord> movableSpaces = new ArrayList<>();
+        Map<Level, List<Coord>> buildableSpaces = new HashMap<>();
+        Map<Coord, Coord> forces = new HashMap<>();
+        oldCurrHandler.getValidSpaces(currentPosition, board.clone(),
+                movableSpaces, buildableSpaces, forces);
+        assert turn.getMovableSpacesReference().size() == movableSpaces.size();
+        assert turn.getMovableSpacesReference().containsAll(movableSpaces);
+        for (Level level : buildableSpaces.keySet()) {
+            assert buildableSpaces.get(level).size() ==
+                    turn.getBuildableSpacesReference().get(level).size();
+            assert turn.getBuildableSpacesReference().get(level).containsAll(
+                    buildableSpaces.get(level));
+        }
+        for (Coord coord : forces.keySet()) {
+            assert turn.getForcesReference().containsKey(coord);
+            assert turn.getForcesReference().get(coord).equals(forces.get(coord));
+        }
+        /*END: New handler test*/
 
         if (turn.getMovableSpacesCopy().isEmpty() && turn.getBuildableSpacesCopy().values()
                 .stream().flatMap(Collection::stream).count() == 0) {
@@ -400,6 +448,7 @@ public class GameModel implements EventSource {
                         "taken back to the beginning of the turn.");
                 turn.reset();
                 currHandler.reset();
+                oldCurrHandler.reset();
                 nextAction();
             } else { // canEndTurn == true
                 setEnd();
@@ -432,6 +481,7 @@ public class GameModel implements EventSource {
 
         board.remove(loser);
         queue.remove(loser);
+        oldHandlers.remove(loser);
         handlers.remove(loser);
         notifyBoardChanged();
 
@@ -479,6 +529,7 @@ public class GameModel implements EventSource {
         // Assumption: a worker can't destroy before a real build
         // Under this assumption, if he can do a build, then it is a real build
 
+        RequestHandler oldCurrHandler = oldHandlers.get(currentPlayer);
         RequestHandler currHandler = handlers.get(currentPlayer);
         List<Coord> selectableWorkers = new ArrayList<>();
         boolean selectable = false;
@@ -488,6 +539,27 @@ public class GameModel implements EventSource {
             currHandler.getValidSpaces(position, board.clone(),
                     turn.getMovableSpacesReference(), turn.getBuildableSpacesReference(),
                     turn.getForcesReference());
+
+            /*START: New handler test*/
+            List<Coord> movableSpaces = new ArrayList<>();
+            Map<Level, List<Coord>> buildableSpaces = new HashMap<>();
+            Map<Coord, Coord> forces = new HashMap<>();
+            oldCurrHandler.getValidSpaces(position, board.clone(),
+                    movableSpaces, buildableSpaces, forces);
+            assert turn.getMovableSpacesReference().size() == movableSpaces.size();
+            assert turn.getMovableSpacesReference().containsAll(movableSpaces);
+            for (Level level : buildableSpaces.keySet()) {
+                assert buildableSpaces.get(level).size() ==
+                        turn.getBuildableSpacesReference().get(level).size();
+                assert turn.getBuildableSpacesReference().get(level).containsAll(
+                        buildableSpaces.get(level));
+            }
+            for (Coord coord : forces.keySet()) {
+                assert turn.getForcesReference().containsKey(coord);
+                assert turn.getForcesReference().get(coord).equals(forces.get(coord));
+            }
+            /*END: New handler test*/
+
             if (!turn.getMovableSpacesCopy().isEmpty()) {
                 if (currentPlayer.getGod().getName().equals("Apollo")) {
                     selectable = turn.getMovableSpacesCopy().stream()

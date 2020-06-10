@@ -9,10 +9,9 @@ import it.polimi.ingsw.view.RemotePlayerView;
 import java.util.*;
 
 
-//TODO: Map a view on a player (security check)
 public class Setup {
 
-    private GameModel model;
+    private final GameModel model;
 
 
     public Setup(GameModel model){
@@ -34,19 +33,6 @@ public class Setup {
             model.nextStep();
         }
     }
-
-    /*
-    public void setPlayerColor(Player p, Color c) {
-
-        try {
-            model.setPlayerColor(p, c);
-        }
-        catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
-        // Handle re-asking for color
-    }
-    */
 
     public void setGods(List<String> gods) { // invoked by Challenger
         /*if (!(invoker.equals(model.getChallenger()))) {
