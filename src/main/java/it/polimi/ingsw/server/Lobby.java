@@ -127,7 +127,7 @@ public class Lobby {
         controller.onNicknameChosen(playerView, nickname);
     }
 
-    private  void setNumPlayers(int numPlayers){
+    private  void setNumPlayers(int numPlayers) {
         if(this.challengerView == null){
             throw new RuntimeException("There is no challanger in the lobby");
         }

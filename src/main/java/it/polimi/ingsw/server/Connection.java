@@ -87,7 +87,8 @@ public class Connection extends Observable<Object> implements Runnable {
                 notify(received);
             }
         } catch (Exception e) {
-            //System.out.println("Error! " + e.getMessage());
+            System.out.println(e.getMessage());
+            e.printStackTrace();
             //if this connection is running on the server, tell the lobby to close all the connections
         }finally{
             if (lobby != null) {

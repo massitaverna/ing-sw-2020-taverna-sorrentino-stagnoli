@@ -29,6 +29,7 @@ secondary rule:
 	condition:
 		compareLevels(before, LVL2, =0)
 		compareLevels(after, LVL3, =0)
+	generatedBy = artemis_gen
 
 secondary rule:
 	purpose = GENERATION
@@ -38,5 +39,5 @@ secondary rule:
 	id = gen_move
 
 secondary file:
-	source = rules/standard_build
+	source = rules/standard/secondary
 	generatedBy = gen_move

@@ -5,5 +5,5 @@ rule:
 	condition:
 		occupied(after)
 		near(before, after)
-		not(samePlayer(before, after))
+		negate(samePlayer(before, after))
 	forceSpaceFunction = before
