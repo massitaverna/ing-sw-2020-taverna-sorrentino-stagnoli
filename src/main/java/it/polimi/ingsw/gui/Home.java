@@ -32,7 +32,7 @@ public class Home implements Initializable {
     public Label numPlayersError;
     public TextField numPlayersTextField, nicknameTextField;
     public ListView<String> lobbyList;
-    public ImageView lobbyListNext, numPlayersNextBtn;
+    public ImageView lobbyListNext, numPlayersNextBtn, backBtn, refreshBtn;
 
     private boolean challenger = false;
     Map<Integer, List<String>> availableLobbies = new HashMap<>(); //lobby index and list of players
@@ -44,6 +44,7 @@ public class Home implements Initializable {
     ObjectOutputStream out;
     ObjectInputStream in;
     private boolean isConnected;
+    private String ip;
 
     Parent root;
     FXMLLoader loader;
@@ -55,9 +56,12 @@ public class Home implements Initializable {
         try {
             root = loader.load();
         } catch (IOException e) { e.printStackTrace(); }
+    }
 
+    public void connectToServer(String ip){
         try {
-            socket = new Socket("127.0.0.1", 12345);
+            this.ip = ip;
+            socket = new Socket(ip, 12345);
             socket.setKeepAlive(true);
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
@@ -88,6 +92,7 @@ public class Home implements Initializable {
         this.challenger = true;
         this.homePane.setVisible(false);
         this.nicknamePane.setVisible(true);
+        this.backBtn.setVisible(true);
     }
 
     @FXML
@@ -96,7 +101,6 @@ public class Home implements Initializable {
         this.availableLobbiesMaxPlayers.clear();
         this.lobbyList.getItems().clear();
 
-        this.lobbyList.getItems().clear();
         this.challenger = false;
         this.homePane.setVisible(false);
         this.lobbyListPane.setVisible(true);
@@ -125,7 +129,17 @@ public class Home implements Initializable {
         } catch (IOException | ClassNotFoundException e) {
             close();
         }
+        this.backBtn.setVisible(true);
+    }
 
+    @FXML
+    public void backBtnClick(){
+        this.backBtn.setVisible(false);
+        this.challenger = false;
+        this.homePane.setVisible(true);
+        this.nicknamePane.setVisible(false);
+        this.numPlayersPane.setVisible(false);
+        this.lobbyListPane.setVisible(false);
     }
 
     @FXML
@@ -261,11 +275,11 @@ public class Home implements Initializable {
 
         //set close event for board window: (close socket and streams, exit application)
         stage.setOnCloseRequest(windowEvent -> {
-            ((Board)loader.getController()).closeConnection();
+            ((Board)loader.getController()).close();
         });
+        ((Board)loader.getController()).setParameters(new Connection(socket, out, in), challenger, nickname, ip);
         stage.show();
 
-        ((Board)loader.getController()).setParameters(new Connection(socket, out, in), challenger, nickname);
         ((Stage) homePane.getScene().getWindow()).close();
     }
 }

@@ -13,7 +13,10 @@ import javafx.stage.WindowEvent;
 
 public class ClientMainGUI extends Application {
 
+    static String ip = "";
+
     public static void main(String[] args) {
+        ip = args[0];
         launch(args);
     }
 
@@ -27,6 +30,7 @@ public class ClientMainGUI extends Application {
         Parent root = loader.load();
 
         //if loaded successfully
+        ((Home)loader.getController()).connectToServer(ip);
         if( ((Home)loader.getController()).isConnected() ){
             Scene scene = new Scene(root);
 
