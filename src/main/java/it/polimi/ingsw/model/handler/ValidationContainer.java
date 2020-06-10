@@ -46,15 +46,12 @@ class ValidationContainer {
         this.currentPosition = currentPosition;
         this.board = board;
         this.allSpaces = board.getAllCoord();
-        this.superList = new ArrayList<List<Coord>>();
-        this.forces = new HashMap<Coord, Coord>();
+        this.superList = new ArrayList<>();
+        this.forces = new HashMap<>();
         for (int i = 0; i < 12; i++) {
-            this.superList.add(new ArrayList<Coord>());
+            this.superList.add(new ArrayList<>());
         }
-
-
     }
-
 
 
     public Coord getCurrentPosition() {
