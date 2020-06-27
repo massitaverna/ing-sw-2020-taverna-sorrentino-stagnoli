@@ -19,30 +19,55 @@ public class Space implements Cloneable, Serializable {
         height = Level.GROUND;
     }
 
+    /**
+     * Set this space as occupied
+     */
     public void setOccupied(){
         occupied = true;
     }
 
+    /**
+     * Set this space as unoccupied
+     */
     public void setUnoccupied(){
         occupied = false;
     }
 
+    /**
+     * set this space as containing a dome
+     */
     private void setDome(){
         hasDome = true;
     }
 
+    /**
+     * Check if this space is occupied
+     * @return
+     */
     public boolean isOccupied() {
         return occupied;
     }
 
+    /**
+     * Check if there is a dome on this space
+     * @return
+     */
     public boolean isDome(){
         return this.hasDome;
     }
 
+    /**
+     * Get the current level of this space
+     * @return the Level of this space
+     */
     public Level getHeight(){
         return height;
     }
 
+    /**
+     * Set a Level for this space
+     * @param level the Level to set
+     */
     public void setLevel(Level level) {
 
 
@@ -58,7 +83,11 @@ public class Space implements Cloneable, Serializable {
         }
     }
 
-    //eccezione se viene invocata su Space con cupola o player
+    /**
+     * Increase the level of this space
+     * @throws SpaceFullException when the space is full
+     * @throws SpaceOccupiedException when the space is occupied
+     */
     public void levelUp() throws SpaceFullException, SpaceOccupiedException {
         if(this.isOccupied()){
             throw new SpaceOccupiedException("This space is occupied.");
@@ -78,6 +107,10 @@ public class Space implements Cloneable, Serializable {
         }
     }
 
+    /**
+     * Clone
+     * @return
+     */
     @Override
     public Space clone() {
         Space result = new Space();
@@ -88,6 +121,10 @@ public class Space implements Cloneable, Serializable {
         return result;
     }
 
+    /**
+     * ToString
+     * @return
+     */
     @Override
     public String toString() {
         String result = height.toString() + (hasDome ? " (DOME)" : "") +
@@ -95,6 +132,11 @@ public class Space implements Cloneable, Serializable {
         return result;
     }
 
+    /**
+     * Equals
+     * @param o
+     * @return
+     */
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Space)) return false;

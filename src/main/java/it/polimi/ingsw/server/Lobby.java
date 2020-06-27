@@ -73,10 +73,18 @@ public class Lobby {
         //new Thread(new PingChecker(), "PingChecker").start();
     }
 
+    /**
+     * To check if the lobby is full or not.
+     * @return
+     */
     public synchronized boolean isFull(){
         return this.playersViews.size() == this.numPlayers;
     }
 
+    /**
+     * To get all the nicknames already in the lobby
+     * @return
+     */
     public synchronized List<String> getPlayersNicknames(){
         List<String> result = new ArrayList<>();
         for(RemotePlayerView v: this.playersViews){
@@ -85,6 +93,14 @@ public class Lobby {
         return result;
     }
 
+    /**
+     * To add a player in the lobby
+     * @param nickname The nickname of the new player
+     * @param socket The socket object coming from the initial connection to the server
+     * @param o The ObjectOutputStream related to the socket
+     * @param i The ObjectInputStream related to the socket
+     * @return True if the player is added to the lobby, false otherwise.
+     */
     public synchronized boolean addPlayer(String nickname, Socket socket, ObjectOutputStream o, ObjectInputStream i){
 
         //if name is null or is already present, return false
@@ -121,7 +137,11 @@ public class Lobby {
         return true;
     }
 
-    //the controller must add the player to the model AFTER the server finished it's initial communication with the new client
+    /**
+     * To make the controller add the player to the model after the server finished it's initial communication with the new client
+     * (after the player is added to the lobby)
+     * @param nickname the nickname of the player
+     */
     public synchronized void controllerAddPlayer(String nickname){
         RemotePlayerView playerView = this.playersViews.stream().filter(v -> v.getNickname().equals(nickname)).collect(Collectors.toList()).get(0);
         controller.onNicknameChosen(playerView, nickname);
@@ -135,11 +155,17 @@ public class Lobby {
         this.controller.onNumberOfPlayersChosen(this.challengerView, numPlayers);
     }
 
+    /**
+     * To get the number of players currently in the lobby
+     * @return
+     */
     public synchronized int getNumPlayers(){
         return model.getNumPlayers();
     }
 
-    //called when a client is disconnected
+    /**
+     * To close the lobby and shutdown all connections to connected clients
+     */
     public synchronized void closeConnections(){
         if(!isClosed) {
             System.out.println("A client has been disconnected, disconnecting other clients...");

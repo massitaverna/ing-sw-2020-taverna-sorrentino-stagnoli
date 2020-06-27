@@ -204,7 +204,7 @@ public class ClientCLI {
         }
     }
 
-    public void onGodsSelection(List<String> gods, int numPlayers) {
+    private void onGodsSelection(List<String> gods, int numPlayers) {
         outputStream.println("Choose the gods to use in this game: ");
         gods.stream().forEach(outputStream::println);
         boolean valid = false;
@@ -239,7 +239,7 @@ public class ClientCLI {
         }
     }
 
-    public void onStartPlayerSelection(List<String> players) {
+    private void onStartPlayerSelection(List<String> players) {
         outputStream.println("Choose the starting player: ");
         List<Object> objects = new ArrayList<>();
         objects.add("onStartPlayerChosen");
@@ -272,7 +272,7 @@ public class ClientCLI {
 
     }
 
-    public void onMyInitialization(List<Coord> freeSpaces) {
+    private void onMyInitialization(List<Coord> freeSpaces) {
         boolean valid = false;
         List<Object> objects = new ArrayList<>();
         objects.add("onWorkerInitialization");
@@ -301,7 +301,7 @@ public class ClientCLI {
 
     }
 
-    public void onMyTurn(List<Coord> selectableWorkers) {
+    private void onMyTurn(List<Coord> selectableWorkers) {
 
         boolean correct = false;
         List<Object> objects = new ArrayList<>();
@@ -330,7 +330,7 @@ public class ClientCLI {
         }
     }
 
-    public void onMyAction(List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces, boolean canEndTurn) {
+    private void onMyAction(List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces, boolean canEndTurn) {
 
         // String colors
         //String selectable = "\u001B[97m"; // Bright white
@@ -498,6 +498,9 @@ public class ClientCLI {
         this.stop();
     }
 
+    /**
+     * To start a thread listening for incoming messages from the server
+     */
     public void run(){
         outputStream.println("You have entered the lobby.");
 
@@ -511,6 +514,9 @@ public class ClientCLI {
         }
     }
 
+    /**
+     * To stop the thread listening for incoming messages from the server
+     */
     public void stop(){
         this.exec.shutdown();
     }

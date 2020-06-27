@@ -39,11 +39,18 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         this.nickname = nickname;
     }
 
+    /**
+     * To get reference to the connection object related to this remote view (server side)
+     * @return the connection object
+     */
     public Connection getClientConnection(){
         return this.clientConnection;
     }
 
-    //used for adding the controller as a listener for the player view events
+    /**
+     * used for adding the controller as a listener for the player view events
+     * @param listener the controller
+     */
     @Override
     public void addListener(Listener listener) {
         if (!(listener instanceof PlayerViewEventListener)) {
@@ -109,12 +116,20 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         }
     }
 
-    //used to send objects to the client through the ClientConnection
+    /**
+     * used to send objects to the client through the Connection
+     * @param message the object to send
+     */
     public void sendObjectToClient(Object message){
         this.clientConnection.asyncSend(message);
     }
 
     //Model Events:
+
+    /**
+     * To send the onBoardChanged event to the client
+     * @param board
+     */
     @Override
     public void onBoardChanged(Board board) {
         List<Object> objects = new ArrayList<>();
@@ -123,6 +138,10 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         sendObjectToClient(objects);
     }
 
+    /**
+     * To send the onGameReady event to the client
+     * @param players
+     */
     @Override
     public void onGameReady(List<Player> players) {
         List<Object> objects = new ArrayList<>();
@@ -131,6 +150,10 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         sendObjectToClient(objects);
     }
 
+    /**
+     * To send the onGodsChosen event to the client
+     * @param gods
+     */
     @Override
     public void onGodsChosen(List<String> gods) {
         List<Object> objects = new ArrayList<>();
@@ -139,6 +162,12 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         sendObjectToClient(objects);
     }
 
+    /**
+     * To send the onPlayerAdded event to the client
+     * @param nickname
+     * @param numCurr
+     * @param numTot
+     */
     @Override
     public void onPlayerAdded(String nickname, int numCurr, int numTot) {
         List<Object> objects = new ArrayList<>();
@@ -149,6 +178,10 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         sendObjectToClient(objects);
     }
 
+    /**
+     * To send the onMessage event to the client
+     * @param message
+     */
     @Override
     public void onMessage(String message) {
         List<Object> objects = new ArrayList<>();
@@ -157,6 +190,11 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         sendObjectToClient(objects);
     }
 
+    /**
+     * To send the onGodSelection event to the client
+     * @param nickname
+     * @param gods
+     */
     @Override
     public void onGodSelection(String nickname, List<String> gods) {
         List<Object> objects = new ArrayList<>();
@@ -166,6 +204,11 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         sendObjectToClient(objects);
     }
 
+    /**
+     * To send the onGodsSelection event to the client
+     * @param gods
+     * @param numPlayers
+     */
     @Override
     public void onGodsSelection(List<String> gods, int numPlayers) {
         List<Object> objects = new ArrayList<>();
@@ -175,6 +218,10 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         sendObjectToClient(objects);
     }
 
+    /**
+     * To send the onStartPlayerSelection event to the client
+     * @param players
+     */
     @Override
     public void onStartPlayerSelection(List<String> players) {
         List<Object> objects = new ArrayList<>();
@@ -183,6 +230,11 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         sendObjectToClient(objects);
     }
 
+    /**
+     * To send the onMyInitialization event to the client
+     * @param nickname
+     * @param freeSpaces
+     */
     @Override
     public void onMyInitialization(String nickname, List<Coord> freeSpaces) {
         List<Object> objects = new ArrayList<>();
@@ -192,6 +244,11 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         sendObjectToClient(objects);
     }
 
+    /**
+     * To send the onMyTurn event to the client
+     * @param nickname
+     * @param selectableWorkers
+     */
     @Override
     public void onMyTurn(String nickname, List<Coord> selectableWorkers) {
         List<Object> objects = new ArrayList<>();
@@ -201,6 +258,13 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         sendObjectToClient(objects);
     }
 
+    /**
+     * To send the onMyAction event to the client
+     * @param nickname
+     * @param movableSpaces
+     * @param buildableSpaces
+     * @param canEndTurn
+     */
     @Override
     public void onMyAction(String nickname, List<Coord> movableSpaces, Map<Level, List<Coord>> buildableSpaces, boolean canEndTurn) {
         List<Object> objects = new ArrayList<>();
@@ -212,6 +276,9 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         sendObjectToClient(objects);
     }
 
+    /**
+     * To send the onEnd event to the client
+     */
     @Override
     public void onEnd() {
         List<Object> objects = new ArrayList<>();
@@ -219,6 +286,10 @@ public class RemotePlayerView implements ModelEventListener, EventSource {
         sendObjectToClient(objects);
     }
 
+    /**
+     * Get the nickname of the client related to this View
+     * @return
+     */
     @Override
     public String getNickname() {
         return this.nickname;

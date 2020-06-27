@@ -35,20 +35,25 @@ public class Home implements Initializable {
     public ImageView lobbyListNext, numPlayersNextBtn, backBtn, refreshBtn;
 
     private boolean challenger = false;
-    Map<Integer, List<String>> availableLobbies = new HashMap<>(); //lobby index and list of players
-    Map<Integer, Integer> availableLobbiesMaxPlayers = new HashMap<>(); //lobby index and max num players
-    String nickname;
-    int numPlayers;
+    private Map<Integer, List<String>> availableLobbies = new HashMap<>(); //lobby index and list of players
+    private Map<Integer, Integer> availableLobbiesMaxPlayers = new HashMap<>(); //lobby index and max num players
+    private String nickname;
+    private int numPlayers;
 
-    Socket socket;
-    ObjectOutputStream out;
-    ObjectInputStream in;
+    private Socket socket;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
     private boolean isConnected;
     private String ip;
 
-    Parent root;
-    FXMLLoader loader;
+    private Parent root;
+    private FXMLLoader loader;
 
+    /**
+     * Intialize the window
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         loader = new FXMLLoader();
@@ -58,6 +63,10 @@ public class Home implements Initializable {
         } catch (IOException e) { e.printStackTrace(); }
     }
 
+    /**
+     * To establish a connection to the server
+     * @param ip the ip address of the server
+     */
     public void connectToServer(String ip){
         try {
             this.ip = ip;
@@ -73,8 +82,15 @@ public class Home implements Initializable {
         }
     }
 
+    /**
+     * To check if the connection to the server is still alive
+     * @return
+     */
     public boolean isConnected(){ return this.isConnected; }
 
+    /**
+     * To close the connection and quit the application
+     */
     public void close(){
         try {
             System.out.println("Connection Lost, closing...");
@@ -87,6 +103,10 @@ public class Home implements Initializable {
         } catch (IOException e) { }
     }
 
+    /**
+     * Called when createGame button is clicked
+     * @param event
+     */
     @FXML
     public void createGame(MouseEvent event){
         this.challenger = true;
@@ -95,6 +115,10 @@ public class Home implements Initializable {
         this.backBtn.setVisible(true);
     }
 
+    /**
+     * Called when joinGame button is clicked
+     * @param event
+     */
     @FXML
     public void joinGame(MouseEvent event){
         this.availableLobbies.clear();
@@ -132,6 +156,9 @@ public class Home implements Initializable {
         this.backBtn.setVisible(true);
     }
 
+    /**
+     * Called when back button is clicked
+     */
     @FXML
     public void backBtnClick(){
         this.backBtn.setVisible(false);
@@ -142,6 +169,10 @@ public class Home implements Initializable {
         this.lobbyListPane.setVisible(false);
     }
 
+    /**
+     * Called when next button in the lobby list pane is clicked
+     * @param event
+     */
     @FXML
     public void lobbyListNext(MouseEvent event){
         if(availableLobbies.size() > 0) {
@@ -172,6 +203,10 @@ public class Home implements Initializable {
         }
     }
 
+    /**
+     * Called when next button in nickname pane is clicked
+     * @param event
+     */
     @FXML
     public void nicknameChosen(MouseEvent event){
         nickname = this.nicknameTextField.getText();
@@ -210,6 +245,10 @@ public class Home implements Initializable {
 
     }
 
+    /**
+     * Called when next button in opponents number pane is clicked
+     * @param event
+     */
     @FXML
     public void opponentsChosen(MouseEvent event){
         int num = -1;
@@ -266,6 +305,9 @@ public class Home implements Initializable {
         return rep;
     }
 
+    /**
+     * To close this window and show the board window
+     */
     public void showBoardWindow() {
         Stage stage = new Stage();
         stage.setScene(new Scene(root));

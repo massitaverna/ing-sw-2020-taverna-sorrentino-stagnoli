@@ -23,6 +23,11 @@ public class Worker implements Cloneable, Serializable {
         this.position = null;
     }
 
+    /**
+     * Set the position coordinates of this worker
+     * @param newPos The coordinates to set
+     * @throws IllegalArgumentException when coordinates are invalid
+     */
     public void setPosition (Coord newPos) throws IllegalArgumentException {
 
         //controllare che newPos sia valido
@@ -33,22 +38,42 @@ public class Worker implements Cloneable, Serializable {
         this.position = newPos;
     }
 
+    /**
+     * Get the current position of this worker
+     * @return
+     */
     public Coord getPosition(){
         return  this.position;
     }
 
+    /**
+     * Get the color of this worker
+     * @return
+     */
     public Color getColor() {
         return color;
     }
 
+    /**
+     * Set the color for this worker
+     * @param c the color to set
+     */
     public void setColor(Color c){
         this.color = c;
     }
 
+    /**
+     * Get the nickname of the player to which this worker belongs
+     * @return
+     */
     public String getPlayerNickname(){
         return this.player.getNickname();
     }
 
+    /**
+     * Clone
+     * @return
+     */
     @Override
     public Worker clone() {
         Worker result = new Worker(new Player(player.getNickname()));
@@ -59,6 +84,11 @@ public class Worker implements Cloneable, Serializable {
         return result;
     }
 
+    /**
+     * Equals
+     * @param o
+     * @return
+     */
     @Override
     public boolean equals (Object o) {
         if (!(o instanceof Worker)) return false;

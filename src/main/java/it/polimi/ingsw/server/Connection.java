@@ -33,10 +33,18 @@ public class Connection extends Observable<Object> implements Runnable {
         this.in = i;
     }
 
+    /**
+     * To get a reference to the ObjectOutputStream object
+     * @return
+     */
     public synchronized ObjectOutputStream getOutputStream(){
         return this.out;
     }
 
+    /**
+     * To get a reference to the ObjectInputStream object
+     * @return
+     */
     public synchronized ObjectInputStream getInputStream(){
         return this.in;
     }
@@ -57,6 +65,10 @@ public class Connection extends Observable<Object> implements Runnable {
         }
     }
 
+    /**
+     * Start a new thread to asynchronously send messages through the socket
+     * @param message
+     */
     public void asyncSend(final Object message){
         new Thread(new Runnable() {
             @Override
@@ -66,6 +78,9 @@ public class Connection extends Observable<Object> implements Runnable {
         }).start();
     }
 
+    /**
+     * To close the connection
+     */
     public synchronized void closeConnection() {
         if(isActive()) {
             try {
@@ -78,6 +93,9 @@ public class Connection extends Observable<Object> implements Runnable {
         }
     }
 
+    /**
+     * To listen for coming messages from the socket.
+     */
     @Override
     public void run() {
         try{

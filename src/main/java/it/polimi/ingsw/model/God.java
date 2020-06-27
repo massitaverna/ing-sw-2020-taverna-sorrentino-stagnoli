@@ -16,9 +16,23 @@ public class God implements Serializable {
         this.description = description;
     }
 
+    /**
+     * Get the name of this god
+     * @return
+     */
     public String getName() { return name; }
+
+    /**
+     * Get the description of this god
+     * @return
+     */
     public String getDescription() { return description; }
 
+    /**
+     * Equality check
+     * @param o
+     * @return
+     */
     @Override
     public boolean equals(Object o){
         if(o instanceof God){

@@ -34,6 +34,7 @@ public class MainServer {
 
         boolean valid = true;
 
+
         public ClientInitializer(Socket s, MainServer server) {
             this.server = server;
             this.socket = s;
@@ -195,6 +196,10 @@ public class MainServer {
 
     }//class
 
+    /**
+     * To run the server adn make it listen for clients
+     * @throws IOException
+     */
     public void runServer() throws IOException {
         while(true) {
             try {
@@ -223,6 +228,10 @@ public class MainServer {
         }
     }
 
+    /**
+     * To remove a lobby from the list
+     * @param lobby The lobby to remove
+     */
     public void removeLobby(Lobby lobby){
         System.out.println("Server: Closing lobby " + lobby.toString());
         synchronized (lobbies) {
