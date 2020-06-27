@@ -22,7 +22,7 @@ secondary rule:
 
 secondary rule:
 	purpose = GENERATION
-	actionType = MOVE
+	actionType = BUILD
 	target = MYSELF
 	generatedBy = limus_gen
 	generatedBy = gen1
@@ -31,7 +31,7 @@ secondary rule:
 
 secondary rule:
 	purpose = GENERATION
-	actionType = MOVE
+	actionType = END
 	target = MYSELF
 	generatedBy = limus_gen
 	generatedBy = gen1

@@ -140,7 +140,7 @@ public class Board implements Initializable {
     public TextArea messageBox;
     private Image lvl1Image, lvl2Image, lvl3Image, domeImage, emptyImage;
     private Map<Color, Image> workersTokens;
-    private int cellStep = 106, intialX = 384, initialY = 109, cellDim = 90, domeOffset = 10;
+    private int cellStep = 105, intialX = 388, initialY = 112, cellDim = 90, domeOffset = 10;
 
     public Board(){
         //initialize board

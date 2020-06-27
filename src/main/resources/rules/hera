@@ -6,6 +6,7 @@ rule:
 
 secondary rule:
 	purpose = WIN
+	actionType = MOVE
 	decision = DENY
 	condition:
 		or(negate(valid(sum(after, coord(1,0)))), or(negate(valid(sum(after, coord(0,1)))), or(negate(valid(sum(after, coord(1,1)))), or(negate(valid(sum(after, coord(-1,0)))), or(negate(valid(sum(after, coord(0,-1)))), or(negate(valid(sum(after, coord(-1,-1)))), or(negate(valid(sum(after, coord(1,-1)))), negate(valid(sum(after, coord(-1,1)))))))))))

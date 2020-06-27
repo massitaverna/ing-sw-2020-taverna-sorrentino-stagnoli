@@ -99,7 +99,7 @@
             <Font size="20.0" />
          </font>
       </Label>
-      <ImageView fx:id="currentGod" fitHeight="150.0" fitWidth="257.0" layoutX="1003.0" layoutY="548.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="currentGod" fitHeight="150.0" fitWidth="194.0" layoutX="1066.0" layoutY="548.0" pickOnBounds="true" preserveRatio="true">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>

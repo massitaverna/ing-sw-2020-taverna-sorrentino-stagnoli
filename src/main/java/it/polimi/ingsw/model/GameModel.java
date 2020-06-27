@@ -492,6 +492,8 @@ public class GameModel implements EventSource {
             return;
         }
         numPlayers = numPlayers - 1;
+        currentWorker = null;
+        nextStep(); // Recently added to avoid blocking on player's losing
         //Commented because the loser may still want to see the game
         //modelListeners.remove(getListenerByNickname(currentPlayer.getNickname()));
     }

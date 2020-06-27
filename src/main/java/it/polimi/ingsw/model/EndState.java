@@ -11,7 +11,7 @@ public class EndState extends ModelState {
     @Override
     public void nextStep() {
         String winner = model.getCurrentPlayer().getNickname();
-        model.getAllListeners().forEach(l -> l.onMessage(winner + " has won !!"));
+        model.getAllListeners().forEach(l -> l.onMessage(winner + " has won!\nThe game is finished.\n\nThanks for playing!"));
         model.getAllListeners().forEach(ModelEventListener::onEnd);
     }
 }
