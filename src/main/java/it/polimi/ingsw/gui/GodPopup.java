@@ -38,6 +38,10 @@ public class GodPopup implements Initializable {
         okBtn.setVisible(true);
     }
 
+    /**
+     * To set the list of available gods
+     * @param availableGods The list of available gods
+     */
     public void setGods(List<String> availableGods){
         for (int i = 0; i < availableGods.size(); i++){
             godsImages.get(i).setImage(new Image("GodCard/" + availableGods.get(i) + ".png"));
@@ -48,10 +52,18 @@ public class GodPopup implements Initializable {
         radioGod1.setSelected(true);
     }
 
+    /**
+     * To get the choice of the user
+     * @return the name of the chosen god
+     */
     public String getChoice(){
         return ((RadioButton) group.getSelectedToggle()).getText().trim();
     }
 
+    /**
+     * Called when the confirm button is clicked
+     * @param mouseEvent
+     */
     public void confirm(MouseEvent mouseEvent) {
         ((Stage)okBtn.getScene().getWindow()).close();
     }

@@ -123,6 +123,7 @@ public class Board implements Initializable {
     private boolean isChallenger;
     private String nickname;
     private Map<String, Color> playersColors;
+    private Map<String, Image> playersGodsImages;
     private Map<String, God> playersGods;
     private Cell[][] board;
     private State state = State.NONE;
@@ -134,13 +135,12 @@ public class Board implements Initializable {
     //resources and window components
     public AnchorPane boardWindow;
     public ImageView moveBtnOn, moveBtnOff, buildBtnOn, buildBtnOff, skipBtnOn, skipBtnOff, backBtn;
-    public ImageView redBanner, blueBanner, yellowBanner;
+    public ImageView redBanner, blueBanner, yellowBanner, currentGod;
     public Label redLabel, blueLabel, yellowLabel;
     public TextArea messageBox;
     private Image lvl1Image, lvl2Image, lvl3Image, domeImage, emptyImage;
     private Map<Color, Image> workersTokens;
     private int cellStep = 106, intialX = 384, initialY = 109, cellDim = 90, domeOffset = 10;
-    private int bannerCounter = 0;
 
     public Board(){
         //initialize board
@@ -163,12 +163,20 @@ public class Board implements Initializable {
         this.workersTokens.put(Color.YELLOW, new Image("Board/token_giallo.png"));
 
         this.playersColors = new HashMap<>();
+        this.playersGodsImages = new HashMap<>();
         this.playersGods = new HashMap<>();
 
         this.clickableCells = new ArrayList<>();
     }
 
-    //used to pass connection and game parameters from the previous window (main menu)
+    /**
+     * To pass connection and game parameters from the previous window (main menu)
+     *
+     * @param serverConnection the connection object used to communicate with the server
+     * @param isChallenger flag to tell the gui if it is challenger or not
+     * @param nickname the nickname chosen in the main menu
+     * @param ip the ip of the server for further reconnection
+     */
     public void setParameters(Connection serverConnection, boolean isChallenger, String nickname, String ip){
         this.serverConnection = serverConnection;
         this.serverConnection.addObserver(new MessageReceiver());
@@ -182,7 +190,12 @@ public class Board implements Initializable {
         System.out.println("You have entered the lobby.");
     }
 
-    //Initializes the board
+    /**
+     * Initializes the board
+     *
+     * @param url
+     * @param resourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //add each ImageView the matrix board as children of the main pane
@@ -199,7 +212,10 @@ public class Board implements Initializable {
         this.yellowBanner.setVisible(false);
     }
 
-    //called when clicking on a cell (can be clicked only if the cell was enabled)
+    /**
+     * called when clicking on a cell (can be clicked only if the cell was enabled)
+     * @param clickedCell the coordinates of the clicked cell
+     */
     private void onCellClicked(Coord clickedCell){
         switch (this.state){
             case MOVE:
@@ -361,27 +377,33 @@ public class Board implements Initializable {
         this.enableBack(false);
     }
 
-    //called when the move button is clicked
+    /**
+     * called when the move button is clicked
+     */
     @FXML
-    public void moveAction(MouseEvent event){
+    public void moveAction(){
         this.disableAll();
         this.enableBoard(true);
         this.state = State.MOVE;
         this.enableBack(true);
     }
 
-    //called when the move button is clicked
+    /**
+     *called when the move button is clicked
+     */
     @FXML
-    public void buildAction(MouseEvent event){
+    public void buildAction(){
         this.disableAll();
         this.enableBoard(true);
         this.state = State.BUILD;
         this.enableBack(true);
     }
 
-    //called when the move button is clicked
+    /**
+     *called when the move button is clicked
+     */
     @FXML
-    public void skipAction(MouseEvent event){
+    public void skipAction(){
         this.disableAll();
         this.state = State.NONE;
         //send a message to the server, player wants to skip
@@ -390,7 +412,9 @@ public class Board implements Initializable {
         serverConnection.asyncSend(objects);
     }
 
-    //called when the back button is clicked
+    /**
+     * called when the back button is clicked
+     */
     @FXML
     public void goBack(){
         disableAll();
@@ -582,6 +606,8 @@ public class Board implements Initializable {
                             showMessage("Set up phase is done!");
                             List<Player> players = (List<Player>) objs.get(1);
                             players.forEach(p -> addPlayerBanner(p.getNickname(), p.getWorkerColor()));
+                            players.forEach(p -> playersGodsImages.put(p.getNickname(), new Image("GodCard/"+p.getGod().getName()+".png")));
+                            players.forEach(p -> playersGods.put(p.getNickname(), p.getGod()));
                             break;
 
                         case "onGodsChosen":
@@ -677,6 +703,8 @@ public class Board implements Initializable {
                             String currPlayerrr = (String) objs.get(1);
                             List<Coord> selectableWorkers = (List<Coord>) objs.get(2);
                             highlightPlayerBanner(currPlayerrr);
+                            currentGod.setImage(playersGodsImages.get(currPlayerrr));
+                            currentGod.setOnMouseClicked(mouseEvent -> { messagePopup(playersGods.get(currPlayerrr).getName(), playersGods.get(currPlayerrr).getDescription());});
                             if (currPlayerrr.equals(nickname)) {
                                 showMessage("Your turn: Select the worker for this turn");
                                 clickableCells.clear();
@@ -769,6 +797,10 @@ public class Board implements Initializable {
         });
     }
 
+    /**
+     * To close the board window and return to the main menu,
+     * connecting to the server as a new client
+     */
     public void close(){
         this.exec.shutdown();
         this.serverConnection.closeConnection();

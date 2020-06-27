@@ -18,6 +18,7 @@ public class GodsPopup implements Initializable {
     private int numPlayers;
 
     public CheckBox apolloCheck, hephaestusCheck, artemisCheck, demeterCheck, atlasCheck, athenaCheck, minotaurCheck, panCheck, prometheusCheck;
+    public CheckBox zeusCheck, tritonCheck, limusCheck, hestiaCheck, heraCheck;
     public ImageView okBtn;
     private final List<CheckBox> boxes = new ArrayList<>();
 
@@ -32,13 +33,26 @@ public class GodsPopup implements Initializable {
         boxes.add(minotaurCheck);
         boxes.add(panCheck);
         boxes.add(prometheusCheck);
+        boxes.add(zeusCheck);
+        boxes.add(tritonCheck);
+        boxes.add(limusCheck);
+        boxes.add(hestiaCheck);
+        boxes.add(heraCheck);
         okBtn.setVisible(false);
     }
 
+    /**
+     * To set the number of choice the user has to make
+     * @param num
+     */
     public void setNumPlayers(int num){
         this.numPlayers = num;
     }
 
+    /**
+     * To get the choices of the user
+     * @return A list containing the names of the gods chosen
+     */
     public List<String> getChoices(){
 
         List<String> gods = new ArrayList<>();
@@ -66,6 +80,10 @@ public class GodsPopup implements Initializable {
         }
     }
 
+    /**
+     * Called when a checkbox is clicked
+     * @param mouseEvent
+     */
     public void checkBoxClicked(MouseEvent mouseEvent) {
         if (countChecked() == numPlayers){
             for (CheckBox box : boxes){
@@ -79,6 +97,10 @@ public class GodsPopup implements Initializable {
         }
     }
 
+    /**
+     * Called when the confirm button is clicked
+     * @param mouseEvent
+     */
     public void confirm(MouseEvent mouseEvent) {
         ((Stage)pane.getScene().getWindow()).close();
     }
