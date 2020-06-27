@@ -382,17 +382,6 @@ public class GameModel implements EventSource {
         }
     }
 
-    /*
-    public void setWin(Player p) throws IllegalArgumentException {
-        //Check that player p is part of the game
-        if( !(this.queue.contains(p)) ){
-            throw new IllegalArgumentException("Given Player is not part of the game");
-        }
-
-        p.win();
-    }
-    */
-
     public void nextPlayer() {
         //Check the game is ready
         if( this.allPlayersArrived() ) {

@@ -44,8 +44,6 @@ public class CoordTest {
         assert( center.isNear(bottomRight) );
         assert( center.isNear(left) );
         assert( center.isNear(right) );
-
-        //assert( !center.isNear(new Coord(5, 5)) );
     }
 
     @Test
@@ -57,8 +55,8 @@ public class CoordTest {
         String center = "C3";
 
         assert (Coord.convertStringToCoord(topLeft).equals(new Coord(0,0)));
-        assert (Coord.convertStringToCoord(topRight).equals(new Coord(0,4)));
-        assert (Coord.convertStringToCoord(bottomLeft).equals(new Coord(4,0)));
+        assert (Coord.convertStringToCoord(topRight).equals(new Coord(4,0)));
+        assert (Coord.convertStringToCoord(bottomLeft).equals(new Coord(0,4)));
         assert (Coord.convertStringToCoord(bottomRight).equals(new Coord(4,4)));
         assert (Coord.convertStringToCoord(center).equals(new Coord(2,2)));
     }

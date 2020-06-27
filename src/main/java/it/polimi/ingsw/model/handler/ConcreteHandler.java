@@ -127,10 +127,12 @@ class ConcreteHandler implements RuleHandler {
         Pair<Coord> pair = new Pair<>(vc.getCurrentPosition(), after);
         Board board = vc.getBoard();
 
-        return rules.stream()
+        Rule winRule = rules.stream()
                 .filter(r -> r.getPurpose() == Purpose.WIN)
                 .filter(r -> r.getActionType() == at)
-                .anyMatch(r -> r.getCondition().test(pair, board));
+                .filter(r -> r.getCondition().test(pair, board))
+                .findFirst().orElse(null);
+        return winRule != null && winRule.getDecision() == Decision.GRANT;
     }
 
     @Override

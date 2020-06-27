@@ -21,7 +21,11 @@ public class EnhancedRequestHandlerCreator {
         this.god = null;
     }
     public EnhancedRequestHandlerCreator(String god) {
-        this.god = god;
+        if (!god.equals("None")) {
+            this.god = god;
+        } else {
+            this.god = null;
+        }
     }
 
     public RequestHandler createHandler() {

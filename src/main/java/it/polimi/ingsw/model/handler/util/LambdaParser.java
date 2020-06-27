@@ -132,6 +132,32 @@ public class LambdaParser {
                 break;
             }
 
+            case "sameGod": {
+                List<String> arguments = parseArguments(argument);
+                if (arguments.size() != 2) {
+                    throw new RuleParserException(function.toUpperCase() + " takes exactly 2 " +
+                            "arguments, " + arguments.size() + " passed.");
+                }
+
+                List<BiFunction<Pair<Coord>, Board, String>> gods = new ArrayList<>();
+                for (String arg : arguments) {
+                    BiFunction<Pair<Coord>, Board, String> god;
+                    if (arg.matches("\"(\\w+)\"")) {
+                        String godName = arg.substring(1, arg.length()-1).strip().toLowerCase();
+                        god = (cPair, board) -> godName;
+                    }
+                    else {
+                        BiFunction<Pair<Coord>, Pair<Coord>, Coord> coord = fromCoordToSymbolicFunction(arg);
+                        god = (cPair, board) -> board.getWorkerCopy(coord.apply(null, cPair)).getGod().toLowerCase();
+                    }
+                    gods.add(god);
+                }
+
+                condition = (oldPair, cPair, board) ->
+                        gods.get(0).apply(cPair, board).equals(gods.get(1).apply(cPair, board));
+                break;
+            }
+
             case "negate": {
                 TriPredicate<Pair<Coord>, Pair<Coord>, Board> internalPredicate = extractPredicate(argument);
                 condition = internalPredicate.negate();

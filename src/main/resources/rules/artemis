@@ -25,6 +25,7 @@ secondary rule:
 
 secondary rule:
 	purpose = WIN
+	decision = GRANT
 	actionType = MOVE
 	condition:
 		compareLevels(before, LVL2, =0)

@@ -60,16 +60,12 @@ public class TestUtils {
             model.setGods(chosenGods);
 
             List<God> godsList = model.getAvailableGods();
-            godsList.forEach(g ->
+            godsList.stream().filter(god -> !god.getName().equals(godUnderTest)).forEach(g ->
                     model.assignGodToPlayer(model.getCurrentPlayer(), g));
-
-            //Handling of case godUnderTest is "None"
-            /*
-            if (godUnderTest.equals("None")) {
-                model.nextPlayer(); // This should set the challenger as currentPlayer
-                model.getCurrentPlayer().setGod(new God("None", "For test purposes only"));
-            }
-             */
+            God got = godsList.stream()
+                    .filter(god -> god.getName().equals(godUnderTest))
+                    .findFirst().orElseThrow();
+            model.assignGodToPlayer(model.getCurrentPlayer(), got);
         } else {
             for (int i = 0; i < numPlayers; i++) {
                 model.getCurrentPlayer().setGod(new God("None", "For test purposes only"));

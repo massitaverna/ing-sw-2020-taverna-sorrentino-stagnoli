@@ -1,0 +1,24 @@
+rule:
+	purpose = GENERATION
+	actionType = BUILD
+	target = MYSELF
+	id = unique
+
+secondary rule:
+	purpose = VALIDATION
+	actionType = BUILD
+	decision = DENY
+	condition:
+		valid(sum(after, coord(1,0)))
+		valid(sum(after, coord(0,1)))
+		valid(sum(after, coord(1,1)))
+		valid(sum(after, coord(-1,0)))
+		valid(sum(after, coord(0,-1)))
+		valid(sum(after, coord(-1,-1)))
+		valid(sum(after, coord(1,-1)))
+		valid(sum(after, coord(-1,1)))
+	generatedBy = unique
+
+secondary file:
+	source = secondary
+	generatedBy = unique

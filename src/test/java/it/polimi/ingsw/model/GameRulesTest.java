@@ -43,6 +43,8 @@ public class GameRulesTest {
         }
     }
 
+
+
     protected void assertCannotBuildOnAnyLevel(Coord buildChoice) {
         Board after;
         for (Level level : Level.values()) {
@@ -52,42 +54,7 @@ public class GameRulesTest {
         }
     }
 
-
-
-
-
-
-
-    protected void cannotMoveInOccupiedSpace() {
-        nextStep();
-        model.setWorkerChoice(src);
-        nextStep();
-        setMove(dest);
-        Board after = model.getBoard();
-        assertEquals(before, after);
-    }
-
-    protected void cannotMoveToDome() {
-        nextStep();
-        model.setWorkerChoice(src);
-        nextStep();
-        setMove(dest);
-        Board after = model.getBoard();
-        assertEquals(before, after);
-    }
-
-    protected void cannotMoveUpMoreThanOneLevel() {
-        nextStep();
-        model.setWorkerChoice(src);
-        nextStep();
-        setMove(dest);
-        Board after = model.getBoard();
-        assertEquals(before, after);
-    }
-
-    protected void cannotMoveFarAway() {
-        nextStep();
-        model.setWorkerChoice(src);
+    protected void cannotMove() {
         nextStep();
         setMove(dest);
         Board after = model.getBoard();

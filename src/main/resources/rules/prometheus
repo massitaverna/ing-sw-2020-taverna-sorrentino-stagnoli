@@ -11,7 +11,8 @@ secondary rule:
 	purpose = VALIDATION
 	actionType = MOVE
 	decision = DENY
-	compareLevels(before, after, >0)
+	condition:
+		compareLevels(before, after, >0)
 	generatedBy = gen_build
 
 secondary file:

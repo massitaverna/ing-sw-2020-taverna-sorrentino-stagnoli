@@ -16,7 +16,7 @@ public class Worker implements Cloneable, Serializable {
 
     private Color color;
     private Coord position;
-    private Player player;
+    private final Player player;
 
     public Worker(Player p){
         this.player = p;
@@ -25,7 +25,6 @@ public class Worker implements Cloneable, Serializable {
 
     public void setPosition (Coord newPos) throws IllegalArgumentException {
 
-        //controllare che newPos sia valido
         if (!Coord.validCoord(newPos)) {
             throw new IllegalArgumentException("Invalid Coordinates");
         }
@@ -49,9 +48,15 @@ public class Worker implements Cloneable, Serializable {
         return this.player.getNickname();
     }
 
+    public String getGod() {
+        return player.getGod().getName();
+    }
+
     @Override
     public Worker clone() {
-        Worker result = new Worker(new Player(player.getNickname()));
+        Player owner = new Player(player.getNickname());
+        owner.setGod(player.getGod());
+        Worker result = new Worker(owner);
         result.color = color;
         if(this.position != null) {
             result.position = new Coord(position.x, position.y);
@@ -65,12 +70,17 @@ public class Worker implements Cloneable, Serializable {
         Worker that = (Worker) o;
         if (this.position != null) {
             return this.color == that.color &&
-                    this.position == that.position &&
+                    this.position.equals(that.position) &&
                     this.player.getNickname().equals(that.player.getNickname());
         }
 
         else {
             return super.equals(o);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "[" + color + ", " + position + ", " + player.getNickname() + "]";
     }
 }

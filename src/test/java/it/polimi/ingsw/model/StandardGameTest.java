@@ -27,74 +27,33 @@ public class StandardGameTest extends GameRulesTest {
     }
 
 
-    /*
-    private helper void nextStep() {
-        try {
-            model.nextStep();
-        }
-        catch (RuntimeException e) {
-            // Exception is thrown if there is no listeners for the player.
-            // This is ok when testing the model, because Views do not exist.
-        }
-    }
-     */
-
-    /*
-    private helper void setMove(Coord c) {
-        try {
-            model.setMove(c);
-        }
-        catch (NullPointerException e) {
-            // Exception is thrown if there is no listeners for the player.
-            // This is ok when testing the model, because Views do not exist.
-        }
-    }
-    */
-
-    /*
-    private helper void setBuild(Coord c, Level l) {
-        try {
-            model.setBuild(c, l);
-        }
-        catch (NullPointerException e) {
-            // Exception is thrown if there is no listeners for the player.
-            // This is ok when testing the model, because Views do not exist.
-        }
-    }
-    */
-
-    /*
-    private helper void assertCannotBuildOnAnyLevel(Coord buildChoice) {
-        Board after;
-        for (Level level : Level.values()) {
-            setBuild(buildChoice, level);
-            after = model.getBoard();
-            assertEquals(before, after);
-        }
-    }
-     */
-
     //-------------------------------TEST SECTION---------------------------------
 
     @Test
     public void cannotMoveInOccupiedSpace() {
         src = Coord.convertStringToCoord("B1");
         dest = Coord.convertStringToCoord("A1");
-        super.cannotMoveInOccupiedSpace();
+        nextStep();
+        model.setWorkerChoice(src);
+        super.cannotMove();
     }
 
     @Test
     public void cannotMoveToDome() {
         src = Coord.convertStringToCoord("B1");
         dest = Coord.convertStringToCoord("C2");
-        super.cannotMoveToDome();
+        nextStep();
+        model.setWorkerChoice(src);
+        super.cannotMove();
     }
 
     @Test
     public void cannotMoveUpMoreThanOneLevel() {
         src = Coord.convertStringToCoord("A1");
         dest = Coord.convertStringToCoord("A2");
-        super.cannotMoveUpMoreThanOneLevel();
+        nextStep();
+        model.setWorkerChoice(src);
+        super.cannotMove();
     }
 
     @Test
@@ -104,7 +63,9 @@ public class StandardGameTest extends GameRulesTest {
 
         src = Coord.convertStringToCoord("A3");
         dest = Coord.convertStringToCoord("C3");
-        super.cannotMoveFarAway();
+        nextStep();
+        model.setWorkerChoice(src);
+        super.cannotMove();
     }
 
     @Test
@@ -436,9 +397,4 @@ public class StandardGameTest extends GameRulesTest {
         assertEquals(beforeWorkers, afterWorkers);
     }
 
-
-    @Test
-    public void sampleTest() {
-        //Do the test here
-    }
 }

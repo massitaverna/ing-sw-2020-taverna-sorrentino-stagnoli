@@ -436,6 +436,19 @@ public class LambdaParserTest {
         assertTrue(condition.test(null, new Pair<>(c, d), board));
         //----------------------------------------------------------
 
+        String god = board.getWorkerCopy(new Coord(3,3)).getGod();
+        s = "sameGod(coord(3,3), \"" + god +"\")";
+        condition = LambdaParser.extractPredicate(s);
+        assertTrue(condition.test(null, null, board));
+        //----------------------------------------------------------
+
+        s = "sameGod(\"Apollo\")";
+        try {
+            LambdaParser.extractPredicate(s);
+            fail();
+        } catch (RuleParserException ignored) {}
+        //----------------------------------------------------------
+
         lines = Arrays.asList("occupied(after)", "near(before, after)", "dome(oldBefore)",
                 "compareLevels(coord(1,0), oldAfter, =0)", "valid(coord(3,1))");
         for (String str : lines) {

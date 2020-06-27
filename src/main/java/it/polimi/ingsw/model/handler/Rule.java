@@ -164,7 +164,7 @@ public class Rule {
         boolean repOk = actionType != null &&
         condition != null &&
         symbolicCondition == null &&
-        iff(decision == null, purpose != Purpose.VALIDATION) &&
+        iff(decision == null, purpose == Purpose.GENERATION) &&
         iff(actionType==ActionType.BUILD && purpose == Purpose.VALIDATION, buildLevel != null) &&
         ifThen(forceSpaceFunction != null, purpose == Purpose.VALIDATION) &&
         ifThen(forceSpaceFunction != null, actionType == ActionType.MOVE) &&

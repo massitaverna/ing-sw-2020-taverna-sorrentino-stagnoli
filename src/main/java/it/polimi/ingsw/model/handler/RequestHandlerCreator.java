@@ -509,6 +509,7 @@ public class RequestHandlerCreator {
             Rule r = new Rule();
             r.setPurpose(Purpose.WIN);
             r.setActionType(ActionType.MOVE);
+            r.setDecision(Decision.GRANT);
             BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
                     board.getSpace(cPair.get(0)).getHeight().ordinal() -
                             board.getSpace(cPair.get(1)).getHeight().ordinal()
@@ -687,12 +688,13 @@ public class RequestHandlerCreator {
         Rule r = new Rule();
         r.setPurpose(Purpose.WIN);
         r.setActionType(ActionType.MOVE);
+        r.setDecision(Decision.GRANT);
         BiPredicate<Pair<Coord>, Board> condition = (cPair, board) ->
                 board.getSpace(cPair.get(0)).getHeight() == Level.LVL2 &&
                         board.getSpace(cPair.get(1)).getHeight() == Level.LVL3;
         r.setCondition(condition);
 
-        List<Rule> newResult = new ArrayList<>(); // Recently added
+        List<Rule> newResult = new ArrayList<>();
         newResult.add(r);
         return newResult;
 
