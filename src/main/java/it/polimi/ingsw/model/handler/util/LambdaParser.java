@@ -91,6 +91,13 @@ public class LambdaParser {
                 condition = (oldPair, cPair, board) ->
                         board.getWorkerCopy(coords.get(0).apply(oldPair, cPair)).getPlayerNickname()
                                 .equals(board.getWorkerCopy(coords.get(1).apply(oldPair, cPair)).getPlayerNickname());
+                // If there is no player in one of the specified positions,
+                // then the condition 'samePlayer' must be false:
+                TriPredicate<Pair<Coord>, Pair<Coord>, Board> conditionOnOccupation =
+                        (oldPair, cPair, board) ->
+                                board.getSpace(coords.get(0).apply(oldPair, cPair)).isOccupied() &&
+                                board.getSpace(coords.get(1).apply(oldPair, cPair)).isOccupied();
+                condition = conditionOnOccupation.and(condition);
                 break;
             }
 
@@ -140,6 +147,7 @@ public class LambdaParser {
                 }
 
                 List<BiFunction<Pair<Coord>, Board, String>> gods = new ArrayList<>();
+                List<BiFunction<Pair<Coord>, Pair<Coord>, Coord>> coords = new ArrayList<>();
                 for (String arg : arguments) {
                     BiFunction<Pair<Coord>, Board, String> god;
                     if (arg.matches("\"(\\w+)\"")) {
@@ -149,12 +157,22 @@ public class LambdaParser {
                     else {
                         BiFunction<Pair<Coord>, Pair<Coord>, Coord> coord = fromCoordToSymbolicFunction(arg);
                         god = (cPair, board) -> board.getWorkerCopy(coord.apply(null, cPair)).getGod().toLowerCase();
+                        coords.add(coord);
                     }
                     gods.add(god);
                 }
 
                 condition = (oldPair, cPair, board) ->
                         gods.get(0).apply(cPair, board).equals(gods.get(1).apply(cPair, board));
+                // If there is no player in one of the specified positions,
+                // then the condition 'sameGod' must be false:
+                for (int i = 0; i < coords.size(); i++) {
+                    int idx = i;
+                    TriPredicate<Pair<Coord>, Pair<Coord>, Board> conditionOnOccupation =
+                            (oldPair, cPair, board) ->
+                                    board.getSpace(coords.get(idx).apply(oldPair, cPair)).isOccupied();
+                    condition = conditionOnOccupation.and(condition);
+                }
                 break;
             }
 

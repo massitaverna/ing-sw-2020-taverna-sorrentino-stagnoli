@@ -9,7 +9,7 @@ secondary file:
 	generatedBy = unique
 	generatedBy = gen1
 	generatedBy = gen2
-    generatedBy = gen3
+	generatedBy = gen3
 
 secondary rule:
 	purpose = GENERATION
@@ -26,7 +26,7 @@ secondary rule:
 	target = MYSELF
 	generatedBy = limus_gen
 	generatedBy = gen1
-    generatedBy = gen3
+	generatedBy = gen3
 	id = gen2
 
 secondary rule:
@@ -35,5 +35,5 @@ secondary rule:
 	target = MYSELF
 	generatedBy = limus_gen
 	generatedBy = gen1
-    generatedBy = gen2
+	generatedBy = gen2
 	id = gen3

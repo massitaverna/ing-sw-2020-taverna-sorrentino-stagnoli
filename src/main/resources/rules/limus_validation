@@ -325,4 +325,3 @@ rule:
 		compareLevels(after, DOME, >0)
 		negate(compareLevels(after, LVL3, =0))
 	buildLevel = DOME
-

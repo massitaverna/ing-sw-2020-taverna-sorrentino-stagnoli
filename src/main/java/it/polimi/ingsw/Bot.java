@@ -11,13 +11,12 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//TODO: async read from server
 
-public class ClientMainCLI
+public class Bot
 {
     public static void main( String[] args ) {
 
-        String ip = "";
+        String ip = "127.0.0.1";
         int port = 12345;
 
         Scanner s = new Scanner(System.in);
@@ -26,38 +25,7 @@ public class ClientMainCLI
         ObjectInputStream in;
         ObjectOutputStream out;
 
-        int gui = -1;
-        while(gui != 1 && gui != 2){
-            System.out.println("Which client do you want to run?");
-            System.out.println("1. CLI");
-            System.out.println("2. GUI");
-            try {
-                gui = Integer.parseInt(s.nextLine());
-            } catch (NumberFormatException e) {
-                System.out.println("Insert a valid input.");
-            }
-        }
-        //s.skip(".*\n");
-
-        boolean ipCorrect = false;
-        Pattern ipPattern = Pattern.compile("(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})");
-        while (!ipCorrect) {
-            System.out.println("IP Address to connect to: ");
-            ip = s.nextLine();
-            Matcher m = ipPattern.matcher(ip);
-            if (m.matches()) {
-                ipCorrect = true;
-                for (int i = 1; i <= 4; i++) {
-                    if (!(Integer.parseInt(m.group(i)) <= 255 && Integer.parseInt(m.group(i)) >= 0)) {
-                        ipCorrect = false;
-                    }
-                }
-            }
-            else if (ip.equals("localhost")) {
-                ip = "127.0.0.1";
-                ipCorrect = true;
-            }
-        }
+        int gui = 1;
 
         if(gui == 1) {
 
@@ -117,7 +85,7 @@ public class ClientMainCLI
                             System.out.println("");
                         }
                         //user choice
-                        lobbyChoice = -1;
+                        lobbyChoice = availableLobbies.keySet().size();
                         while (lobbyChoice < 0) {
                             try {
                                 lobbyChoice = s.nextInt();
@@ -229,19 +197,10 @@ public class ClientMainCLI
     }
 
     private static String askForNickname(List<String> nicknamesInLobby){
-        String nickname = "";
-        Scanner ss = new Scanner(System.in);
-        System.out.println("What's your nickname?");
-        if (nicknamesInLobby != null && nicknamesInLobby.size() > 0) {
-            System.out.println("Players already in the lobby: ");
-            nicknamesInLobby.forEach(System.out::println);
-        }
-        while (nicknamesInLobby != null && nicknamesInLobby.contains(nickname) || nickname.equals("") ) {
-            nickname = ss.nextLine();
-            if (nicknamesInLobby != null && nicknamesInLobby.contains(nickname))
-                System.out.println("Invalid input: nickname already in the lobby.");
-            else if (nickname.equals(""))
-                System.out.println("Invalid input: nickname can't be an empty string.");
+        String nickname = "Bot";
+        Random r = new Random();
+        for (int i = 0; i < 5; i++) {
+            nickname += r.nextInt(10);
         }
 
         return nickname;

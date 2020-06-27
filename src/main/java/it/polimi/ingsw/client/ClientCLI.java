@@ -160,13 +160,6 @@ public class ClientCLI {
                 this.onEnd();
                 break;
 
-            //LOBBY MESSAGES
-            /*case "onPing":
-                List<Object> response = new ArrayList<>();
-                response.add("onPong");
-                this.serverConnection.asyncSend(response);
-                break;*/
-
             default:
                 outputStream.println("Event message not recognized.");
                 break;
@@ -197,7 +190,7 @@ public class ClientCLI {
                 objects.add("onGodChosen");
                 objects.add(input);
                 serverConnection.asyncSend(objects);
-                if(!(gods.size() == 1)) { //if i am the last to choose, do not print
+                if(gods.size() != 1) { //if i am the last to choose, do not print
                     outputStream.println("Waiting for other players to choose their god...");
                 }
             }
@@ -206,7 +199,7 @@ public class ClientCLI {
 
     private void onGodsSelection(List<String> gods, int numPlayers) {
         outputStream.println("Choose the gods to use in this game: ");
-        gods.stream().forEach(outputStream::println);
+        gods.forEach(outputStream::println);
         boolean valid = false;
         boolean godIsOk = false;
         List<Object> objects = new ArrayList<>();

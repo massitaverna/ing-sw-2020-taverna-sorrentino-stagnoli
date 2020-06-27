@@ -293,6 +293,7 @@ public class GameModel implements EventSource {
         }
         currentWorker = selected;
         turn.setInitialBoard(board.clone());
+        turn.setInitialPosition(workerPos);
     }
 
     public void setMove(Coord moveChoice) {
@@ -409,28 +410,36 @@ public class GameModel implements EventSource {
                 turn.getForcesReference());
 
         /*START: New handler test*/
-        List<Coord> movableSpaces = new ArrayList<>();
-        Map<Level, List<Coord>> buildableSpaces = new HashMap<>();
-        Map<Coord, Coord> forces = new HashMap<>();
-        oldCurrHandler.getValidSpaces(currentPosition, board.clone(),
-                movableSpaces, buildableSpaces, forces);
-        assert turn.getMovableSpacesReference().size() == movableSpaces.size();
-        assert turn.getMovableSpacesReference().containsAll(movableSpaces);
-        for (Level level : buildableSpaces.keySet()) {
-            assert buildableSpaces.get(level).size() ==
-                    turn.getBuildableSpacesReference().get(level).size();
-            assert turn.getBuildableSpacesReference().get(level).containsAll(
-                    buildableSpaces.get(level));
-        }
-        for (Coord coord : forces.keySet()) {
-            assert turn.getForcesReference().containsKey(coord);
-            assert turn.getForcesReference().get(coord).equals(forces.get(coord));
+        if (!(currentPlayer.getGod().getName().equals("Hera") ||
+                currentPlayer.getGod().getName().equals("Hestia") ||
+                currentPlayer.getGod().getName().equals("Limus") ||
+                currentPlayer.getGod().getName().equals("Triton") ||
+                currentPlayer.getGod().getName().equals("Zeus")
+        )) {
+            List<Coord> movableSpaces = new ArrayList<>();
+            Map<Level, List<Coord>> buildableSpaces = new HashMap<>();
+            Map<Coord, Coord> forces = new HashMap<>();
+            oldCurrHandler.getValidSpaces(currentPosition, board.clone(),
+                    movableSpaces, buildableSpaces, forces);
+            assert turn.getMovableSpacesReference().size() == movableSpaces.size();
+            assert turn.getMovableSpacesReference().containsAll(movableSpaces);
+            for (Level level : buildableSpaces.keySet()) {
+                assert buildableSpaces.get(level).size() ==
+                        turn.getBuildableSpacesReference().get(level).size();
+                assert turn.getBuildableSpacesReference().get(level).containsAll(
+                        buildableSpaces.get(level));
+            }
+            for (Coord coord : forces.keySet()) {
+                assert turn.getForcesReference().containsKey(coord);
+                assert turn.getForcesReference().get(coord).equals(forces.get(coord));
+            }
         }
         /*END: New handler test*/
 
         if (turn.getMovableSpacesCopy().isEmpty() && turn.getBuildableSpacesCopy().values()
                 .stream().flatMap(Collection::stream).count() == 0) {
             if (!turn.canEndTurn()) {
+                /*
                 board = turn.getInitialBoard();
                 notifyBoardChanged();
                 notifyMessage(currentPlayer + " couldn't complete the turn and has been " +
@@ -439,6 +448,9 @@ public class GameModel implements EventSource {
                 currHandler.reset();
                 oldCurrHandler.reset();
                 nextAction();
+                */
+                removeCurrentPlayer();
+
             } else { // canEndTurn == true
                 setEnd();
                 nextStep();
@@ -509,7 +521,7 @@ public class GameModel implements EventSource {
     }
 
 
-    List<Coord> getSelectableWorkers() {
+    List<Coord> old_getSelectableWorkers() {
         // Assumptions: a player cannot destroy before moving
         // Under this assumption,
         // if he cannot move as first action, then he cannot move even if he first builds.
@@ -522,6 +534,72 @@ public class GameModel implements EventSource {
         RequestHandler currHandler = handlers.get(currentPlayer);
         List<Coord> selectableWorkers = new ArrayList<>();
         boolean selectable = false;
+        for (Worker worker : currentPlayer.getWorkersList()) {
+            Coord position = worker.getPosition();
+            turn.clear();
+            currHandler.getValidSpaces(position, board.clone(),
+                    turn.getMovableSpacesReference(), turn.getBuildableSpacesReference(),
+                    turn.getForcesReference());
+
+            /*START: New handler test*/
+            if (!(currentPlayer.getGod().getName().equals("Hera") ||
+                    currentPlayer.getGod().getName().equals("Hestia") ||
+                    currentPlayer.getGod().getName().equals("Limus") ||
+                    currentPlayer.getGod().getName().equals("Triton") ||
+                    currentPlayer.getGod().getName().equals("Zeus")
+            )) {
+                List<Coord> movableSpaces = new ArrayList<>();
+                Map<Level, List<Coord>> buildableSpaces = new HashMap<>();
+                Map<Coord, Coord> forces = new HashMap<>();
+                oldCurrHandler.getValidSpaces(position, board.clone(),
+                        movableSpaces, buildableSpaces, forces);
+                assert turn.getMovableSpacesReference().size() == movableSpaces.size();
+                assert turn.getMovableSpacesReference().containsAll(movableSpaces);
+                for (Level level : buildableSpaces.keySet()) {
+                    assert buildableSpaces.get(level).size() ==
+                            turn.getBuildableSpacesReference().get(level).size();
+                    assert turn.getBuildableSpacesReference().get(level).containsAll(
+                            buildableSpaces.get(level));
+                }
+                for (Coord coord : forces.keySet()) {
+                    assert turn.getForcesReference().containsKey(coord);
+                    assert turn.getForcesReference().get(coord).equals(forces.get(coord));
+                }
+            }
+            /*END: New handler test*/
+
+            if (!turn.getMovableSpacesCopy().isEmpty()) {
+                if (currentPlayer.getGod().getName().equals("Apollo")) {
+                    selectable = turn.getMovableSpacesCopy().stream()
+                            .map(c -> board.getSpace(c))
+                            .anyMatch(s -> !s.isOccupied());
+                    if (!selectable) {
+                        for (Coord moveChoice : turn.getMovableSpacesCopy()) {
+                            selectable = board.getSpacesAround(moveChoice).stream()
+                                    .map(c -> board.getSpace(c))
+                                    .anyMatch(s -> !s.isOccupied() && !s.isDome());
+                            if (selectable) {
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    selectable = true;
+                }
+            }
+            if (selectable) {
+                selectableWorkers.add(worker.getPosition());
+            }
+        }
+        turn.setSelectableWorkers(selectableWorkers);
+        return selectableWorkers;
+    }
+
+    List<Coord> getSelectableWorkers() {
+
+        RequestHandler oldCurrHandler = oldHandlers.get(currentPlayer);
+        RequestHandler currHandler = handlers.get(currentPlayer);
+        List<Coord> selectableWorkers = new ArrayList<>();
         for (Worker worker : currentPlayer.getWorkersList()) {
             Coord position = worker.getPosition();
             turn.clear();
@@ -550,25 +628,6 @@ public class GameModel implements EventSource {
             /*END: New handler test*/
 
             if (!turn.getMovableSpacesCopy().isEmpty()) {
-                if (currentPlayer.getGod().getName().equals("Apollo")) {
-                    selectable = turn.getMovableSpacesCopy().stream()
-                            .map(c -> board.getSpace(c))
-                            .anyMatch(s -> !s.isOccupied());
-                    if (!selectable) {
-                        for (Coord moveChoice : turn.getMovableSpacesCopy()) {
-                            selectable = board.getSpacesAround(moveChoice).stream()
-                                    .map(c -> board.getSpace(c))
-                                    .anyMatch(s -> !s.isOccupied() && !s.isDome());
-                            if (selectable) {
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    selectable = true;
-                }
-            }
-            if (selectable) {
                 selectableWorkers.add(worker.getPosition());
             }
         }
