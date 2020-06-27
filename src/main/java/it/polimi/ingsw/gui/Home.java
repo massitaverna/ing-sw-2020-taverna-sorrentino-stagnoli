@@ -104,11 +104,34 @@ public class Home implements Initializable {
     }
 
     /**
-     * Called when createGame button is clicked
-     * @param event
+     * Called when enter is pressed in opponents pane
      */
     @FXML
-    public void createGame(MouseEvent event){
+    public void opponentsKeyPressed(){
+        opponentsChosen();
+    }
+
+    /**
+     * Called when enter is pressed in nickname pane
+     */
+    @FXML
+    public void nicknameKeyPressed(){
+        nicknameChosen();
+    }
+
+    /**
+     * Called when enter is pressed in lobby list pane
+     */
+    @FXML
+    public void lobbylistKeyPressed(){
+        lobbyListNext();
+    }
+
+    /**
+     * Called when createGame button is clicked
+     */
+    @FXML
+    public void createGame(){
         this.challenger = true;
         this.homePane.setVisible(false);
         this.nicknamePane.setVisible(true);
@@ -117,10 +140,9 @@ public class Home implements Initializable {
 
     /**
      * Called when joinGame button is clicked
-     * @param event
      */
     @FXML
-    public void joinGame(MouseEvent event){
+    public void joinGame(){
         this.availableLobbies.clear();
         this.availableLobbiesMaxPlayers.clear();
         this.lobbyList.getItems().clear();
@@ -171,10 +193,9 @@ public class Home implements Initializable {
 
     /**
      * Called when next button in the lobby list pane is clicked
-     * @param event
      */
     @FXML
-    public void lobbyListNext(MouseEvent event){
+    public void lobbyListNext(){
         if(availableLobbies.size() > 0) {
 
             int lobbyIndex = this.lobbyList.getSelectionModel().getSelectedIndex();
@@ -205,10 +226,9 @@ public class Home implements Initializable {
 
     /**
      * Called when next button in nickname pane is clicked
-     * @param event
      */
     @FXML
-    public void nicknameChosen(MouseEvent event){
+    public void nicknameChosen(){
         nickname = this.nicknameTextField.getText();
         if(!nickname.equals("")){
             this.nicknamePane.setVisible(false);
@@ -247,10 +267,9 @@ public class Home implements Initializable {
 
     /**
      * Called when next button in opponents number pane is clicked
-     * @param event
      */
     @FXML
-    public void opponentsChosen(MouseEvent event){
+    public void opponentsChosen(){
         int num = -1;
         try{
             num = Integer.parseInt(numPlayersTextField.getText());
