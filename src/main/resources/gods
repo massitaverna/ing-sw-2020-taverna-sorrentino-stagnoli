@@ -9,6 +9,6 @@
 {"name":"Prometheus","description":"Your Turn: If your Worker does not move up, it may build both before and after moving."}
 {"name":"Zeus","description":"Your Build: Your Worker may build a block under itself."}
 {"name":"Limus","description":"Opponent’s Turn: Opponent Workers cannot build on spaces neighboring your Workers, unless building a dome to create a Complete Tower."}
-{"name":"Triton","description":"Your Move: Each time your Worker moves into a perimeter space, it may immediately moveagain."}
+{"name":"Triton","description":"Your Move: Each time your Worker moves into a perimeter space, it may immediately move again."}
 {"name":"Hestia","description":"Your Build: Your Worker may build one additional time, but this cannot be on a perimeter space."}
 {"name":"Hera","description":"Opponent’s Turn: An opponent cannot win by moving into a perimeter space."}

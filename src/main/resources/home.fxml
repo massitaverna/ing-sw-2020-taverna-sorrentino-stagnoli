@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="mainPane" maxHeight="720.0" maxWidth="1280.0" minHeight="720.0" minWidth="1280.0" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gui.Home">
+<AnchorPane fx:id="mainPane" maxHeight="720.0" maxWidth="1280.0" minHeight="720.0" minWidth="1280.0" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gui.Home">
    <children>
       <ImageView pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <image>
@@ -38,7 +41,7 @@
             </ImageView>
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="numPlayersPane" prefHeight="720.0" prefWidth="1280.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane fx:id="numPlayersPane" onKeyPressed="#opponentsKeyPressed" prefHeight="720.0" prefWidth="1280.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <TextField fx:id="numPlayersTextField" alignment="CENTER" layoutX="325.0" layoutY="394.0" prefHeight="56.0" prefWidth="631.0" promptText="Insert number of opponents..." style="-fx-border-style: solid; -fx-border-width: 4px; -fx-border-color: rgb(26, 103, 159); -fx-background-color: #DDD;" styleClass="text_box" stylesheets="@style.css" AnchorPane.bottomAnchor="270.0" AnchorPane.leftAnchor="325.0" AnchorPane.rightAnchor="324.0" AnchorPane.topAnchor="394.0">
                <font>
@@ -65,7 +68,7 @@
             </Label>
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="nicknamePane" prefHeight="720.0" prefWidth="1280.0" visible="false">
+      <AnchorPane fx:id="nicknamePane" onKeyPressed="#nicknameKeyPressed" prefHeight="720.0" prefWidth="1280.0" visible="false">
          <children>
             <TextField fx:id="nicknameTextField" alignment="CENTER" layoutX="325.0" layoutY="394.0" prefHeight="56.0" prefWidth="631.0" promptText="Nickname..." style="-fx-border-style: solid; -fx-border-width: 4px; -fx-border-color: rgb(26, 103, 159); -fx-background-color: #DDD;" styleClass="text_box" stylesheets="@style.css">
                <font>
@@ -87,7 +90,7 @@
             </ImageView>
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="lobbyListPane" layoutY="14.0" prefHeight="720.0" prefWidth="1280.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane fx:id="lobbyListPane" layoutY="14.0" onKeyPressed="#lobbylistKeyPressed" prefHeight="720.0" prefWidth="1280.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <ListView fx:id="lobbyList" fixedCellSize="40.0" layoutX="416.0" layoutY="296.0" prefHeight="347.0" prefWidth="448.0" AnchorPane.bottomAnchor="77.0" AnchorPane.leftAnchor="416.0" AnchorPane.rightAnchor="416.0" AnchorPane.topAnchor="296.0" />
             <ImageView fx:id="lobbyListNext" layoutX="471.0" layoutY="650.0" onMouseClicked="#lobbyListNext">

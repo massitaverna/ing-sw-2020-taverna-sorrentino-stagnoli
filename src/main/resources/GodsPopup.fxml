@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="pane" prefHeight="855.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polimi.ingsw.gui.GodsPopup">
    <children>
@@ -36,7 +37,10 @@
                   </ImageView>
                   <CheckBox fx:id="hephaestusCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="243.0" prefWidth="130.0" text="Hephaestus   ">
                      <tooltip>
-                        <Tooltip text="Empty Tooltip" />
+                        <Tooltip consumeAutoHidingEvents="false" text="Your Build: Your Worker may build one additional block (not dome) on top of your first block." textOverrun="CLIP">
+                           <font>
+                              <Font size="16.0" />
+                           </font></Tooltip>
                      </tooltip>
                   </CheckBox>
                </children>
@@ -50,7 +54,10 @@
                   </ImageView>
                   <CheckBox fx:id="apolloCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="243.0" prefWidth="130.0" text="Apollo    ">
                      <tooltip>
-                        <Tooltip text="Empty Tooltip" />
+                        <Tooltip consumeAutoHidingEvents="false" text="Your Move: Your Worker may move into an opponent Worker’s space by forcing their Worker to the space yours just vacated." textOverrun="CLIP">
+                           <font>
+                              <Font size="16.0" />
+                           </font></Tooltip>
                      </tooltip>
                   </CheckBox>
                </children>
@@ -64,7 +71,10 @@
                   </ImageView>
                   <CheckBox fx:id="artemisCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="243.0" prefWidth="130.0" text="Artemis  ">
                      <tooltip>
-                        <Tooltip text="Empty Tooltip" />
+                        <Tooltip consumeAutoHidingEvents="false" text="Your Move: Your Worker may move one additional time, but not back to its initial space." textOverrun="CLIP">
+                           <font>
+                              <Font size="16.0" />
+                           </font></Tooltip>
                      </tooltip>
                   </CheckBox>
                </children>
@@ -78,7 +88,10 @@
                   </ImageView>
                   <CheckBox fx:id="demeterCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="243.0" prefWidth="130.0" text="Demeter   ">
                      <tooltip>
-                        <Tooltip text="Empty Tooltip" />
+                        <Tooltip consumeAutoHidingEvents="false" text="Your Build: Your Worker may build one additional time, but not on the same space." textOverrun="CLIP">
+                           <font>
+                              <Font size="16.0" />
+                           </font></Tooltip>
                      </tooltip>
                   </CheckBox>
                </children>
@@ -92,7 +105,10 @@
                   </ImageView>
                   <CheckBox fx:id="atlasCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="243.0" prefWidth="130.0" text="Atlas   ">
                      <tooltip>
-                        <Tooltip text="Empty Tooltip" />
+                        <Tooltip consumeAutoHidingEvents="false" text="Your Build: Your Worker may build a dome at any level." textOverrun="CLIP">
+                           <font>
+                              <Font size="16.0" />
+                           </font></Tooltip>
                      </tooltip>
                   </CheckBox>
                </children>
@@ -106,7 +122,10 @@
                   </ImageView>
                   <CheckBox fx:id="athenaCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="243.0" prefWidth="130.0" text="Athena   ">
                      <tooltip>
-                        <Tooltip text="Empty Tooltip" />
+                        <Tooltip consumeAutoHidingEvents="false" text="Opponent’s Turn: If one of your Workers moved up on your last turn, opponent Workers cannot move up this turn." textOverrun="CLIP">
+                           <font>
+                              <Font size="16.0" />
+                           </font></Tooltip>
                      </tooltip>
                   </CheckBox>
                </children>
@@ -120,7 +139,10 @@
                   </ImageView>
                   <CheckBox fx:id="minotaurCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="243.0" prefWidth="130.0" text="Minotaur   ">
                      <tooltip>
-                        <Tooltip text="Empty Tooltip" />
+                        <Tooltip consumeAutoHidingEvents="false" text="Your Move: Your Worker may move into an opponent Worker’s space, if their Worker can be forced one space straight backwards to an unoccupied space at any level." textOverrun="CLIP">
+                           <font>
+                              <Font size="16.0" />
+                           </font></Tooltip>
                      </tooltip>
                   </CheckBox>
                </children>
@@ -134,7 +156,10 @@
                   </ImageView>
                   <CheckBox fx:id="panCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="243.0" prefWidth="130.0" text="Pan      ">
                      <tooltip>
-                        <Tooltip text="Empty Tooltip" />
+                        <Tooltip consumeAutoHidingEvents="false" text="Win Condition: You also win if your Worker moves down two or more levels." textOverrun="CLIP">
+                           <font>
+                              <Font size="16.0" />
+                           </font></Tooltip>
                      </tooltip>
                   </CheckBox>
                </children>
@@ -148,7 +173,10 @@
                   </ImageView>
                   <CheckBox fx:id="prometheusCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="243.0" prefWidth="130.0" text="Prometheus   ">
                      <tooltip>
-                        <Tooltip text="Empty Tooltip" />
+                        <Tooltip consumeAutoHidingEvents="false" text="Your Turn: If your Worker does not move up, it may build both before and after moving." textOverrun="CLIP">
+                           <font>
+                              <Font size="16.0" />
+                           </font></Tooltip>
                      </tooltip>
                   </CheckBox>
                </children>
@@ -162,7 +190,10 @@
                   </ImageView>
                   <CheckBox fx:id="zeusCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="243.0" prefWidth="130.0" text="Zeus      ">
                      <tooltip>
-                        <Tooltip text="Empty Tooltip" />
+                        <Tooltip consumeAutoHidingEvents="false" text="Your Build: Your Worker may build a block under itself." textOverrun="CLIP">
+                           <font>
+                              <Font size="16.0" />
+                           </font></Tooltip>
                      </tooltip>
                   </CheckBox>
                </children>
@@ -176,7 +207,10 @@
                   </ImageView>
                   <CheckBox fx:id="tritonCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="243.0" prefWidth="130.0" text="Triton      ">
                      <tooltip>
-                        <Tooltip text="Empty Tooltip" />
+                        <Tooltip consumeAutoHidingEvents="false" text="Your Move: Each time your Worker moves into a perimeter space, it may immediately move again." textOverrun="CLIP">
+                           <font>
+                              <Font size="16.0" />
+                           </font></Tooltip>
                      </tooltip>
                   </CheckBox>
                </children>
@@ -190,7 +224,10 @@
                   </ImageView>
                   <CheckBox fx:id="limusCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="243.0" prefWidth="130.0" text="Limus      ">
                      <tooltip>
-                        <Tooltip text="Empty Tooltip" />
+                        <Tooltip consumeAutoHidingEvents="false" text="Opponent’s Turn: Opponent Workers cannot build on spaces neighboring your Workers, unless building a dome to create a Complete Tower." textOverrun="CLIP">
+                           <font>
+                              <Font size="16.0" />
+                           </font></Tooltip>
                      </tooltip>
                   </CheckBox>
                </children>
@@ -204,7 +241,10 @@
                   </ImageView>
                   <CheckBox fx:id="hestiaCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="243.0" prefWidth="130.0" text="Hestia       ">
                      <tooltip>
-                        <Tooltip text="Empty Tooltip" />
+                        <Tooltip consumeAutoHidingEvents="false" text="Your Build: Your Worker may build one additional time, but this cannot be on a perimeter space." textOverrun="CLIP">
+                           <font>
+                              <Font size="16.0" />
+                           </font></Tooltip>
                      </tooltip>
                   </CheckBox>
                </children>
@@ -218,7 +258,10 @@
                   </ImageView>
                   <CheckBox fx:id="heraCheck" alignment="BOTTOM_CENTER" layoutX="60.0" layoutY="32.0" mnemonicParsing="false" onMouseClicked="#checkBoxClicked" prefHeight="243.0" prefWidth="130.0" text="Hera      ">
                      <tooltip>
-                        <Tooltip text="Empty Tooltip" />
+                        <Tooltip consumeAutoHidingEvents="false" text="Opponent’s Turn: An opponent cannot win by moving into a perimeter space." textOverrun="CLIP">
+                           <font>
+                              <Font size="16.0" />
+                           </font></Tooltip>
                      </tooltip>
                   </CheckBox>
                </children>

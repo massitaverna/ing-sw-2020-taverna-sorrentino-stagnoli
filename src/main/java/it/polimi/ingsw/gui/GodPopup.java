@@ -1,5 +1,6 @@
 package it.polimi.ingsw.gui;
 
+import com.google.gson.Gson;
 import it.polimi.ingsw.model.God;
 import javafx.fxml.Initializable;
 import javafx.scene.control.RadioButton;
@@ -9,8 +10,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class GodPopup implements Initializable {
     public ToggleGroup group;
@@ -20,6 +24,7 @@ public class GodPopup implements Initializable {
 
     private List<ImageView> godsImages = new ArrayList<>();
     private List<RadioButton> buttons = new ArrayList<>();
+    private List<God> godsDescription = new ArrayList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -43,10 +48,27 @@ public class GodPopup implements Initializable {
      * @param availableGods The list of available gods
      */
     public void setGods(List<String> availableGods){
+        InputStream inputStream = this.getClass()
+                .getClassLoader().getResourceAsStream("gods");
+        if (inputStream != null) {
+            Scanner sc = new Scanner(inputStream);
+            Gson gson = new Gson();
+            while (sc.hasNext()) {
+                godsDescription.add(gson.fromJson(sc.nextLine(), God.class));
+            }
+            sc.close();
+            try {
+                inputStream.close();
+            }   catch (IOException ignored) { }
+        }
+
         for (int i = 0; i < availableGods.size(); i++){
             godsImages.get(i).setImage(new Image("GodCard/" + availableGods.get(i) + ".png"));
             godsImages.get(i).setVisible(true);
             buttons.get(i).setVisible(true);
+            String godName = availableGods.get(i);
+            God god = godsDescription.stream().filter(g -> g.getName().equals(godName)).collect(Collectors.toList()).get(0);
+            buttons.get(i).getTooltip().setText(god.getDescription());
             buttons.get(i).setText(availableGods.get(i));
         }
         radioGod1.setSelected(true);
