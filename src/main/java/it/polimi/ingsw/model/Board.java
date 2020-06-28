@@ -6,7 +6,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Board implements Cloneable, Serializable {
 
@@ -14,7 +13,7 @@ public class Board implements Cloneable, Serializable {
 
     public static final int BOARD_SIZE = 5;
     private Space[][] board;
-    private List<Worker> workers;
+    private final List<Worker> workers;
 
     public Board(){
         this.board = new Space[BOARD_SIZE][BOARD_SIZE];
@@ -27,7 +26,7 @@ public class Board implements Cloneable, Serializable {
     }
 
     /**
-     * Get the reference to the space in the given coordinates
+     * Get a copy of the space in the given coordinates
      * @param c the coordinates
      * @return
      * @throws InvalidCoordinatesException when invalid coordinates
@@ -67,7 +66,7 @@ public class Board implements Cloneable, Serializable {
             throw new WorkerNotFoundException("Worker not found: Invalid coordinates given.");
         }
 
-        for(Worker w: this.workers){
+        for(Worker w : this.workers){
             if(pos.equals(w.getPosition())) {
                 return w;
             }
@@ -85,11 +84,11 @@ public class Board implements Cloneable, Serializable {
    }
 
     /**
-     * Intializes the worker of the given player, in the given coordinates
-     * @param player the player
-     * @param coord the coordinates
-     * @throws IllegalArgumentException when invalid coordinates
-     * @throws IllegalStateException when the workers of the player are all already set
+     * Intializes a worker of the given player, in the given coordinates
+     * @param player the player whose worker is to be initialized
+     * @param coord the coordinates where the worker will be set
+     * @throws IllegalArgumentException when coordinates are invalid
+     * @throws IllegalStateException when all the workers of the player are already set
      */
     void initializeWorker(Player player, Coord coord) throws IllegalArgumentException, IllegalStateException {
 
@@ -114,42 +113,10 @@ public class Board implements Cloneable, Serializable {
     }
 
     /**
-     * Intializes the given worker, in the given coordinates
-     * @param worker the worker
-     * @param coord the coordinates
-     * @throws IllegalArgumentException when invalid coordinates
-     * @throws IllegalStateException when the worker is already set
-     */
-    void initializeWorker(Worker worker, Coord coord) throws IllegalArgumentException, IllegalStateException {
-
-        //Check worker belongs to the game
-        if(!this.workers.contains(worker)){
-            throw new IllegalArgumentException("The worker " + worker.toString() + " is not part of the game.");
-        }
-
-        //Check coordinates are valid
-        if (!Coord.validCoord(coord)) {
-            throw new IllegalArgumentException("Invalid Coordinates");
-        }
-
-        Space dest = board[coord.x][coord.y];
-        if (dest.isOccupied()) {
-            throw new IllegalStateException("Tried to initialize worker on an occupied space.");
-        }
-        if (worker.getPosition() != null) {
-            throw new IllegalStateException("Tried to initialize worker when he is already placed in board.");
-        }
-        worker.setPosition(coord);
-        dest.setOccupied();
-    }
-
-    //THIS METHOD IS USED ONLY FOR INITIALIZATION PHASE !!!!!!
-
-    /**
      * Get all the unoccupied spaces
-     * @return a list containing all the unoccupied spaces
+     * @return a list containing all the unoccupied coordinates
      */
-    public List<Coord> getUnoccupiedSpaces() {
+    public List<Coord> getUnoccupiedSpaces() { //Used only in initialization
 
         List<Coord> unoccupiedSpaces = new ArrayList<>();
 
@@ -165,17 +132,7 @@ public class Board implements Cloneable, Serializable {
     }
 
     /**
-     * Get all the spaces
-     * @return a list containing all the spaces
-     */
-    public List<Space> getAllSpaces() {
-        return getAllCoord().stream()
-                .map(this::getSpace)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Get all the possible coordinates for the board
+     * Get all the valid coordinates for the board
      * @return a list containing all the possible coordinates for the board
      */
     public List<Coord> getAllCoord() {
@@ -189,6 +146,7 @@ public class Board implements Cloneable, Serializable {
         return result;
     }
 
+    //Use this method when moving without a force (i.e. to an unoccupied space)
     void workerMove(Worker w, Coord newPos) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException {
         //Check newPos is valid
         if(!Coord.validCoord(newPos)){
@@ -200,7 +158,7 @@ public class Board implements Cloneable, Serializable {
             throw new IllegalWorkerActionException("The worker " + w.toString() + " is not part of the game.");
         }
 
-        if(w.getPosition() == null){
+        if(w.getPosition() == null) {
             throw new IllegalWorkerActionException("The worker is not initialized.");
         }
 
@@ -222,19 +180,13 @@ public class Board implements Cloneable, Serializable {
                 throw new SpaceFullException("Space is DOME.");
             }
         }
-        else{
+        else {
             throw new SpaceOccupiedException("Space occupied by another worker.");
         }
 
     }
 
-    void workerMove(Coord src, Coord dest) throws
-            IllegalWorkerActionException, SpaceOccupiedException, SpaceFullException {
-
-        Worker w = getWorkerByPosition(src);
-        workerMove(w, dest);
-    }
-
+    //Use this method when moving with a force (i.e. to an occupied space)
     void workerForceMove(Worker w, Coord newPos, Coord forcePos){
         if(!Coord.validCoord(newPos) || !Coord.validCoord(forcePos)){
             throw new InvalidCoordinatesException("Invalid coordinates.");
@@ -246,10 +198,16 @@ public class Board implements Cloneable, Serializable {
         }
 
         //check that in newPos there is a worker
-        Worker otherW = this.getWorkerByPosition(newPos);
+        Worker otherW;
+        try {
+            otherW = this.getWorkerByPosition(newPos);
+        }
+        catch (WorkerNotFoundException e) {
+            throw new IllegalWorkerActionException(e.getMessage());
+        }
 
         //check worker w is initialized
-        if(w.getPosition() == null){
+        if(w.getPosition() == null) {
             throw new IllegalWorkerActionException("The worker is not initialized.");
         }
 
@@ -289,140 +247,6 @@ public class Board implements Cloneable, Serializable {
         this.board[buildPos.x][buildPos.y].setLevel(level);
     }
 
-    void workerBuild(Worker w, Coord buildPos) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException {
-        /*//Check that worker w is near newPos
-        if(!(w.getPosition().isNear(buildPos))){
-            throw new IllegalWorkerActionException("Cannot build here from that position");
-        }*/
-
-        if(!Coord.validCoord(buildPos)){
-            throw new InvalidCoordinatesException("Invalid coordinates.");
-        }
-
-        //Check that worker w in is the list of workers
-        if(!this.workers.contains(w)){
-            throw new IllegalWorkerActionException("The worker " + w.toString() + " is not part of the game.");
-        }
-
-        //check worker w is initialized
-        if(w.getPosition() == null){
-            throw new IllegalWorkerActionException("The worker is not initialized.");
-        }
-
-        //if not space occupied
-        if(!this.board[buildPos.x][buildPos.y].isOccupied()) {
-            //if not space full
-            if (!(this.board[buildPos.x][buildPos.y].isDome())) {
-                this.board[buildPos.x][buildPos.y].levelUp();
-            }
-            else{
-                throw new SpaceFullException("Space is DOME.");
-            }
-        }
-        else{
-            throw new SpaceOccupiedException("Space occupied by another worker.");
-        }
-    }
-
-    /**
-     * Get all the movable spaces around a given coordinate
-     * @param c the coordinate
-     * @param maxDiff the max difference in height between the center space and the around one.
-     * @return a list containing all the coordinates of movable spaces around a given coordinate
-     * @throws InvalidCoordinatesException
-     */
-    public List<Coord> getMovableSpacesAround(Coord c, int maxDiff) throws InvalidCoordinatesException{
-
-        //Check coordinates c are valid
-        if(!Coord.validCoord(c)){
-            throw new InvalidCoordinatesException("Invalid coordinates.");
-        }
-
-        List<Coord> result = new ArrayList<>();
-        for (int i = -1; i < 1; i++) {
-            for (int j = -1; j < 1; j++) {
-                if (i == 0 && j == 0)
-                    continue;
-
-                //if(space not occupied/dome && Rules.CheckSomething) ??
-                if (Coord.validCoord(new Coord(c.x + i, c.y + j))) {
-                    if (!this.board[c.x + i][c.y + j].isOccupied() &&
-                            !this.board[c.x + i][c.y + j].isDome() &&
-                            (this.board[c.x + i][c.y + j].getHeight().ordinal() - this.board[c.x][c.y].getHeight().ordinal()
-                                    <= maxDiff
-                            )
-                    ) {
-                        /*result.put(new Coord(c.x + i, c.y + j), this.board[c.x + i][c.y + j]);*/
-                        result.add(new Coord(c.x + i, c.y + j));
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Get all the buildable spaces around a given coordinate
-     * @param c the coordinate
-     * @return a list containing all the coordinates of buildable spaces around a given coordinate
-     * @throws InvalidCoordinatesException
-     */
-    public List<Coord> getBuildableSpacesAround(Coord c) throws InvalidCoordinatesException{
-
-        //Check coordinates c are valid
-        if(!Coord.validCoord(c)){
-            throw new InvalidCoordinatesException("Invalid coordinates.");
-        }
-
-        List<Coord> result = new ArrayList<>();
-        for (int i = -1; i < 1; i++) {
-            for (int j = -1; j < 1; j++) {
-                if (i==0 && j==0)
-                    continue;
-
-                //if(space not occupied/dome && Rules.CheckSomething) ??
-                if(Coord.validCoord(new Coord(c.x + i, c.y + j))) {
-                    if (!this.board[c.x + i][c.y + j].isOccupied() &&
-                            !this.board[c.x + i][c.y + j].isDome()) {
-
-                        result.add(new Coord(c.x + i, c.y + j));
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Get all the spaces around a given coordinate
-     * @param c the coordinate
-     * @return a list containing all the coordinates of spaces around a given coordinate
-     * @throws InvalidCoordinatesException
-     */
-    public List<Coord> getSpacesAround(Coord c) throws InvalidCoordinatesException{
-        //Check coordinates c are valid
-        if(!Coord.validCoord(c)){
-            throw new InvalidCoordinatesException("Invalid coordinates.");
-        }
-
-        List<Coord> result = new ArrayList<>();
-        for (int i = -1; i < 1; i++) {
-            for (int j = -1; j < 1; j++) {
-                if (i==0 && j==0)
-                    continue;
-
-                Coord nextCoord = new Coord(c.x + i, c.y + j);
-                if(Coord.validCoord(nextCoord)){
-                    result.add(nextCoord);
-                }
-            }
-        }
-
-        return result;
-    }
-
     void remove (Player player) {
         List<Worker> workersToBeRemoved = workers.stream()
                 .filter(w -> w.getPlayerNickname().equals(player.getNickname()))
@@ -437,10 +261,10 @@ public class Board implements Cloneable, Serializable {
     }
 
     /**
-     *Get all the workers on the board
+     *Get a copy of all the workers on the board
      * @return
      */
-    public List<Worker> getWorkers(){
+    public List<Worker> getAllWorkersCopy(){
         List<Worker> res = new ArrayList<>();
         for(Worker w : this.workers){
             res.add(w.clone());

@@ -356,9 +356,9 @@ public class LambdaParserTest {
 
         s = "samePlayer(oldBefore, after)";
         condition = LambdaParser.extractPredicate(s);
-        String randomNickname = board.getWorkers().get(r.nextInt(board.getWorkers().size()))
+        String randomNickname = board.getAllWorkersCopy().get(r.nextInt(board.getAllWorkersCopy().size()))
                 .getPlayerNickname();
-        coordList = board.getWorkers().stream()
+        coordList = board.getAllWorkersCopy().stream()
                 .filter(w -> w.getPlayerNickname().equals(randomNickname))
                 .map(Worker::getPosition)
                 .collect(Collectors.toList());

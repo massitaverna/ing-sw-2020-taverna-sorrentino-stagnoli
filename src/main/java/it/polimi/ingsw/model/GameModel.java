@@ -232,6 +232,7 @@ public class GameModel implements EventSource {
         }
     }
 
+    /*
     public void initializeWorker(Worker w, Coord c) {
         if (!currentPlayer.getWorkersList().contains(w)) {
             throw new IllegalStateException("Tried to initialize a worker not " +
@@ -246,6 +247,7 @@ public class GameModel implements EventSource {
             nextPlayer();
         }
     }
+     */
 
     //GAME FUNCTIONS//
     void initRequestHandlers() {
@@ -523,6 +525,7 @@ public class GameModel implements EventSource {
     }
 
 
+    /*
     List<Coord> old_getSelectableWorkers() {
         // Assumptions: a player cannot destroy before moving
         // Under this assumption,
@@ -543,7 +546,7 @@ public class GameModel implements EventSource {
                     turn.getMovableSpacesReference(), turn.getBuildableSpacesReference(),
                     turn.getForcesReference());
 
-            /*START: New handler test*/
+            START: New handler test
             if (!(currentPlayer.getGod().getName().equals("Hera") ||
                     currentPlayer.getGod().getName().equals("Hestia") ||
                     currentPlayer.getGod().getName().equals("Limus") ||
@@ -568,7 +571,7 @@ public class GameModel implements EventSource {
                     assert turn.getForcesReference().get(coord).equals(forces.get(coord));
                 }
             }
-            /*END: New handler test*/
+            END: New handler test
 
             if (!turn.getMovableSpacesCopy().isEmpty()) {
                 if (currentPlayer.getGod().getName().equals("Apollo")) {
@@ -596,6 +599,7 @@ public class GameModel implements EventSource {
         turn.setSelectableWorkers(selectableWorkers);
         return selectableWorkers;
     }
+     */
 
     List<Coord> getSelectableWorkers() {
 

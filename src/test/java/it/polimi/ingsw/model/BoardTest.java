@@ -7,11 +7,33 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Random;
 
-//TODO: test di Board.equals(): se cambio qualcosina restituisce false?
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
 public class BoardTest {
 
-    //Test getWorkerByPosition() returns the correct positions of the workers
-    @Test ( expected = WorkerNotFoundException.class )
+
+    @Test
+    public void getAllCoordTest() {
+        List<Coord> coords = new Board().getAllCoord();
+        assertEquals(Board.BOARD_SIZE*Board.BOARD_SIZE, coords.size());
+        for (int i = 0; i < Board.BOARD_SIZE; i++) {
+            for (int j = 0; j < Board.BOARD_SIZE; j++) {
+                assertTrue(coords.contains(new Coord(i,j)));
+            }
+        }
+
+    }
+    @Test ( expected = InvalidCoordinatesException.class )
+    public void getNonExistingSpace() {
+        Coord c = new Coord(0,8);
+        Board b = new Board();
+        b.getSpace(c);
+    }
+
+
+    //Test getWorkerByPosition() returns the correct workers for each position
+    @Test
     public void getWorkerByPositionTest() throws WorkerNotFoundException {
         Board b = new Board();
         Player p1 = new Player("Lucio");
@@ -25,26 +47,36 @@ public class BoardTest {
         b.addWorker(p3.getWorker(1));
 
         b.initializeWorker(p1, new Coord(0, 0));
-        b.initializeWorker(p1.getWorker(1), new Coord(1, 0));
-        b.initializeWorker(p2.getWorker(0), new Coord(0, 1));
-        b.initializeWorker(p2.getWorker(1), new Coord(1, 1));
-        b.initializeWorker(p3.getWorker(0), new Coord(2, 0));
-        b.initializeWorker(p3.getWorker(1), new Coord(2, 1));
+        b.initializeWorker(p1, new Coord(1, 0));
+        b.initializeWorker(p2, new Coord(0, 1));
+        b.initializeWorker(p2, new Coord(1, 1));
+        b.initializeWorker(p3, new Coord(2, 0));
+        b.initializeWorker(p3, new Coord(2, 1));
 
         //check the returned worker is the same worker on that position
-        assert(b.getWorkerByPosition(new Coord(0, 0)) == p1.getWorker(0));
-        assert(b.getWorkerByPosition(new Coord(1, 0)) == p1.getWorker(1));
-        assert(b.getWorkerByPosition(new Coord(0, 1)) == p2.getWorker(0));
-        assert(b.getWorkerByPosition(new Coord(1, 1)) == p2.getWorker(1));
-        assert(b.getWorkerByPosition(new Coord(2, 0)) == p3.getWorker(0));
-        assert(b.getWorkerByPosition(new Coord(2, 1)) == p3.getWorker(1));
-
-        //this should throw the worker not found exception
-        b.getWorkerByPosition(new Coord(5, 5));
+        assertSame(b.getWorkerByPosition(new Coord(0, 0)), p1.getWorker(0));
+        assertSame(b.getWorkerByPosition(new Coord(1, 0)), p1.getWorker(1));
+        assertSame(b.getWorkerByPosition(new Coord(0, 1)), p2.getWorker(0));
+        assertSame(b.getWorkerByPosition(new Coord(1, 1)), p2.getWorker(1));
+        assertSame(b.getWorkerByPosition(new Coord(2, 0)), p3.getWorker(0));
+        assertSame(b.getWorkerByPosition(new Coord(2, 1)), p3.getWorker(1));
 
     }
 
-    //Test getUnoccupiedSpaces works correctly
+    @Test ( expected = WorkerNotFoundException.class )
+    public void getWorkerByInvalidPosition() {
+        Coord c = new Coord(6,2);
+        Board b = new Board();
+        b.getWorkerByPosition(c);
+    }
+
+    @Test ( expected = WorkerNotFoundException.class )
+    public void getWorkerByFreePosition() {
+        Coord c = new Coord(3,3);
+        Board b = new Board();
+        b.getWorkerByPosition(c);
+    }
+
     @Test
     public void getUnoccupiedSpacesTest() {
         Board b = new Board();
@@ -59,20 +91,20 @@ public class BoardTest {
         b.addWorker(p3.getWorker(1));
 
         //when board is created, it is empty and the count of unoccupied spaces should be 25
-        assert(b.getUnoccupiedSpaces().size() == 25);
+        assertEquals(b.getUnoccupiedSpaces().size(), 25);
 
-        b.initializeWorker(p1.getWorker(0), new Coord(0, 0));
-        assert(b.getUnoccupiedSpaces().size() == 24);
-        b.initializeWorker(p1.getWorker(1), new Coord(1, 0));
-        assert(b.getUnoccupiedSpaces().size() == 23);
-        b.initializeWorker(p2.getWorker(0), new Coord(0, 1));
-        assert(b.getUnoccupiedSpaces().size() == 22);
-        b.initializeWorker(p2.getWorker(1), new Coord(1, 1));
-        assert(b.getUnoccupiedSpaces().size() == 21);
-        b.initializeWorker(p3.getWorker(0), new Coord(2, 0));
-        assert(b.getUnoccupiedSpaces().size() == 20);
-        b.initializeWorker(p3.getWorker(1), new Coord(2, 1));
-        assert(b.getUnoccupiedSpaces().size() == 19);
+        b.initializeWorker(p1, new Coord(0, 0));
+        assertEquals(b.getUnoccupiedSpaces().size(), 24);
+        b.initializeWorker(p1, new Coord(1, 0));
+        assertEquals(b.getUnoccupiedSpaces().size(), 23);
+        b.initializeWorker(p2, new Coord(0, 1));
+        assertEquals(b.getUnoccupiedSpaces().size(), 22);
+        b.initializeWorker(p2, new Coord(1, 1));
+        assertEquals(b.getUnoccupiedSpaces().size(), 21);
+        b.initializeWorker(p3, new Coord(2, 0));
+        assertEquals(b.getUnoccupiedSpaces().size(), 20);
+        b.initializeWorker(p3, new Coord(2, 1));
+        assertEquals(b.getUnoccupiedSpaces().size(), 19);
     }
 
     //Test adding an already added worker throws an exception
@@ -87,41 +119,22 @@ public class BoardTest {
         b.addWorker(p2.getWorker(0));
         b.addWorker(p2.getWorker(1));
 
-        //this should throw the exception
+        //Here the exception is thrown:
         b.addWorker(p1.getWorker(0));
     }
 
-    //test exception is thrown when initializing an already placed worker
-    @Test ( expected = IllegalStateException.class )
-    public void initializeAlreadyPlacedWorker() throws IllegalArgumentException, IllegalStateException {
+    @Test
+    public void playerInitializesTooManyTimes() {
         Board b = new Board();
-        Player p1 = new Player("Lucio");
-        Player p2 = new Player("Asdrogonio");
-        b.addWorker(p1.getWorker(0));
-        b.addWorker(p1.getWorker(1));
-        b.addWorker(p2.getWorker(0));
-        b.addWorker(p2.getWorker(1));
+        Player p = new Player("Lucio");
+        b.addWorker(p.getWorker(0));
+        b.addWorker(p.getWorker(1));
+        b.initializeWorker(p, new Coord(0, 0));
+        b.initializeWorker(p, new Coord(0, 1));
 
-        b.initializeWorker(p1.getWorker(0), new Coord(0, 0));
-
-        //this should throw the exception
-        b.initializeWorker(p1.getWorker(0), new Coord(0, 1));
-    }
-
-    //test exception is thrown when initializing a worker that is not part of the game (not added to the board)
-    @Test ( expected = IllegalArgumentException.class )
-    public void initializeWorkerNotPartOfTheGame() throws IllegalArgumentException, IllegalStateException {
-        Board b = new Board();
-        Player p1 = new Player("Lucio");
-        Player p2 = new Player("Asdrogonio");
-        Player p3 = new Player("DSSDSD");
-        b.addWorker(p1.getWorker(0));
-        b.addWorker(p1.getWorker(1));
-        b.addWorker(p2.getWorker(0));
-        b.addWorker(p2.getWorker(1));
-
-        Worker invalidWorker = new Worker(p3);
-        b.initializeWorker(invalidWorker, new Coord(0, 0));
+        try {
+            b.initializeWorker(p, new Coord(0, 2));
+        } catch (IllegalStateException ignored) {}
     }
 
     //test that after initialization all workers previously added to the board have valid coordinates
@@ -138,15 +151,16 @@ public class BoardTest {
         b.addWorker(p3.getWorker(0));
         b.addWorker(p3.getWorker(1));
 
-        b.initializeWorker(p1.getWorker(0), new Coord(0, 0));
-        b.initializeWorker(p1.getWorker(1), new Coord(1, 0));
-        b.initializeWorker(p2.getWorker(0), new Coord(1, 1));
-        b.initializeWorker(p2.getWorker(1), new Coord(2, 0));
-        b.initializeWorker(p3.getWorker(0), new Coord(3, 0));
-        b.initializeWorker(p3.getWorker(1), new Coord(3, 4));
+        b.initializeWorker(p1, new Coord(0, 0));
+        b.initializeWorker(p1, new Coord(1, 0));
+        b.initializeWorker(p2, new Coord(1, 1));
+        b.initializeWorker(p2, new Coord(2, 0));
+        b.initializeWorker(p3, new Coord(3, 0));
+        b.initializeWorker(p3, new Coord(3, 4));
 
-        for(Worker w: b.getAllWorkers()){
-            assert( !(w.getPosition()==null) && Coord.validCoord(w.getPosition()));
+        for(Worker w : b.getAllWorkers()){
+            assertNotNull(w.getPosition());
+            assertTrue(Coord.validCoord(w.getPosition()));
         }
     }
 
@@ -154,18 +168,12 @@ public class BoardTest {
     @Test ( expected = IllegalStateException.class )
     public void forceInitializationOnOccupiedSpace() throws IllegalArgumentException, IllegalStateException {
         Board b = new Board();
-        Player p1 = new Player("Lucio");
-        Player p2 = new Player("Asdrogonio");
-        Player p3 = new Player("DSSDSD");
-        b.addWorker(p1.getWorker(0));
-        b.addWorker(p1.getWorker(1));
-        b.addWorker(p2.getWorker(0));
-        b.addWorker(p2.getWorker(1));
-        b.addWorker(p3.getWorker(0));
-        b.addWorker(p3.getWorker(1));
+        Player p = new Player("Lucio");
+        b.addWorker(p.getWorker(0));
+        b.addWorker(p.getWorker(1));
 
-        b.initializeWorker(p1.getWorker(0), new Coord(0, 0));
-        b.initializeWorker(p1.getWorker(1), new Coord(0, 0));
+        b.initializeWorker(p, new Coord(0, 0));
+        b.initializeWorker(p, new Coord(0, 0));
     }
 
     //test exception is thrown when trying to move a worker that has not been initialized
@@ -179,46 +187,14 @@ public class BoardTest {
 
 
         //initialize workers
-        b.initializeWorker(p1.getWorker(0), new Coord(0, 0));
+        b.initializeWorker(p1, new Coord(0, 0));
 
         b.workerMove(p1.getWorker(1), new Coord(2, 0));
     }
 
-    //Test exception is thrown when moving a worker to an occupied space
-    @Test ( expected = SpaceOccupiedException.class )
-    public void notTwoWorkersOnSameSpace() throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException {
-
-        Random rand = new Random();
-        Board b = new Board();
-        Player p1 = new Player("Lucio");
-        Player p2 = new Player("Asdrogonio");
-        Player p3 = new Player("Timburlaldo");
-        b.addWorker(p1.getWorker(0));
-        b.addWorker(p1.getWorker(1));
-        b.addWorker(p2.getWorker(0));
-        b.addWorker(p2.getWorker(1));
-        b.addWorker(p3.getWorker(0));
-        b.addWorker(p3.getWorker(1));
-
-        //initialize workers
-        b.initializeWorker(p1.getWorker(0), new Coord(0, 0));
-        b.initializeWorker(p1.getWorker(1), new Coord(1, 0));
-        b.initializeWorker(p2.getWorker(0), new Coord(0, 1));
-        b.initializeWorker(p2.getWorker(1), new Coord(1, 1));
-        b.initializeWorker(p3.getWorker(0), new Coord(2, 0));
-        b.initializeWorker(p3.getWorker(1), new Coord(2, 1));
-
-        //, forza il movimento di un worker dove si trova un altro worker.
-        int randomWorkerIndex = rand.nextInt(b.getAllWorkers().length);
-        Worker randomWorker = b.getAllWorkers()[randomWorkerIndex];
-        Coord otherWorkerPosition = b.getAllWorkers()[(randomWorkerIndex==0?randomWorkerIndex+1:(randomWorkerIndex==5?randomWorkerIndex-1:randomWorkerIndex+1))].getPosition();
-        b.workerMove(randomWorker, otherWorkerPosition);
-    }
-
-    //Test Board.getMovableSpaceAround method does not give occupied (there is a worker) or full (there is a Dome) space coordinates
-    //No exceptions expected from this test
     @Test
-    public void notMoveOnOccupiedOrFullSpace() throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException {
+    public void workerMoveTest() throws InvalidCoordinatesException, SpaceFullException,
+            SpaceOccupiedException, IllegalWorkerActionException {
 
         Random rand = new Random();
         Board b = new Board();
@@ -233,40 +209,89 @@ public class BoardTest {
         b.addWorker(p3.getWorker(1));
 
         //initialize workers
-        b.initializeWorker(p1.getWorker(0), new Coord(0, 0));
-        b.initializeWorker(p1.getWorker(1), new Coord(1, 0));
-        b.initializeWorker(p2.getWorker(0), new Coord(0, 1));
-        b.initializeWorker(p2.getWorker(1), new Coord(1, 1));
-        b.initializeWorker(p3.getWorker(0), new Coord(2, 0));
-        b.initializeWorker(p3.getWorker(1), new Coord(2, 1));
+        b.initializeWorker(p1, new Coord(0, 0));
+        b.initializeWorker(p1, new Coord(1, 0));
+        b.initializeWorker(p2, new Coord(0, 1));
+        b.initializeWorker(p2, new Coord(1, 1));
+        b.initializeWorker(p3, new Coord(2, 0));
+        b.initializeWorker(p3, new Coord(2, 1));
 
         for (int j = 0; j < 10000; j++) {
             //pick a random worker
             int i = rand.nextInt(6);
             Worker randomWorker = b.getAllWorkers()[i];
-            List<Coord> moves = b.getMovableSpacesAround(randomWorker.getPosition(), 1);
 
-            //if worker cannot move, skip to another worker
-            if(moves.size() == 0){
+            Coord randomMove = new Coord(rand.nextInt(5), rand.nextInt(5));
+            if (b.getSpace(randomMove).isOccupied() || b.getSpace(randomMove).isDome()) {
                 continue;
             }
-
-            Coord move = moves.get(rand.nextInt(moves.size()));
-            b.workerMove(randomWorker, move);
+            b.workerMove(randomWorker, randomMove); //This doesn't throw an exception because the
+                                                    //destination space is free and not dome
         }
-
-        //no exceptions expected in this test
-        Assert.assertTrue(true);
     }
 
-    //Test exception is thrown when building on an occupied space
-    @Test (expected = SpaceOccupiedException.class )
-    public void notBuildOnOccupiedSpace() throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException {
+    @Test (expected = SpaceOccupiedException.class)
+    public void workerMoveOnOccupiedSpace() {
+        Board b = new Board();
+        Player p = new Player("Lucio");
+        b.addWorker(p.getWorker(0));
+        b.addWorker(p.getWorker(1));
+        b.initializeWorker(p, new Coord(0, 0));
+        b.initializeWorker(p, new Coord(1, 0));
 
+        //Here the exception is thrown:
+        b.workerMove(p.getWorker(1), new Coord(0,0));
+    }
+
+    @Test (expected = SpaceFullException.class)
+    public void workerMoveOnSpaceWithDome() {
+        Board b = new Board();
+        Player p = new Player("Lucio");
+        b.addWorker(p.getWorker(0));
+        b.addWorker(p.getWorker(1));
+        b.initializeWorker(p, new Coord(0, 0));
+        b.initializeWorker(p, new Coord(1, 0));
+        b.workerBuild(p.getWorker(1), new Coord(2,0), Level.DOME);
+        /* First row:
+        | W | W | ^ |   |   |
+         */
+
+        //Here the exception is thrown:
+        b.workerMove(p.getWorker(1), new Coord(2,0));
+    }
+
+    @Test (expected = InvalidCoordinatesException.class)
+    public void workerMoveOnInvalidSpace() {
+        Board b = new Board();
+        Player p = new Player("Lucio");
+        b.addWorker(p.getWorker(0));
+        b.addWorker(p.getWorker(1));
+        b.initializeWorker(p, new Coord(0, 0));
+        b.initializeWorker(p, new Coord(1, 0));
+
+        //Here the exception is thrown:
+        b.workerMove(p.getWorker(0), new Coord(7,4));
+    }
+
+    @Test (expected = IllegalWorkerActionException.class)
+    public void workerMove_WorkerNotAdded() {
+        Board b = new Board();
+        Player p = new Player("Lucio");
+        b.addWorker(p.getWorker(0));
+
+        //Here the exception is thrown:
+        b.workerMove(p.getWorker(1), new Coord(2,2));
+    }
+
+    @Test
+    public void workerForceMoveTest() throws InvalidCoordinatesException, SpaceFullException,
+            SpaceOccupiedException, IllegalWorkerActionException {
+
+        Random rand = new Random();
         Board b = new Board();
         Player p1 = new Player("Lucio");
         Player p2 = new Player("Asdrogonio");
-        Player p3 = new Player("MamboLosco");
+        Player p3 = new Player("Timburlaldo");
         b.addWorker(p1.getWorker(0));
         b.addWorker(p1.getWorker(1));
         b.addWorker(p2.getWorker(0));
@@ -275,22 +300,103 @@ public class BoardTest {
         b.addWorker(p3.getWorker(1));
 
         //initialize workers
-        b.initializeWorker(p1.getWorker(0), new Coord(0, 0));
-        b.initializeWorker(p1.getWorker(1), new Coord(1, 0));
-        b.initializeWorker(p2.getWorker(0), new Coord(0, 1));
-        b.initializeWorker(p2.getWorker(1), new Coord(1, 1));
-        b.initializeWorker(p3.getWorker(0), new Coord(2, 0));
-        b.initializeWorker(p3.getWorker(1), new Coord(2, 1));
+        b.initializeWorker(p1, new Coord(0, 0));
+        b.initializeWorker(p1, new Coord(1, 0));
+        b.initializeWorker(p2, new Coord(0, 1));
+        b.initializeWorker(p2, new Coord(1, 1));
+        b.initializeWorker(p3, new Coord(2, 0));
+        b.initializeWorker(p3, new Coord(2, 1));
 
-        //forza costruzione di un worker dove si trova un altro worker
-        Worker worker1 = p1.getWorker(0);
-        Coord otherWorkerPosition = p2.getWorker(0).getPosition();
-       // b.workerBuild(worker1, otherWorkerPosition, b.getSpace(otherWorkerPosition).getHeight());
-        b.workerBuild(worker1, otherWorkerPosition);
+        for (int j = 0; j < 10; j++) {
+            //pick a random worker
+            int i = rand.nextInt(6);
+            Worker randomWorker = b.getAllWorkers()[i];
+
+            Coord randomMove = new Coord(rand.nextInt(5), rand.nextInt(5));
+            while (!b.getSpace(randomMove).isOccupied() ||
+                    randomMove.equals(randomWorker.getPosition())) {
+                randomMove = new Coord(rand.nextInt(5), rand.nextInt(5));
+            }
+            Coord randomForceDest = new Coord(rand.nextInt(5), rand.nextInt(5));
+            while (b.getSpace(randomForceDest).isOccupied() ||
+                    b.getSpace(randomForceDest).isDome() ||
+                    randomForceDest.equals(randomMove)) {
+                randomForceDest = new Coord(rand.nextInt(5), rand.nextInt(5));
+            }
+            b.workerForceMove(randomWorker, randomMove, randomForceDest);
+        }
     }
 
+    @Test (expected = InvalidCoordinatesException.class)
+    public void workerForceMoveOnInvalidSpace() {
+        Board b = new Board();
+        Player p = new Player("Lucio");
+        b.addWorker(p.getWorker(0));
+        b.addWorker(p.getWorker(1));
+        b.initializeWorker(p, new Coord(0, 0));
+        b.initializeWorker(p, new Coord(1, 0));
+
+        //Here the exception is thrown:
+        b.workerForceMove(p.getWorker(0), new Coord(7,4), new Coord(1,1));
+    }
+
+    @Test (expected = IllegalWorkerActionException.class)
+    public void workerForceMove_WorkerNotAdded() {
+        Board b = new Board();
+        Player p = new Player("Lucio");
+        b.addWorker(p.getWorker(0));
+
+        //Here the exception is thrown:
+        b.workerForceMove(p.getWorker(1), new Coord(2,2), new Coord(1,1));
+    }
+
+    @Test (expected = IllegalWorkerActionException.class)
+    public void workerForceMove_WorkerNotInitialized() {
+        Board b = new Board();
+        Player p = new Player("Lucio");
+        b.addWorker(p.getWorker(0));
+
+        //Here the exception is thrown:
+        b.workerForceMove(p.getWorker(0), new Coord(2,2), new Coord(1,1));
+    }
+
+    @Test (expected = InvalidCoordinatesException.class)
+    public void workerBuildOnInvalidSpace() {
+        Board b = new Board();
+        Player p = new Player("Lucio");
+        b.addWorker(p.getWorker(0));
+        b.addWorker(p.getWorker(1));
+        b.initializeWorker(p, new Coord(0, 0));
+        b.initializeWorker(p, new Coord(1, 0));
+
+        //Here the exception is thrown:
+        b.workerBuild(p.getWorker(0), new Coord(7,4), Level.LVL3);
+    }
+
+    @Test (expected = IllegalWorkerActionException.class)
+    public void workerBuild_WorkerNotAdded() {
+        Board b = new Board();
+        Player p = new Player("Lucio");
+        b.addWorker(p.getWorker(0));
+
+        //Here the exception is thrown:
+        b.workerBuild(p.getWorker(1), new Coord(1,1), Level.LVL3);
+    }
+
+    @Test (expected = IllegalWorkerActionException.class)
+    public void workerBuild_WorkerNotInitialized() {
+        Board b = new Board();
+        Player p = new Player("Lucio");
+        b.addWorker(p.getWorker(0));
+
+        //Here the exception is thrown:
+        b.workerBuild(p.getWorker(0), new Coord(1,1), Level.LVL3);
+    }
+
+
+
     //Test Board.getBuildableSpaceAround method does not give occupied (there is a worker) or full (there is a Dome) space coordinates
-    //No exceptions expected from this test
+    /*
     @Test
     public void notBuildOnOccupiedOrFullSpace() throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException{
 
@@ -328,19 +434,24 @@ public class BoardTest {
             Coord build = builds.get(rand.nextInt(builds.size()));
             b.workerBuild(randomWorker, build, Level.values()[b.getSpace(build).getHeight().ordinal() + 1]);
         }
-
-        //no exceptions expected in this test
-        Assert.assertTrue(true);
     }
+     */
 
-    //Test exception is thrown when moving a worker on a space with Dome
-    @Test (expected = SpaceFullException.class )
-    public void notWorkerOnDome() throws InvalidCoordinatesException, SpaceOccupiedException, SpaceFullException, IllegalWorkerActionException {
-        Random rand = new Random();
+    @Test
+    public void nonEmptyRepresentation() {
         Board b = new Board();
         Player p1 = new Player("Lucio");
         Player p2 = new Player("Asdrogonio");
-        Player p3 = new Player("Timburlaldo");
+        Player p3 = new Player("MamboLosco");
+        p1.setWorkerColor(Color.BLUE);
+        p2.setWorkerColor(Color.RED);
+        p3.setWorkerColor(Color.YELLOW);
+        p1.getWorker(0).setColor(Color.BLUE);
+        p1.getWorker(1).setColor(Color.BLUE);
+        p2.getWorker(0).setColor(Color.RED);
+        p2.getWorker(1).setColor(Color.RED);
+        p3.getWorker(0).setColor(Color.YELLOW);
+        p3.getWorker(1).setColor(Color.YELLOW);
         b.addWorker(p1.getWorker(0));
         b.addWorker(p1.getWorker(1));
         b.addWorker(p2.getWorker(0));
@@ -349,105 +460,19 @@ public class BoardTest {
         b.addWorker(p3.getWorker(1));
 
         //initialize workers
-        b.initializeWorker(p1.getWorker(0), new Coord(0, 0));
-        b.initializeWorker(p1.getWorker(1), new Coord(1, 0));
-        b.initializeWorker(p2.getWorker(0), new Coord(4, 4));
-        b.initializeWorker(p2.getWorker(1), new Coord(1, 1));
-        b.initializeWorker(p3.getWorker(0), new Coord(2, 0));
-        b.initializeWorker(p3.getWorker(1), new Coord(2, 1));
+        b.initializeWorker(p1, new Coord(0, 0));
+        b.initializeWorker(p1, new Coord(1, 0));
+        b.initializeWorker(p2, new Coord(0, 1));
+        b.initializeWorker(p2, new Coord(1, 1));
+        b.initializeWorker(p3, new Coord(2, 0));
+        b.initializeWorker(p3, new Coord(2, 1));
 
-        Coord dome = new Coord(0, 1);
-        b.workerBuild(p1.getWorker(0), dome, Level.LVL1); //L1
-        b.workerBuild(p1.getWorker(0), dome, Level.LVL2); //L2
-        b.workerBuild(p1.getWorker(0), dome, Level.LVL3); //L3
-        b.workerBuild(p1.getWorker(0), dome, Level.DOME); //DOME
+        //Populating the board
+        b.workerBuild(p1.getWorker(0), new Coord(3,3), Level.LVL1);
+        b.workerBuild(p1.getWorker(0), new Coord(3,4), Level.LVL2);
+        b.workerBuild(p1.getWorker(0), new Coord(4,4), Level.LVL3);
+        b.workerBuild(p1.getWorker(0), new Coord(4,2), Level.DOME);
 
-        //dovrebbe lanciare eccezione
-        b.workerMove(p1.getWorker(0), dome);
+        assertNotEquals("", b.toString());
     }
-
-    //Test exception is thrown when building on a space with Dome.
-    @Test (expected = SpaceFullException.class )
-    public void notBuildOnDome() throws InvalidCoordinatesException, SpaceOccupiedException, SpaceFullException, IllegalWorkerActionException{
-        Random rand = new Random();
-        Board b = new Board();
-        Player p1 = new Player("Lucio");
-        Player p2 = new Player("Asdrogonio");
-        Player p3 = new Player("Timburlaldo");
-        b.addWorker(p1.getWorker(0));
-        b.addWorker(p1.getWorker(1));
-        b.addWorker(p2.getWorker(0));
-        b.addWorker(p2.getWorker(1));
-        b.addWorker(p3.getWorker(0));
-        b.addWorker(p3.getWorker(1));
-
-        //initialize workers
-        b.initializeWorker(p1.getWorker(0), new Coord(0, 0));
-        b.initializeWorker(p1.getWorker(1), new Coord(1, 0));
-        b.initializeWorker(p2.getWorker(0), new Coord(4, 4));
-        b.initializeWorker(p2.getWorker(1), new Coord(1, 1));
-        b.initializeWorker(p3.getWorker(0), new Coord(2, 0));
-        b.initializeWorker(p3.getWorker(1), new Coord(2, 1));
-
-        Coord dome = new Coord(0, 1);
-        b.workerBuild(p1.getWorker(0), dome, Level.LVL1); //L1
-        b.workerBuild(p1.getWorker(0), dome, Level.LVL2); //L2
-        b.workerBuild(p1.getWorker(0), dome, Level.LVL3); //L3
-        b.workerBuild(p1.getWorker(0), dome, Level.DOME); //DOME
-
-        //dovrebbe lanciare eccezione
-        b.workerBuild(p1.getWorker(0), dome, Level.DOME);
-    }
-
-    //Test exception is thrown when trying to move from more than one space of distance
-    /*@Test (expected = IllegalWorkerActionException.class )
-    public void notMoveFromDistance() throws InvalidCoordinatesException, SpaceOccupiedException, SpaceFullException, IllegalWorkerActionException {
-        Board b = new Board();
-        Player p1 = new Player("Lucio");
-        Player p2 = new Player("Asdrogonio");
-        Player p3 = new Player("Timburlaldo");
-        b.addWorker(p1.getWorker(0));
-        b.addWorker(p1.getWorker(1));
-        b.addWorker(p2.getWorker(0));
-        b.addWorker(p2.getWorker(1));
-        b.addWorker(p3.getWorker(0));
-        b.addWorker(p3.getWorker(1));
-
-        //initialize workers
-        b.initializeWorker(p1.getWorker(0), new Coord(0, 0));
-        b.initializeWorker(p1.getWorker(1), new Coord(1, 0));
-        b.initializeWorker(p2.getWorker(0), new Coord(0, 1));
-        b.initializeWorker(p2.getWorker(1), new Coord(1, 1));
-        b.initializeWorker(p3.getWorker(0), new Coord(2, 0));
-        b.initializeWorker(p3.getWorker(1), new Coord(2, 1));
-
-        //dovrebbe lanciare eccezione
-        b.workerMove(p1.getWorker(0), new Coord(1, 2));
-    }*/
-
-    //Test exception is thrown when trying to build form more than one space of distance
-    /*@Test (expected = IllegalWorkerActionException.class )
-    public void notBuildFromDistance() throws InvalidCoordinatesException, SpaceOccupiedException, SpaceFullException, IllegalWorkerActionException {
-        Board b = new Board();
-        Player p1 = new Player("Lucio");
-        Player p2 = new Player("Asdrogonio");
-        Player p3 = new Player("Timburlaldo");
-        b.addWorker(p1.getWorker(0));
-        b.addWorker(p1.getWorker(1));
-        b.addWorker(p2.getWorker(0));
-        b.addWorker(p2.getWorker(1));
-        b.addWorker(p3.getWorker(0));
-        b.addWorker(p3.getWorker(1));
-
-        //initialize workers
-        b.initializeWorker(p1.getWorker(0), new Coord(0, 0));
-        b.initializeWorker(p1.getWorker(1), new Coord(1, 0));
-        b.initializeWorker(p2.getWorker(0), new Coord(0, 1));
-        b.initializeWorker(p2.getWorker(1), new Coord(1, 1));
-        b.initializeWorker(p3.getWorker(0), new Coord(2, 0));
-        b.initializeWorker(p3.getWorker(1), new Coord(2, 1));
-
-        //dovrebbe lanciare eccezione
-        b.workerBuild(p1.getWorker(0), new Coord(1, 2));
-    }*/
 }
