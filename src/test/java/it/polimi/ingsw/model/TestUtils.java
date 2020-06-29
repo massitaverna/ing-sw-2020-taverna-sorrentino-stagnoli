@@ -2,6 +2,7 @@ package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.model.exceptions.PrepareModelException;
 
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -21,7 +22,14 @@ public class TestUtils {
         }
 
         Scanner scanner = new Scanner(inputStream);
-        GameModel model = new GameModel();
+        GameModel model;
+        try {
+            model = new GameModel();
+        } catch (FileNotFoundException e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+           throw new PrepareModelException("GameModel couldn't be created.");
+        }
         Random random = new Random();
 
         //Read numPlayers and godUnderTest with correct skipping in stream

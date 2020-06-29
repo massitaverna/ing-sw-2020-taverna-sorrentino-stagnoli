@@ -1,12 +1,4 @@
-/*
-Note:
-A clone of a worker contains a different instance of Player player.
-This player has only the same name as the original one, but nothing else.
- */
-
 package it.polimi.ingsw.model;
-
-import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 
 import java.io.Serializable;
 
@@ -18,14 +10,14 @@ public class Worker implements Cloneable, Serializable {
     private Coord position;
     private final Player player;
 
-    public Worker(Player p){
+    public Worker(Player p) {
         this.player = p;
         this.position = null;
     }
 
     /**
-     * Set the position coordinates of this worker
-     * @param newPos The coordinates to set
+     * Set the position of this worker
+     * @param newPos the coordinates to set
      * @throws IllegalArgumentException when coordinates are invalid
      */
     public void setPosition (Coord newPos) throws IllegalArgumentException {
@@ -39,15 +31,15 @@ public class Worker implements Cloneable, Serializable {
 
     /**
      * Get the current position of this worker
-     * @return
+     * @return the current position of this worker
      */
     public Coord getPosition(){
-        return  this.position;
+        return position;
     }
 
     /**
      * Get the color of this worker
-     * @return
+     * @return the color of this worker
      */
     public Color getColor() {
         return color;
@@ -63,19 +55,23 @@ public class Worker implements Cloneable, Serializable {
 
     /**
      * Get the nickname of the player to which this worker belongs
-     * @return
+     * @return the nickname of the player to which this worker belongs
      */
     public String getPlayerNickname(){
         return this.player.getNickname();
     }
 
+    /**
+     * Get the god of the player to which this worker belongs
+     * @return the god of the player to which this worker belongs
+     */
     public String getGod() {
         return player.getGod().getName();
     }
 
     /**
-     * Clone
-     * @return
+     * Clone this worker
+     * @return a clone of this worker
      */
     @Override
     public Worker clone() {
@@ -90,9 +86,12 @@ public class Worker implements Cloneable, Serializable {
     }
 
     /**
-     * Equals
-     * @param o
-     * @return
+     * Equality test.
+     * The colors, positions and player's nicknames are compared.
+     * Note that if this method is called on a worker whose position is null,
+     * then the returned value is the same of {@link Object#equals(Object)}
+     * @param o the object to compare with this
+     * @return true if this and o are equal
      */
     @Override
     public boolean equals (Object o) {
@@ -109,6 +108,10 @@ public class Worker implements Cloneable, Serializable {
         }
     }
 
+    /**
+     * Returns a string representation of the worker
+     * @return a string representation of the worker
+     */
     @Override
     public String toString() {
         return "[" + color + ", " + position + ", " + player.getNickname() + "]";

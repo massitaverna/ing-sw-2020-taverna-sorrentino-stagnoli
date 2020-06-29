@@ -14,8 +14,6 @@ public class Turn implements Cloneable {
     private boolean hasMoved;
     private boolean hasBuilt;
     private boolean turnEnded;
-    private Board board;
-    private Coord position;
 
     public Turn() {
         selectableWorkers = new ArrayList<>();
@@ -79,22 +77,6 @@ public class Turn implements Cloneable {
         movableSpaces.clear();
         buildableSpaces.clear();
         forces.clear();
-    }
-
-    public void setInitialBoard(Board board) {
-        this.board = board;
-    }
-
-    public void setInitialPosition(Coord position) {
-        this.position = position;
-    }
-
-    public Board getInitialBoard() {
-        return board.clone();
-    }
-
-    public Coord getInitialPosition() {
-        return position;
     }
 
     public void setSelectableWorkers(List<Coord> selectableWorkers) {

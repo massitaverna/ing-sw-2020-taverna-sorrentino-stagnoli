@@ -4,14 +4,24 @@ import it.polimi.ingsw.exceptions.model.AlreadyExistingPlayerException;
 import it.polimi.ingsw.exceptions.model.GameFullException;
 import org.junit.Test;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+
+import static org.junit.Assert.fail;
 
 public class GameModelTest {
 
     @Test( expected = GameFullException.class )
     public void gameFullTest(){
-        GameModel m = new GameModel();
+        GameModel m;
+        try {
+            m = new GameModel();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            fail();
+            return;
+        }
         m.setNumPlayers(3);
 
         m.addNewPlayer(new Player("AA"));
@@ -25,7 +35,14 @@ public class GameModelTest {
 
     @Test( expected = AlreadyExistingPlayerException.class )
     public void alreadyExistingPlayerTest(){
-        GameModel m = new GameModel();
+        GameModel m;
+        try {
+            m = new GameModel();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            fail();
+            return;
+        }
         m.setNumPlayers(3);
 
         m.addNewPlayer(new Player("AA"));
@@ -34,7 +51,14 @@ public class GameModelTest {
 
     @Test
     public void allPlayersHaveDifferentGodAndColor(){
-        GameModel m = new GameModel();
+        GameModel m;
+        try {
+            m = new GameModel();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            fail();
+            return;
+        }
         m.setNumPlayers(3);
 
         m.addNewPlayer(new Player("AA"));

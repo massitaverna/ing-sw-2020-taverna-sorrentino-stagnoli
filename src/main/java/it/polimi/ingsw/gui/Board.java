@@ -157,9 +157,9 @@ public class Board implements Initializable {
         this.domeImage = new Image("Board/dome.png");
         this.emptyImage = new Image("Board/empty.png");
         this.workersTokens = new HashMap<>();
-        this.workersTokens.put(Color.RED, new Image("Board/token_rosso.png"));
-        this.workersTokens.put(Color.BLUE, new Image("Board/token_blu.png"));
-        this.workersTokens.put(Color.YELLOW, new Image("Board/token_giallo.png"));
+        this.workersTokens.put(Color.RED, new Image("Board/token_red.png"));
+        this.workersTokens.put(Color.BLUE, new Image("Board/token_blue.png"));
+        this.workersTokens.put(Color.YELLOW, new Image("Board/token_yellow.png"));
 
         this.playersColors = new HashMap<>();
         this.playersGodsImages = new HashMap<>();

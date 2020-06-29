@@ -4,6 +4,7 @@ import it.polimi.ingsw.controller.RealController;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.view.RemotePlayerView;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -66,7 +67,16 @@ public class Lobby {
 
     public Lobby(MainServer server, int numPlayers){
         this.server = server;
-        this.model = new GameModel();
+        try {
+            this.model = new GameModel();
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("Couldn't create a GameModel because some files where missing.");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+            System.out.println("Exiting the application.");
+            System.exit(1);
+        }
         this.controller = new RealController(this.model);
         this.playersViews = new ArrayList<>();
         this.numPlayers = numPlayers;

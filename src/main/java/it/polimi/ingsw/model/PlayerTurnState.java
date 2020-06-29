@@ -1,9 +1,6 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.listeners.ModelEventListener;
-
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PlayerTurnState extends ModelState {
 
@@ -25,8 +22,8 @@ public class PlayerTurnState extends ModelState {
 
             if (!selectableWorkers.isEmpty()) {
                 model.getAllListeners().forEach(l -> l.onMyTurn(nickname, selectableWorkers));
-            } else {
-                model.removeCurrentPlayer();
+            } else { // If player cannot select any worker...
+                model.removeCurrentPlayer(); //... he lost
             }
         } else {
             model.nextAction();

@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.model.SpaceFullException;
-import it.polimi.ingsw.exceptions.model.SpaceOccupiedException;
 
 import java.io.Serializable;
 
@@ -34,15 +33,8 @@ public class Space implements Cloneable, Serializable {
     }
 
     /**
-     * set this space as containing a dome
-     */
-    private void setDome(){
-        hasDome = true;
-    }
-
-    /**
-     * Check if this space is occupied
-     * @return
+     * Check if this space is occupied (i.e. a worker is in this space)
+     * @return true if this space is occupied.
      */
     public boolean isOccupied() {
         return occupied;
@@ -50,15 +42,15 @@ public class Space implements Cloneable, Serializable {
 
     /**
      * Check if there is a dome on this space
-     * @return
+     * @return true if there is a dome on this space
      */
     public boolean isDome(){
         return this.hasDome;
     }
 
     /**
-     * Get the current level of this space
-     * @return the Level of this space
+     * Get the current {@link Level} of this space
+     * @return the level of this space
      */
     public Level getHeight(){
         return height;
@@ -66,12 +58,11 @@ public class Space implements Cloneable, Serializable {
 
     /**
      * Set a Level for this space
-     * @param level the Level to set
+     * @param level the level to set
      */
     public void setLevel(Level level) {
 
-
-        //Not sure this check should remain
+        //This check is valid as long as no gods can destroy a dome
         if(this.isDome()){
             throw new SpaceFullException("This space contains a dome.");
         }
@@ -79,37 +70,13 @@ public class Space implements Cloneable, Serializable {
         if (level != Level.DOME) {
             height = level;
         } else {
-            setDome();
+            hasDome = true;
         }
     }
 
     /**
-     * Increase the level of this space
-     * @throws SpaceFullException when the space is full
-     * @throws SpaceOccupiedException when the space is occupied
-     */
-    public void levelUp() throws SpaceFullException, SpaceOccupiedException {
-        if(this.isOccupied()){
-            throw new SpaceOccupiedException("This space is occupied.");
-        }
-
-        if(this.isDome()){
-            throw new SpaceOccupiedException("This space contains a dome.");
-        }
-
-        //if not level 3, level up
-        if(this.height != Level.LVL3) {
-            height = Level.values()[height.ordinal() + 1];
-        }
-        //if level 3, set dome
-        else {
-            this.setDome();
-        }
-    }
-
-    /**
-     * Clone
-     * @return
+     * Clone this space
+     * @return a clone of this space
      */
     @Override
     public Space clone() {
@@ -122,8 +89,8 @@ public class Space implements Cloneable, Serializable {
     }
 
     /**
-     * ToString
-     * @return
+     * Returns a string representation of the object
+     * @return a string representation of the object
      */
     @Override
     public String toString() {
@@ -133,9 +100,9 @@ public class Space implements Cloneable, Serializable {
     }
 
     /**
-     * Equals
+     * Equality test
      * @param o
-     * @return
+     * @return true if this and o are equal
      */
     @Override
     public boolean equals(Object o) {

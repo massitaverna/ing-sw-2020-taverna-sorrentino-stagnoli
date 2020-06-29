@@ -1,7 +1,5 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.listeners.ModelEventListener;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +14,7 @@ public class GodSelectionState extends ModelState {
     public void nextStep() {
         List<String> godsNames = new ArrayList<>();
         model.getAvailableGods().forEach(g -> godsNames.add(g.getName()));
-        boolean areGodsChosen = model.getAvailableGods().size() <= model.getNumPlayers() ;
+        boolean areGodsChosen = godsNames.size() <= model.getNumPlayers();
 
         if (!areGodsChosen) {
             model.getAllListeners().forEach(l -> l.onGodsSelection(godsNames, model.getNumPlayers()));

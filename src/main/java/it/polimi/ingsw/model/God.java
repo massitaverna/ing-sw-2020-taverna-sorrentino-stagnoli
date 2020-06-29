@@ -1,7 +1,5 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.model.Player;
-
 import java.io.Serializable;
 
 public class God implements Serializable {
@@ -18,20 +16,20 @@ public class God implements Serializable {
 
     /**
      * Get the name of this god
-     * @return
+     * @return the name of this god
      */
     public String getName() { return name; }
 
     /**
      * Get the description of this god
-     * @return
+     * @return the description of this god
      */
     public String getDescription() { return description; }
 
     /**
      * Equality check
      * @param o
-     * @return
+     * @return true if this and o have same name
      */
     @Override
     public boolean equals(Object o){

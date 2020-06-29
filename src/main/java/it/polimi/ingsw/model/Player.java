@@ -10,7 +10,6 @@ public class Player implements Serializable, Cloneable {
 
     private final String nickname;
     private God god;
-    //private boolean hasWon;
     private List<Worker> workersList;
     private Color workerColor;
     private boolean isStartPlayer;
@@ -22,8 +21,6 @@ public class Player implements Serializable, Cloneable {
         this.workersList.add(new Worker(this));
         this.workersList.add(new Worker(this));
         this.isStartPlayer = false;
-        /*this.rules = new Collection<Rule>();*/
-        //this.hasWon = false;
     }
 
     /**
@@ -36,20 +33,16 @@ public class Player implements Serializable, Cloneable {
 
     /**
      * Get the god of this player
-     * @return
+     * @return the god of this player
      */
     public God getGod() {
         return god;
     }
 
-    // prende come parametro il numero del lavoratore (1 o 2) e
-    // restituisce il lavoratore corrispondente
-    //utilizzato solo per inserirli nella board, in seguito verrano scelti
-    //dalla board tramite le loro coordinate
 
     /**
      * Get a specific worker of this player
-     * @param num the number of the worker to get (1 or 2)
+     * @param num the number of the worker to get (0 or 1)
      * @return a reference to the selected worker
      */
     public Worker getWorker(int num){
@@ -58,7 +51,7 @@ public class Player implements Serializable, Cloneable {
 
     /**
      * Get all the workers of this player
-     * @return
+     * @return a list containing a copy of the player's workers
      */
     public List<Worker> getWorkersList() {
         List<Worker> result = new ArrayList<>();
@@ -70,7 +63,7 @@ public class Player implements Serializable, Cloneable {
 
     /**
      * Get the nickname of this player
-     * @return
+     * @return the nickname of this player
      */
     public String getNickname() {
         return nickname;
@@ -78,9 +71,9 @@ public class Player implements Serializable, Cloneable {
 
     /**
      * Set the color for the workers of this player
-     * @param c
+     * @param c the color to be set
      */
-    public void setWorkerColor(Color c){
+    public void setWorkerColor(Color c) {
         this.workerColor = c;
         this.workersList.get(0).setColor(this.workerColor);
         this.workersList.get(1).setColor(this.workerColor);
@@ -88,7 +81,7 @@ public class Player implements Serializable, Cloneable {
 
     /**
      * Get the color of this player
-     * @return
+     * @return the color of this player
      */
     public Color getWorkerColor(){
         return this.workerColor;
@@ -96,22 +89,22 @@ public class Player implements Serializable, Cloneable {
 
     /**
      * Check if this player is the starting one
-     * @return
+     * @return true if this player is the start player
      */
     public boolean isStartPlayer() {
         return isStartPlayer;
     }
 
     /**
-     * Set this player as the starting player
+     * Set this player as the start player
      */
     void setAsStartPlayer() {
         isStartPlayer = true;
     }
 
     /**
-     * Clone
-     * @return
+     * Clone the player
+     * @return a clone of this player.
      */
     @Override
     public Player clone() {
