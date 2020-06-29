@@ -11,18 +11,20 @@ public class Coord implements Serializable {
     public final int x;
     public final int y;
 
-    public Coord(int x, int y){
+    public Coord(int x, int y) {
         this.x=x;
         this.y=y;
     }
 
     /**
-     * Check if the given coordinates are valid for the game
-     * @param c coordinates to check
+     * Check if a coordinate is valid for the game.
+     * More formally, this method returns true if and only if both values of the coordinate
+     * are between 0 (included) and {@link Board#BOARD_SIZE} (excluded)
+     * @param c coordinate to check
      * @return true if valid, false otherwise
      */
     public static boolean validCoord(Coord c) {
-        if(c.x < 0 || c.x > 4 || c.y < 0 || c.y > 4) {
+        if (c.x < 0 || c.x >= Board.BOARD_SIZE || c.y < 0 || c.y >= Board.BOARD_SIZE) {
             return false;
         }
         else {
@@ -44,9 +46,9 @@ public class Coord implements Serializable {
             throw new InvalidCoordinatesException("Invalid coordinates given.");
         }
 
-        //if it's the same coordinate, return false
-        if(this.x == c.x && this.y == c.y)
+        if(this.x == c.x && this.y == c.y) { // Same coordinates
             return false;
+        }
 
         int diffX = Math.abs(this.x - c.x);
         int diffY = Math.abs(this.y - c.y);
@@ -90,7 +92,7 @@ public class Coord implements Serializable {
     /**
      * Equality check between coordinates
      * @param obj the other coordinates
-     * @return true if the components has the same values, false otherwise
+     * @return true if the components have the same values, false otherwise
      */
     @Override
     public boolean equals(Object obj) {
@@ -103,7 +105,7 @@ public class Coord implements Serializable {
 
     /**
      * ToString method
-     * @return
+     * @return a string representation of the coordinate
      */
     @Override
     public String toString() {
@@ -112,7 +114,7 @@ public class Coord implements Serializable {
 
     /**
      * HashCode method
-     * @return
+     * @return a unique numeric value for each pair of values x and y
      */
     @Override
     public int hashCode() {

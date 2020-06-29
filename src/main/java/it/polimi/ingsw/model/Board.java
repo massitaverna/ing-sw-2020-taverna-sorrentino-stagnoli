@@ -33,7 +33,7 @@ public class Board implements Cloneable, Serializable {
      */
     public Space getSpace(Coord c) throws InvalidCoordinatesException {
 
-        //Check coordinates c are valid
+        // Coordinates must be valid
         if (Coord.validCoord(c)) {
             return board[c.x][c.y].clone();
         } else {
@@ -43,7 +43,7 @@ public class Board implements Cloneable, Serializable {
 
     void addWorker(Worker w) throws IllegalStateException {
 
-        //if worker is already present, throw exception
+        // Worker must be absent from board
         if(this.workers.contains(w)) {
             throw new IllegalStateException("The worker has already been added.");
         }
@@ -51,7 +51,7 @@ public class Board implements Cloneable, Serializable {
         this.workers.add(w);
     }
 
-    Worker[] getAllWorkers(){
+    Worker[] getAllWorkers() {
         Worker[] allWorkers = new Worker[this.workers.size()];
         for (int i = 0; i < this.workers.size(); i++) {
             allWorkers[i] = this.workers.get(i);
@@ -59,11 +59,12 @@ public class Board implements Cloneable, Serializable {
         return allWorkers;
     }
 
+    //Returns the worker of the board that occupies coordinates 'pos'
     Worker getWorkerByPosition(Coord pos) throws WorkerNotFoundException {
 
-        //Check coordinates pos are valid
+        //Coordinates must be valid
         if (!Coord.validCoord(pos)) {
-            throw new WorkerNotFoundException("Worker not found: Invalid coordinates given.");
+            throw new WorkerNotFoundException("Worker not found: invalid coordinates given.");
         }
 
         for(Worker w : this.workers){
@@ -84,7 +85,7 @@ public class Board implements Cloneable, Serializable {
    }
 
     /**
-     * Intializes a worker of the given player, in the given coordinates
+     * Initializes a worker of the given player, in the given coordinates
      * @param player the player whose worker is to be initialized
      * @param coord the coordinates where the worker will be set
      * @throws IllegalArgumentException when coordinates are invalid
@@ -102,10 +103,9 @@ public class Board implements Cloneable, Serializable {
                     " have already been initialized.");
         }
 
-
         Space dest = board[coord.x][coord.y];
         if (dest.isOccupied()) {
-            throw new IllegalStateException("Tried to initialize worker on an occupied space.");
+            throw new IllegalStateException("Tried to initialize a worker on an occupied space.");
         }
 
         worker.setPosition(coord);
@@ -113,10 +113,10 @@ public class Board implements Cloneable, Serializable {
     }
 
     /**
-     * Get all the unoccupied spaces
-     * @return a list containing all the unoccupied coordinates
+     * Get all the unoccupied positions
+     * @return a list containing all the coordinates of the unoccupied board's spaces
      */
-    public List<Coord> getUnoccupiedSpaces() { //Used only in initialization
+    public List<Coord> getUnoccupiedPositions() { //Used only in initialization
 
         List<Coord> unoccupiedSpaces = new ArrayList<>();
 
@@ -146,58 +146,57 @@ public class Board implements Cloneable, Serializable {
         return result;
     }
 
-    //Use this method when moving without a force (i.e. to an unoccupied space)
+    // Use this method when moving without a force (i.e. to an unoccupied space)
     void workerMove(Worker w, Coord newPos) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException {
-        //Check newPos is valid
+        //Coordinates must be valid
         if(!Coord.validCoord(newPos)){
             throw new InvalidCoordinatesException("Invalid coordinates.");
         }
 
-        //Check that worker w is in the list of workers
+        // Worker must be on board
         if(!this.workers.contains(w)){
-            throw new IllegalWorkerActionException("The worker " + w.toString() + " is not part of the game.");
+            throw new IllegalWorkerActionException("The worker " + w.toString() + " is not part of the board.");
         }
 
+        //Worker must have a position
         if(w.getPosition() == null) {
-            throw new IllegalWorkerActionException("The worker is not initialized.");
+            throw new IllegalWorkerActionException("The worker is not initialized " +
+                    "(doesn't have a position).");
         }
-
 
         Space currentSpace, newSpace;
         currentSpace = this.board[w.getPosition().x][w.getPosition().y];
         newSpace = this.board[newPos.x][newPos.y];
 
-        //Space not occupied
         if ( !newSpace.isOccupied() ) {
-            //Space not full
             if ( !(newSpace.isDome()) ) {
 
                 w.setPosition(newPos);
                 currentSpace.setUnoccupied();
                 newSpace.setOccupied();
             }
-            else {
+            else { // isDome
                 throw new SpaceFullException("Space is DOME.");
             }
         }
-        else {
+        else { // isOccupied
             throw new SpaceOccupiedException("Space occupied by another worker.");
         }
 
     }
 
-    //Use this method when moving with a force (i.e. to an occupied space)
-    void workerForceMove(Worker w, Coord newPos, Coord forcePos){
+    // Use this method when moving with a force (i.e. to an occupied space)
+    void workerForceMove(Worker w, Coord newPos, Coord forcePos) {
         if(!Coord.validCoord(newPos) || !Coord.validCoord(forcePos)){
             throw new InvalidCoordinatesException("Invalid coordinates.");
         }
 
-        //Check that worker w is in the list of workers
+        // Check that worker w is on board
         if(!this.workers.contains(w)){
-            throw new IllegalWorkerActionException("The worker " + w.toString() + " is not part of the game.");
+            throw new IllegalWorkerActionException("The worker " + w.toString() + " is not part of the board.");
         }
 
-        //check that in newPos there is a worker
+        // Check that there is a worker in newPos
         Worker otherW;
         try {
             otherW = this.getWorkerByPosition(newPos);
@@ -206,9 +205,10 @@ public class Board implements Cloneable, Serializable {
             throw new IllegalWorkerActionException(e.getMessage());
         }
 
-        //check worker w is initialized
+        //Worker must have a position
         if(w.getPosition() == null) {
-            throw new IllegalWorkerActionException("The worker is not initialized.");
+            throw new IllegalWorkerActionException("The worker is not initialized " +
+                    "(doesn't have a position).");
         }
 
 
@@ -216,8 +216,6 @@ public class Board implements Cloneable, Serializable {
         currentSpace = this.board[w.getPosition().x][w.getPosition().y];
         newSpace = this.board[newPos.x][newPos.y];
         forceSpace = this.board[forcePos.x][forcePos.y];
-
-        //not space full
 
         w.setPosition(newPos);
         otherW.setPosition(forcePos);
@@ -229,17 +227,18 @@ public class Board implements Cloneable, Serializable {
 
 
     void workerBuild(Worker w, Coord buildPos, Level level) throws InvalidCoordinatesException, SpaceFullException, SpaceOccupiedException, IllegalWorkerActionException{
-        //Check buildPos is valid
+
+        // Coordinates must be valid
         if(!Coord.validCoord(buildPos)){
             throw new InvalidCoordinatesException("Invalid coordinates.");
         }
 
-        //Check that worker w in is the list of workers
+        // Check that worker w is on board
         if(!this.workers.contains(w)){
             throw new IllegalWorkerActionException("The worker " + w.toString() + " is not part of the game.");
         }
 
-        //check worker w is initialized
+        // Worker must have a position
         if(w.getPosition() == null){
             throw new IllegalWorkerActionException("The worker is not initialized.");
         }
@@ -302,25 +301,26 @@ public class Board implements Cloneable, Serializable {
                 if (board[i][j].isOccupied()) {
                     try {
                         Worker workerInSpace = this.getWorkerByPosition(new Coord(i ,j));
-                        String colredWorker = "";
+                        String coloredWorker = "";
                         switch (workerInSpace.getColor()) {
                             case RED:
-                                colredWorker = (char) 27 + "[31mW";
+                                coloredWorker = (char) 27 + "[31mW";
                                 break;
                             case BLUE:
-                                colredWorker = (char) 27 + "[34mW";
+                                coloredWorker = (char) 27 + "[34mW";
                                 break;
                             case YELLOW:
-                                colredWorker = (char) 27 + "[33mW";
+                                coloredWorker = (char) 27 + "[33mW";
                                 break;
                         }
-                        workerLine = workerLine + "    "+ colredWorker + stdColor + "    |";
+                        workerLine = workerLine + "    " + coloredWorker + stdColor + "    |";
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
                 else if (board[i][j].isDome())
-                    workerLine = workerLine + "    ^    |";  // a space cannot be occupied by a worker and be a dome at the same time
+                    // A space cannot be occupied by a worker and have a dome at the same time
+                    workerLine = workerLine + "    ^    |";
                 else
                     workerLine = workerLine + "         |";
 

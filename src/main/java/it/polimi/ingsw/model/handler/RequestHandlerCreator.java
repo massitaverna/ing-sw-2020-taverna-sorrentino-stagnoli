@@ -9,7 +9,6 @@ import it.polimi.ingsw.model.handler.util.TriPredicate;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
 
 public class RequestHandlerCreator {
 

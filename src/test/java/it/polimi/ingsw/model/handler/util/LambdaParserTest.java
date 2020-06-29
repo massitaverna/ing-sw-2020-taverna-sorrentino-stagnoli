@@ -305,7 +305,7 @@ public class LambdaParserTest {
         s = "occupied(after)";
         condition = LambdaParser.extractPredicate(s);
         coordList = board.getAllCoord();
-        coordList.removeAll(board.getUnoccupiedSpaces());
+        coordList.removeAll(board.getUnoccupiedPositions());
         d = coordList.get(r.nextInt(coordList.size()));
         c = new Coord(1,0);
         assertTrue(condition.test(null, new Pair<>(c, d), board));

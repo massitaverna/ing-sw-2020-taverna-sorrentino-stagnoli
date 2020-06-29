@@ -25,6 +25,7 @@ SuperList structure:
 
 Every list is accessed with index = 2*actionType + decision (+ 2*level if level != null)
  */
+
 package it.polimi.ingsw.model.handler;
 
 import it.polimi.ingsw.model.Board;
@@ -36,11 +37,11 @@ import java.util.stream.Collectors;
 
 
 class ValidationContainer {
-    private Coord currentPosition;
+    private final Coord currentPosition;
     private final Board board;
     private final List<Coord> allSpaces;
-    private List<List<Coord>> superList;
-    private Map<Coord, Coord> forces;
+    private final List<List<Coord>> superList;
+    private final Map<Coord, Coord> forces;
 
     public ValidationContainer(Coord currentPosition, Board board) {
         this.currentPosition = currentPosition;

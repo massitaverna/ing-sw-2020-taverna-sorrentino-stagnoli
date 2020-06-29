@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model;
 
 import it.polimi.ingsw.exceptions.model.*;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.List;
@@ -91,20 +90,20 @@ public class BoardTest {
         b.addWorker(p3.getWorker(1));
 
         //when board is created, it is empty and the count of unoccupied spaces should be 25
-        assertEquals(b.getUnoccupiedSpaces().size(), 25);
+        assertEquals(b.getUnoccupiedPositions().size(), 25);
 
         b.initializeWorker(p1, new Coord(0, 0));
-        assertEquals(b.getUnoccupiedSpaces().size(), 24);
+        assertEquals(b.getUnoccupiedPositions().size(), 24);
         b.initializeWorker(p1, new Coord(1, 0));
-        assertEquals(b.getUnoccupiedSpaces().size(), 23);
+        assertEquals(b.getUnoccupiedPositions().size(), 23);
         b.initializeWorker(p2, new Coord(0, 1));
-        assertEquals(b.getUnoccupiedSpaces().size(), 22);
+        assertEquals(b.getUnoccupiedPositions().size(), 22);
         b.initializeWorker(p2, new Coord(1, 1));
-        assertEquals(b.getUnoccupiedSpaces().size(), 21);
+        assertEquals(b.getUnoccupiedPositions().size(), 21);
         b.initializeWorker(p3, new Coord(2, 0));
-        assertEquals(b.getUnoccupiedSpaces().size(), 20);
+        assertEquals(b.getUnoccupiedPositions().size(), 20);
         b.initializeWorker(p3, new Coord(2, 1));
-        assertEquals(b.getUnoccupiedSpaces().size(), 19);
+        assertEquals(b.getUnoccupiedPositions().size(), 19);
     }
 
     //Test adding an already added worker throws an exception

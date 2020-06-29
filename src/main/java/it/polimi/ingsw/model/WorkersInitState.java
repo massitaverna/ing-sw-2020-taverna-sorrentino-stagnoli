@@ -1,7 +1,5 @@
 package it.polimi.ingsw.model;
 
-import it.polimi.ingsw.listeners.ModelEventListener;
-
 import java.util.List;
 
 public class WorkersInitState extends ModelState {
@@ -20,7 +18,7 @@ public class WorkersInitState extends ModelState {
             return;
         }
 
-        List<Coord> freeSpaces = model.getBoard().getUnoccupiedSpaces();
+        List<Coord> freeSpaces = model.getBoard().getUnoccupiedPositions();
         String currPlayer = model.getCurrentPlayer().getNickname();
         model.getAllListeners().forEach(l -> l.onMyInitialization(currPlayer, freeSpaces));
     }

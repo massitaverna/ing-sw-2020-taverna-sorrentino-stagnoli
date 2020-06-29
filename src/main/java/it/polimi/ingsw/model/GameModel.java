@@ -30,13 +30,8 @@ public class GameModel implements EventSource {
     private Turn turn;
     private final Map<Player, RequestHandler> oldHandlers;
     private final Map<Player, RequestHandler> handlers;
-
     private final List<ModelEventListener> modelListeners;
 
-    /*per sollevare un evento (esempio) :
-        for(ModelEventListener l: modelListeners){
-            l.onAllPlayersArrived();
-        }*/
 
 
     public GameModel() {
@@ -58,7 +53,7 @@ public class GameModel implements EventSource {
 
     }
 
-    //STATE FUNCTIONS//
+    // STATE FUNCTIONS
     public void changeState(ModelState state) {
         this.state = state;
     }
@@ -67,9 +62,10 @@ public class GameModel implements EventSource {
         state.nextStep();
     }
 
-    //INIT FUNCTIONS//
+    // INIT FUNCTIONS
+
+    // Reads from file all available gods
     private void loadAvailableGods() {
-        //Read from file all available gods
 
         InputStream inputStream = this.getClass()
                 .getClassLoader().getResourceAsStream("gods");

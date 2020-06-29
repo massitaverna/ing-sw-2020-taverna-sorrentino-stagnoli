@@ -43,28 +43,6 @@ class ConcreteHandler implements RuleHandler {
         Coord current = vc.getCurrentPosition();
         Board board = vc.getBoard();
 
-        /*
-        //FOR-LOOP WAY
-        List<Rule> validationRules = rules.stream()
-                .filter(r -> r.getPurpose() == Purpose.VALIDATION)
-                .collect(Collectors.toList());
-
-        for (Rule r : validationRules) {
-            BiPredicate<Space, Space> condition = r.getCondition();
-            vc.getAllSpaces().stream()
-                    .filter(s -> condition.test(current, s))
-                    .forEach(s -> vc.validateSpace(
-                            s,
-                            r.getActionType(),
-                            r.getDecision(),
-                            r.getForceSpaceFunction().apply(current, s),
-                            r.getBuildLevel())
-                    );
-
-        }
-         */
-
-        // STREAM WAY
         rules.stream()
                 .filter(r -> r.getPurpose() == Purpose.VALIDATION)
                 .forEach(r ->

@@ -269,7 +269,6 @@ public class LambdaParser {
             boolean canReduce = false;
             int count = 0;
             for (int pos = 0; pos < source.length(); pos++) {
-                // Test case: or((or(f(a),g(b))),h(c))
                 char c = source.charAt(pos);
                 if (c == '(') count++;
                 if (c == ')') count--;

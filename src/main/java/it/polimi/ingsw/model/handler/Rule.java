@@ -93,7 +93,7 @@ public class Rule {
                         rule.symbolicCondition.test(oldAction, cPair, board);
                 g.symbolicCondition = null;
             }
-            g.repOk(); // Recently added
+            g.repOk();
             result.add(g);
         }
         return result;
@@ -155,7 +155,6 @@ public class Rule {
     public String toString() {
         String result;
 
-        result = actionType.name();
         result = purpose.name() + "_" + actionType.name() + " Rule @ " + Integer.toHexString(hashCode());
         return result;
     }

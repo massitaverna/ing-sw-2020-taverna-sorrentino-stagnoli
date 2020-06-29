@@ -1,7 +1,6 @@
 package it.polimi.ingsw.model.handler.util;
 
 import java.util.Objects;
-import java.util.function.Predicate;
 
 @FunctionalInterface
 public interface TriPredicate<T, U, R> {
