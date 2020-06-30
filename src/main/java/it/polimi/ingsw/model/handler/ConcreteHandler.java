@@ -1,10 +1,3 @@
-/*
-Rep:
-
-rules != null
-rules.size() > 0
- */
-
 package it.polimi.ingsw.model.handler;
 
 import it.polimi.ingsw.exceptions.model.handler.UndeterminedSpaceException;
@@ -17,7 +10,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+/**
+ * Handles requests about the possibilities of a player during his turn, based on the rules of the game.
+ * This class is at the heart of the application logic. It determines what actions a player can
+ * do, whether he has won or not, and updates the current rules used in this turn with the rules
+ * to be used in the next turn.
+ */
 class ConcreteHandler implements RuleHandler {
 
     private static final List<ConcreteHandler> handlers = new ArrayList<>();
@@ -34,7 +32,20 @@ class ConcreteHandler implements RuleHandler {
 
     //---------------------------------------------------------------------------------------
 
-
+    /**
+     * This methods determines, for each coordinate, what actions can be performed and what actions can't.
+     * It takes all the {@code VALIDATION} rules and, for each {@code Rule r}:
+     * <ul>
+     *     <li>Checks if the rule applies to a coordinate
+     *     <li>If so, marks the coordinate as valid for the action {@code r.getActionType}
+     *          or invalid (it depends on {@code r.getDecision})
+     *     <li>Repeats for next coordinates, until all coordinates have been examined
+     *     </li>
+     * </ul>
+     * @param vc the container of the data this method will populate
+     * @throws UndeterminedSpaceException when the rules aren't enough to determine the validity
+     * of all the coordinates/spaces
+     */
     @Override
     public void handleValidationRequest(ValidationContainer vc) throws UndeterminedSpaceException {
 

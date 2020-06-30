@@ -1,9 +1,3 @@
-/*
-Contract logic:
-The caller must clean the argument to be passed to the callee (i.e. strip() + reduceParentheses())
-The callee can safely call parseArguments() on the argument passed by the caller
-*/
-
 package it.polimi.ingsw.model.handler.util;
 
 import it.polimi.ingsw.exceptions.model.handler.RuleParserException;
@@ -17,11 +11,51 @@ import java.util.function.BiFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A parser of conditions written in a domain-specific language.
+ * This class allows the user to convert a condition (written in the language defined below)
+ * into a lambda expression for implementing the interface {@link TriPredicate}.
+ *
+ * <h2>The language</h2>
+ * A condition can be expressed using the following "functions":
+ * <ul>
+ *     <li>occupied(coord)
+ *     <li>dome(coord)
+ *     <li>near(coord1, coord2)
+ *     <li>valid(coord)
+ *     <li>equalCoordinates(coord1, coord2)
+ *     <li>samePlayer(coord1, coord2)
+ *     <li>compareLevels(coord1, coord2, comparator_level)
+ *     <li>sameGod(coord1, coord2)
+ *     <li>negate(condition)
+ *     <li>or(condition1, condition2)
+ *     <li>and(condition1, condition2)
+ *     </li>
+ * </ul>
+ * Apart from the last three functions, the other ones take coordinates as input.
+ * A coordinate can be:
+ * <ul>
+ *     <li>before: the position of the current worker before making the action
+ *     <li>after: the position of the current worker after making the action
+ *     <li>oldBefore: the position of the current worker before making the previous action
+ *     <li>the position of the current worker after making the previous action
+ *     <li>coord(n,m): the coordinate (n,m) (a constant value)
+ *     </li>
+ * </ul>
+ * Furthermore, a coordinate can be expressed as a sum or difference of two other coordinates,
+ * by using the functions sum(coord1, coord2) and diff(coord1, coord2)
+ */
 public class LambdaParser {
 
-    public static final Pattern coordPattern =
+    private static final Pattern coordPattern =
             Pattern.compile("coord\\x20*\\(\\x20*(-?\\d)\\x20*,\\x20*(-?\\d)\\x20*\\)");
 
+    /**
+     * Parses the condition converting it to a lambda expression
+     * @param line the string containing the condition
+     * @return the TriPredicate corresponding to the condition
+     * @throws RuleParserException when the condition is not written properly
+     */
     public static TriPredicate<Pair<Coord>, Pair<Coord>, Board> extractPredicate(String line) throws RuleParserException {
 
         TriPredicate<Pair<Coord>, Pair<Coord>, Board> condition;
@@ -208,12 +242,24 @@ public class LambdaParser {
         return condition;
     }
 
+    /**
+     * Converts a coordinate into a lambda expression
+     * @param argument the coordinate expressed in the language defined above
+     * @return a function that returns the coordinate
+     * @throws RuleParserException when the coordinate is not written properly
+     */
     public static BiFunction<Pair<Coord>, Pair<Coord>, Coord> extractCoordFunction(String argument) throws RuleParserException {
         return fromCoordToSymbolicFunction(argument);
     }
 
 
     //-----------------------------HELPER METHODS------------------------------
+
+    /*
+    Internal contract logic:
+    The caller must clean the argument to be passed to the callee (i.e. strip() + reduceParentheses())
+    The callee can safely call parseArguments() on the argument passed by the caller
+    */
 
     static List<String> /*helper*/ parseArguments(String source) throws RuleParserException {
 

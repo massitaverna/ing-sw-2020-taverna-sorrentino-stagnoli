@@ -20,8 +20,17 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
-
-public class Rule {
+/**
+ * Represents a rule of the game.
+ * This class is at the heart of the representation of all standard rules and
+ * God Effects in the game.
+ * It achieves its aim thanks to a high level of detail, provided by
+ * several attributes that can be accessed through the getters/setters of the class.
+ * A fundamental principle of the class is its <strong>immutability</strong>. Attributes can be
+ * set only once and then the rule can be used by multiple users without interfering with
+ * one another leading to undesired changes in behaviors.
+ */
+class Rule {
     private Purpose purpose;
     private ActionType actionType;
     private Decision decision;
@@ -47,7 +56,7 @@ public class Rule {
     }
 
 
-    Purpose getPurpose() {
+    public Purpose getPurpose() {
         assert repOk();
         return this.purpose;
     }

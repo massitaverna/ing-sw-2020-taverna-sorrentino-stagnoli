@@ -197,7 +197,7 @@ public class MainServer {
     }//class
 
     /**
-     * To run the server adn make it listen for clients
+     * To run the server and make it listen for clients
      * @throws IOException
      */
     public void runServer() throws IOException {

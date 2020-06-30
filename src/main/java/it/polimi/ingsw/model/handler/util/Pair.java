@@ -1,5 +1,9 @@
 package it.polimi.ingsw.model.handler.util;
 
+/**
+ * An ordered couple of objects of type {@link T}
+ * @param <T> the type of elements inside this pair
+ */
 public class Pair<T> {
     private final T first;
     private final T second;

@@ -8,6 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class is the Factory for RequestHandler objects.
+ * @see RequestHandler
+ */
 public class EnhancedRequestHandlerCreator {
     private final String god;
     private static final List<Rule> standardRules = new ArrayList<>();
@@ -20,6 +24,11 @@ public class EnhancedRequestHandlerCreator {
     public EnhancedRequestHandlerCreator() {
         this.god = null;
     }
+
+    /**
+     * Gets a new instance of this class, useful to get a RequestHandler for the specified god
+     * @param god the name of the god whose rules will be used by the RequestHandler
+     */
     public EnhancedRequestHandlerCreator(String god) {
         if (!god.equals("None")) {
             this.god = god;
@@ -28,6 +37,11 @@ public class EnhancedRequestHandlerCreator {
         }
     }
 
+    /**
+     * Factory method
+     * @return a RequestHandler for the desired god (or with only the standard rules if no god
+     * is specified)
+     */
     public RequestHandler createHandler() {
         List<Rule> rules = createRulesList();
         RuleHandler ruleHandler = new ConcreteHandler(rules);

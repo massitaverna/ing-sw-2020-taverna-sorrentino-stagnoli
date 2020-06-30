@@ -14,7 +14,77 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
-
+/**
+ * A parser for rules defined in a domain-specific language.
+ * This class allows the user to get a list of rules based on a file written in the language
+ * defined below. The expressive power of the language is enough to represent every rule dictated
+ * by any God Effect and the standard rules.
+ *
+ * <h2>Language specification</h2>
+ * <h3>Main tags</h3>
+ * The main tags define which kind of object will be described in the following lines.
+ * They should be written with a colon at their end. For example:<br>
+ * <pre>{@code
+ * rule:
+ *     ...}</pre>
+ * <ul>
+ *     <li>rule: the following lines will describe the attributes of a rule, and this rule will
+ *     be added to the ones that the user can get by calling the method {@code getRules()}.
+ *     <li>secondary rule: the following lines will describe the attributes of a rule,
+ *     but this rule won't be added to the ones that the user can get by calling the method
+ *     {@code getRules()}. On the contrary, this rule must be generated at least by one other rule
+ *     (see parameter "generatedBy" below).
+ *     <li>file: the following lines will describe another file (its path and other optional parameters)
+ *     that will be parsed using another instance of this class. The rules defined in that file
+ *     will be added to the ones that the user can get by calling the method {@code getRules()}.
+ *     <li>seocndary file: the following lines will describe another file (its path and other optional
+ *     parameters) that will be parsed using another instance of this class. The rules defined in that
+ *     file won't be added to the ones that the user can get by calling the method {@code getRules()}.
+ *     On the contrary, they must be generated at least by one other rule (see parameter "generatedBy"
+ *     below).
+ *     </li>
+ * </ul>
+ * <h3>Rule parameters</h3>
+ * These parameters can be specified after a "rule" main tag and need one tab of indentation.
+ * They must be written in a notation like:<br>
+ *     <pre>{@code
+ *     parameter = value}</pre>
+ * <ul>
+ *     <li>purpose: a value of the enumeration {@link Purpose}
+ *     <li>actionType: a value of the enumeration {@link ActionType}
+ *     <li>decision: a value of the enumeration {@link Decision}
+ *     <li>target: a value of the enumeration {@link Target}
+ *     <li>buildLevel: a value of the enumeration {@link Level}
+ *     <li>forceSpaceFunction: a coordinate representing the destination of a "force", specified as
+ *     described in the documentation of {@link LambdaParser}
+ *     <li>id: a user-defined name to reference a rule uniquely (to be used for {@code GENERATION} rules
+ *     <li>generatedBy: an ID that specifies which rule will generate this one. This parameter is
+ *     compulsory if the rule is secondary.
+ *     </li>
+ * </ul>
+ * <h4>Condition of the rule</h4>
+ * The condition of the rule can be specified with the tag {@code condition}, followed by a colon.
+ * For example:<br>
+ * <pre>{@code
+ * condition:
+ *     (condition goes here)}</pre>
+ * If the condition contains references to positions of the previous move (see {@code oldBefore}
+ * and {@code oldAfter} in {@code LambdaParser}'s documentation) then the tag {@code symbolicCondition}
+ * must be used instead.<br>
+ *     These tags require one tab of indentation, too.
+ * <h3>File parameters</h3>
+ * These parameters can be specified after a "file" tag and need one tab of indentation. The format
+ * is like the one of rule parameters:<br>
+ * <pre>{@code
+ * parameter = value}</pre>
+ * <ul>
+ *     <li>source: the path to the file
+ *     <li>generatedBy: an ID that specifies which rule will generate the ones contained in this file.
+ *     This parameter is compulsory if the file is secondary.
+ *     </li>
+ * </ul>
+ *
+ */
 public class RuleParser {
     private String line;
     private int numLine;
@@ -38,7 +108,11 @@ public class RuleParser {
     private final Scanner scanner;
 
 
-
+    /**
+     * Constructor method
+     * @param file the file to be parsed
+     * @throws FileNotFoundException when the file doesn't exist
+     */
     public RuleParser(String file) throws FileNotFoundException {
         numLine = 0;
         indentationLevel = 0;
@@ -53,6 +127,10 @@ public class RuleParser {
         scanner = new Scanner(inputStream);
     }
 
+    /**
+     * Parses the file
+     * @throws RuleParserException when the file contains syntax mistakes
+     */
     public void parse() throws RuleParserException {
         //State check
         if (rules == null) {
@@ -162,6 +240,10 @@ public class RuleParser {
 
     }
 
+    /**
+     * Returns the rules specified in the file
+     * @return a list containing the rules specified in the file
+     */
     public List<Rule> getRules() {
         if (rules == null) {
             throw new IllegalStateException("A parsing is needed before calling this method.");
