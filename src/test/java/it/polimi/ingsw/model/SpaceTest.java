@@ -78,4 +78,11 @@ public class SpaceTest {
         s.setLevel(Level.DOME);
         assertTrue(s.isDome());
     }
+
+    @Test
+    public void nonEmptyRepresentation() {
+        Space s = new Space();
+        assertNotNull(s.toString());
+        assertNotEquals("", s.toString());
+    }
 }

@@ -17,7 +17,7 @@ public class Pair<T> {
         if (x == 0) {
             return first;
         }
-        else if (x==1) {
+        else if (x == 1) {
             return second;
         }
 

@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gui;
+package it.polimi.ingsw.client.gui;
 
 import it.polimi.ingsw.model.*;
 import it.polimi.ingsw.observer.Observer;

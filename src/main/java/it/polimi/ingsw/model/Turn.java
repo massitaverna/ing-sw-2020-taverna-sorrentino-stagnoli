@@ -87,6 +87,7 @@ public class Turn implements Cloneable {
         return new ArrayList<>(selectableWorkers);
     }
 
+    /*
     public Turn clone() {
         Turn result = new Turn();
         result.movableSpaces = getMovableSpacesCopy();
@@ -98,4 +99,5 @@ public class Turn implements Cloneable {
 
         return result;
     }
+     */
 }

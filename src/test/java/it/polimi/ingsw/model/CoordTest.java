@@ -4,6 +4,9 @@ import it.polimi.ingsw.exceptions.model.InvalidCoordinatesException;
 import it.polimi.ingsw.exceptions.model.WorkerNotFoundException;
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public class CoordTest {
 
     @Test
@@ -15,12 +18,12 @@ public class CoordTest {
         Coord c5 = new Coord(4, 5);
         Coord c6 = new Coord(5, 4);
 
-        assert( !Coord.validCoord(c1) );
-        assert( !Coord.validCoord(c2) );
-        assert( !Coord.validCoord(c3) );
-        assert( !Coord.validCoord(c4) );
-        assert( !Coord.validCoord(c5) );
-        assert( !Coord.validCoord(c6) );
+        assertFalse(Coord.validCoord(c1));
+        assertFalse(Coord.validCoord(c2));
+        assertFalse(Coord.validCoord(c3));
+        assertFalse(Coord.validCoord(c4));
+        assertFalse(Coord.validCoord(c5));
+        assertFalse(Coord.validCoord(c6));
     }
 
     @Test
@@ -35,15 +38,27 @@ public class CoordTest {
         Coord left = new Coord(1, 2);
         Coord right = new Coord(3, 2);
 
-        assert ( !center.isNear(center) );
-        assert( center.isNear(up) );
-        assert( center.isNear(upLeft) );
-        assert( center.isNear(upRight) );
-        assert( center.isNear(bottom) );
-        assert( center.isNear(bottomLeft) );
-        assert( center.isNear(bottomRight) );
-        assert( center.isNear(left) );
-        assert( center.isNear(right) );
+        assertTrue(!center.isNear(center) );
+        assertTrue( center.isNear(up) );
+        assertTrue( center.isNear(upLeft) );
+        assertTrue( center.isNear(upRight) );
+        assertTrue( center.isNear(bottom) );
+        assertTrue( center.isNear(bottomLeft) );
+        assertTrue( center.isNear(bottomRight) );
+        assertTrue( center.isNear(left) );
+        assertTrue( center.isNear(right) );
+    }
+
+    @Test
+    public void isNearTest_exceptions() {
+        Coord c1 = new Coord(-1, 0);
+        Coord c2 = new Coord(0, 0);
+        try {
+            c1.isNear(c2);
+        } catch (InvalidCoordinatesException ignored) {}
+        try {
+            c2.isNear(c1);
+        } catch (InvalidCoordinatesException ignored) {}
     }
 
     @Test
@@ -54,10 +69,20 @@ public class CoordTest {
         String bottomRight = "E5";
         String center = "C3";
 
-        assert (Coord.convertStringToCoord(topLeft).equals(new Coord(0,0)));
-        assert (Coord.convertStringToCoord(topRight).equals(new Coord(4,0)));
-        assert (Coord.convertStringToCoord(bottomLeft).equals(new Coord(0,4)));
-        assert (Coord.convertStringToCoord(bottomRight).equals(new Coord(4,4)));
-        assert (Coord.convertStringToCoord(center).equals(new Coord(2,2)));
+        assertTrue(Coord.convertStringToCoord(topLeft).equals(new Coord(0,0)));
+        assertTrue (Coord.convertStringToCoord(topRight).equals(new Coord(4,0)));
+        assertTrue (Coord.convertStringToCoord(bottomLeft).equals(new Coord(0,4)));
+        assertTrue (Coord.convertStringToCoord(bottomRight).equals(new Coord(4,4)));
+        assertTrue (Coord.convertStringToCoord(center).equals(new Coord(2,2)));
+    }
+
+    @Test
+    public void convertStringToCoordTest_exceptions() {
+        try {
+            Coord.convertStringToCoord("A5C");
+        } catch (IllegalArgumentException ignored) {}
+        try {
+            Coord.convertStringToCoord("F1");
+        } catch (IllegalArgumentException ignored) {}
     }
 }

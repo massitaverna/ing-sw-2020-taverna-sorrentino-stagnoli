@@ -1,15 +1,11 @@
-package it.polimi.ingsw;
+package it.polimi.ingsw.client;
 
-import it.polimi.ingsw.gui.Board;
-import it.polimi.ingsw.gui.Home;
+import it.polimi.ingsw.client.gui.Home;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 public class ClientMainGUI extends Application {
 

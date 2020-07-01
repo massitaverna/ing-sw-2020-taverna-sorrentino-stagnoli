@@ -1,14 +1,13 @@
 package it.polimi.ingsw.model.handler;
 
-import it.polimi.ingsw.model.GameModel;
-import it.polimi.ingsw.model.God;
+
 import it.polimi.ingsw.model.Level;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+
 
 public class RuleTest {
 
@@ -76,6 +75,17 @@ public class RuleTest {
         //---
 
         r.setSymbolicCondition((a, b, c) -> true);
+    }
+
+    @Test
+    public void nonEmptyRepresentation() {
+        Rule r = new Rule();
+        r.setPurpose(Purpose.VALIDATION);
+        r.setDecision(Decision.GRANT);
+        r.setActionType(ActionType.MOVE);
+        String s = r.toString();
+        assertNotNull(s);
+        assertNotEquals("", s);
     }
 
 }

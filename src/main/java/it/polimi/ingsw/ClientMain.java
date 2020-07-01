@@ -1,6 +1,7 @@
 package it.polimi.ingsw;
 
 import it.polimi.ingsw.client.ClientCLI;
+import it.polimi.ingsw.client.ClientMainGUI;
 import it.polimi.ingsw.server.Connection;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ import java.util.regex.Pattern;
 
 //TODO: async read from server
 
-public class ClientMainCLI
+public class ClientMain
 {
     public static void main( String[] args ) {
 

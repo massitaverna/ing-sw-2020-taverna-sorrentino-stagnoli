@@ -1,4 +1,4 @@
-package it.polimi.ingsw.gui;
+package it.polimi.ingsw.client.gui;
 
 import com.google.gson.Gson;
 import it.polimi.ingsw.model.God;

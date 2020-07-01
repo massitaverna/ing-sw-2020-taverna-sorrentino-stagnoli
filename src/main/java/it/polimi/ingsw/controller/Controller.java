@@ -11,11 +11,11 @@ import it.polimi.ingsw.view.RemotePlayerView;
 
 import java.util.List;
 
-public class RealController implements PlayerViewEventListener, ChallengerViewEventListener {
+public class Controller implements PlayerViewEventListener, ChallengerViewEventListener {
     private final GameModel model;
     private final Setup setup;
 
-    public RealController(GameModel model) {
+    public Controller(GameModel model) {
         this.model = model;
         setup = new Setup(this.model);
     }

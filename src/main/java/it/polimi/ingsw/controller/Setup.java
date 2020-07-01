@@ -128,20 +128,6 @@ public class Setup {
         addNewPlayer(new Player(nickname));
     }
 
-    /*
-    public void onColorChosen(EventSource source, Color color) {
-        String nickname = ((PlayerView) source).getNickname();
-        try {
-            Player player = model.getPlayerByNickname(nickname);
-            setPlayerColor(player, color);
-        }
-        catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-            System.out.println("View's and Model's nicknames mismatch.");
-        }
-    }
-     */
-
     public void onNumberOfPlayersChosen(EventSource source, int num) {
         setNumPlayers(num);
     }

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server;
 
-import it.polimi.ingsw.controller.RealController;
+import it.polimi.ingsw.controller.Controller;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.view.RemotePlayerView;
 
@@ -53,7 +53,7 @@ public class Lobby {
     }*/
 
     private GameModel model;
-    private RealController controller;
+    private Controller controller;
     private int numPlayers;
 
     private List<RemotePlayerView> playersViews;
@@ -77,7 +77,7 @@ public class Lobby {
             System.out.println("Exiting the application.");
             System.exit(1);
         }
-        this.controller = new RealController(this.model);
+        this.controller = new Controller(this.model);
         this.playersViews = new ArrayList<>();
         this.numPlayers = numPlayers;
         //new Thread(new PingChecker(), "PingChecker").start();
