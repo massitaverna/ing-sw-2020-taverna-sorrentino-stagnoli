@@ -11,7 +11,9 @@ public class ServerMain {
             MainServer server = new MainServer();
             System.out.println("Starting server...");
             server.runServer();
-        } catch (IOException e) {
+        } catch (Exception e) {
+            System.out.println("An unexpected exception occurred. Below you find the stack " +
+                    "trace, in order to help you find the cause.");
             e.printStackTrace();
         }
     }

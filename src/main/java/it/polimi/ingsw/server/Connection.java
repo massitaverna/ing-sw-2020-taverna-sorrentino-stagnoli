@@ -98,10 +98,18 @@ public class Connection extends Observable<Object> implements Runnable {
      */
     @Override
     public void run() {
-        try{
+        try {
             while(isActive()){
                 //notify the Player View that a message is arrived from the client
-                Object received = this.in.readObject();
+                Object received;
+                try {
+                    received = this.in.readObject();
+                } catch (Exception e) {
+                    System.out.println("A network error occurred: " + e.getMessage());
+                    System.out.println("Closing connection...");
+                    //e.printStackTrace();
+                    return;
+                }
                 notify(received);
             }
         } catch (Exception e) {

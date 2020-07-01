@@ -404,7 +404,9 @@ public class LambdaParserTest {
         s = "compareLevels(before, after, =0)";
         condition = LambdaParser.extractPredicate(s);
         Level randomLevel = Level.values()[r.nextInt(Level.values().length)];
-        coordList = board.getAllCoord().stream()
+        List<Coord> allCoord = board.getAllCoord();
+        assertEquals(25, allCoord.size());
+        coordList = allCoord.stream()
                 .filter(co -> board.getSpace(co).getHeight() == randomLevel)
                 .collect(Collectors.toList());
         c = coordList.get(0);

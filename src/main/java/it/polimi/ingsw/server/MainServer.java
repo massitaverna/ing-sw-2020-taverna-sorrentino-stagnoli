@@ -207,7 +207,8 @@ public class MainServer {
                 newSocket.setKeepAlive(true);
                 pendingSockets.add(newSocket);
                 executor.submit(new ClientInitializer(newSocket, this));
-            } catch (IOException e) {
+            } catch (Exception e) {
+                System.out.println("A network problem occurred.");
                 System.out.println("Closing server...");
                 break;
             }
