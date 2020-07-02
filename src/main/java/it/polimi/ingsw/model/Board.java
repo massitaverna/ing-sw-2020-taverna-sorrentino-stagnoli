@@ -282,7 +282,7 @@ public class Board implements Cloneable, Serializable {
         String horizontalBorder =   "  +---------+---------+---------+---------+---------+\n";
         String topSpaceLine =       "  |         |         |         |         |         |\n";
 
-        String stdColor = (char) 27 + "[39m";
+        String stdColor = "\033[39m";
 
         String boardString = numLine + horizontalBorder;
         String workerLine;
@@ -304,13 +304,13 @@ public class Board implements Cloneable, Serializable {
                         String coloredWorker = "";
                         switch (workerInSpace.getColor()) {
                             case RED:
-                                coloredWorker = (char) 27 + "[31mW";
+                                coloredWorker = "\033[31mW";
                                 break;
                             case BLUE:
-                                coloredWorker = (char) 27 + "[34mW";
+                                coloredWorker = "\033[34mW";
                                 break;
                             case YELLOW:
-                                coloredWorker = (char) 27 + "[33mW";
+                                coloredWorker = "\033[33mW";
                                 break;
                         }
                         workerLine = workerLine + "    " + coloredWorker + stdColor + "    |";

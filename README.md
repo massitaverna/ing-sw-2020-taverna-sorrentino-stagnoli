@@ -29,6 +29,14 @@ In order to use this piece of software it is required that you have **Maven** an
 
 To install Maven follow this [guide](https://maven.apache.org/install.html) on their site.
 
+### If you are using Windows
+
+Our CLI version of the game uses escape sequences and in order to work properly in the windows cmd you'll have to run this command inside your terminal:
+
+```shell
+reg add HKEY_CURRENT_USER\Console /v VirtualTerminalLevel /t REG_DWORD /d 0x00000001 /f
+```
+
 ## How to use this software
 
 ### Generate the Jar
