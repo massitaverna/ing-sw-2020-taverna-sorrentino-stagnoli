@@ -62,7 +62,7 @@ Now you should see something like this:
 
 
 
-[target_folder]: https://imgur.com/OA061wr "Target folder"
+[target_folder]: https://i.imgur.com/OA061wr.png "Target folder"
 
 Le funzionalità sviluppate (cioè la riga corrispondenete al 30L)
 La coverage dei test: tipo una tabella che dica:
