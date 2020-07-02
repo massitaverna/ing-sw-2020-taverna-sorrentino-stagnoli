@@ -430,11 +430,18 @@ public class LambdaParser {
         }
 
         BiFunction<Pair<Coord>, Pair<Coord>, Coord> minuend = coords.get(0);
+        /*
         BiFunction<Pair<Coord>, Pair<Coord>, Coord> subtrahend =
                 (oldPair, cPair) -> new Coord(-coords.get(1).apply(cPair, oldPair).x,
                         -coords.get(1).apply(cPair, oldPair).y);
         BiFunction<Pair<Coord>, Pair<Coord>, Coord> diffFunction =
                 (oldPair, cPair) -> minuend.apply(cPair, oldPair).sum(subtrahend.apply(cPair, oldPair));
+         */
+        BiFunction<Pair<Coord>, Pair<Coord>, Coord> subtrahend =
+                (oldPair, cPair) -> new Coord(-coords.get(1).apply(oldPair, cPair).x,
+                        -coords.get(1).apply(oldPair, cPair).y);
+        BiFunction<Pair<Coord>, Pair<Coord>, Coord> diffFunction =
+                (oldPair, cPair) -> minuend.apply(oldPair, cPair).sum(subtrahend.apply(oldPair, cPair));
         return diffFunction;
     }
 }

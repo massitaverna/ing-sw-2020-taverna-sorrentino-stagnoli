@@ -9,6 +9,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
+// Note: I can use Apollo, Artemis or Atlas as "other gods" when testing a particular god: they have no
+//       "side effects"
 public class TestUtils {
 
     public static GameModel prepareModel(String inputFile) throws PrepareModelException {

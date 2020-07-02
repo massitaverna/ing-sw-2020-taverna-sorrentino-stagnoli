@@ -5,12 +5,10 @@ import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.server.Connection;
 import it.polimi.ingsw.view.RemotePlayerView;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -66,9 +64,6 @@ public class ControllerTest {
         List<String> gods = Arrays.asList("Apollo", "Atlas", "Demeter");
         gods = new ArrayList<>(gods);
         controller.onGodsChosen(view1, gods);
-        //assert model.getAvailableGods().get(0).getName().equals("Apollo");
-        //assert model.getAvailableGods().get(1).getName().equals("Atlas");
-        //assert model.getAvailableGods().get(2).getName().equals("Demeter");
     }
 
     private void chooseGod() {
@@ -77,16 +72,16 @@ public class ControllerTest {
         controller.onGodChosen(view2, gods.remove(0));
         controller.onGodChosen(view3, gods.remove(0));
         controller.onGodChosen(view1, gods.remove(0));
-        assert model.getPlayerByNickname(view2.getNickname()).getGod().getName().equals("Apollo");
-        assert model.getPlayerByNickname(view3.getNickname()).getGod().getName().equals("Atlas");
-        assert model.getPlayerByNickname(view1.getNickname()).getGod().getName().equals("Demeter");
+        assertEquals(model.getPlayerByNickname(view2.getNickname()).getGod().getName(), "Apollo");
+        assertEquals(model.getPlayerByNickname(view3.getNickname()).getGod().getName(), "Atlas");
+        assertEquals(model.getPlayerByNickname(view1.getNickname()).getGod().getName(), "Demeter");
     }
 
-    private void startPlayer(){
+    private void startPlayer() {
         controller.onStartPlayerChosen(view1, view1.getNickname());
     }
 
-    private void workerInit(){
+    private void workerInit() {
         controller.onWorkerInitialization(view1, new Coord(0, 0));
         controller.onWorkerInitialization(view1, new Coord(0, 1));
         controller.onWorkerInitialization(view2, new Coord(3, 1));
@@ -95,19 +90,19 @@ public class ControllerTest {
         controller.onWorkerInitialization(view3, new Coord(2, 1));
     }
 
-    private void chooseWorker(){
+    private void chooseWorker() {
         controller.onWorkerChosen(view1, new Coord(0, 0));
     }
 
-    private void move(){
+    private void move() {
         controller.onMoveChosen(view1, new Coord(1, 0));
     }
 
-    private void build(){
+    private void build() {
         controller.onBuildChosen(view1, new Coord(0, 0), Level.LVL1);
     }
 
-    private void skip(){
+    private void skip() {
         controller.skipAction(view1);
     }
 }
