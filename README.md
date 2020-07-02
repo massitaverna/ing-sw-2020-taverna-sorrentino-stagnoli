@@ -33,7 +33,7 @@ To install Maven follow this [guide](https://maven.apache.org/install.html) on t
 
 ### Generate the Jar
 
-To run this piece of software you'll need to generate a .jar file. After you've cloned this repository make sure you are in the main directory called _"ing-sw-2020-taverna-sorrentino-stagnoli"_. Open your terminal in this position and type the following commands (it's the same for all operating system).
+To run this piece of software you'll need to generate a .jar file. After you've cloned this repository make sure you are in the main directory called **_"ing-sw-2020-taverna-sorrentino-stagnoli"_**. Open your terminal in this position and type the following commands (it's the same for all operating system).
 
 This is just a good practice to make sure it's a clean generation
 
@@ -47,7 +47,7 @@ This is the actual command that will generate the jar file
 mvn package shade:shade
 ```
 
-After the jar is created you'll need to change directory into the _"target"_ folder. Simply type
+After the jar is created you'll need to change directory into the **_"target"_** folder. Simply type
 
 ```shell
 cd target
@@ -58,16 +58,26 @@ Now you should see something like this:
 
 ### Run the server
 
+Now that you are in the **_"target"_** folder all you need to do to run the server is type this simple command in your terminal:
+
+```shell
+java -cp GC6-1.0-SNAPSHOT.jar it.polimi.ingsw.ServerMain
+```
+
+If you've renamed the jar file use the new name instead of **GC6-1.0-SNAPSHOT.jar**.
+
 ### Run the client
 
+Now that you are in the **_"target"_** folder all you need to do to run the client is type this simple command in your terminal:
+
+```shell
+java -cp GC6-1.0-SNAPSHOT.jar it.polimi.ingsw.ClientMain
+```
+
+If you've renamed the jar file use the new name instead of **GC6-1.0-SNAPSHOT.jar**.
+
+You'll be prompted to choose if you want to use a CLI or a GUI, make your choice and enjoy the game.
 
 
 [target_folder]: https://i.imgur.com/OA061wr.png "Target folder"
 
-Le funzionalità sviluppate (cioè la riga corrispondenete al 30L)
-La coverage dei test: tipo una tabella che dica:
-model --> 100%
-controller --> 100%
-Prerequisiti per l'installazione (java 14 + maven)
-Come generare i jar da maven
-Come avviare client e server
