@@ -25,7 +25,7 @@ public class Controller implements PlayerViewEventListener, ChallengerViewEventL
         String nickname = ((RemotePlayerView) source).getNickname();
 
         if (!isCurrentPlayer(nickname)) {
-            throw new IllegalStateException("Player " + nickname + "tried to choose a " +
+            throw new IllegalStateException("Player " + nickname + " tried to choose a " +
                     "worker not in his turn.");
         }
 

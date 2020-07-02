@@ -101,10 +101,17 @@ public class GameModel implements EventSource {
 
     // STATE FUNCTIONS
 
+    /**
+     * To change the game state
+     * @param state the new state
+     */
     public void changeState(ModelState state) {
         this.state = state;
     }
 
+    /**
+     * To do the next step of the current state
+     */
     public void nextStep() {
         state.nextStep();
     }
@@ -112,18 +119,34 @@ public class GameModel implements EventSource {
 
     // SETUP FUNCTIONS
 
+    /**
+     * To set the number of players for the game
+     * @param numPlayers the number of players
+     */
     public void setNumPlayers(int numPlayers) {
         this.numPlayers = numPlayers;
     }
 
+    /**
+     * To get the number of players for this game
+     * @return the number of players for this game
+     */
     public int getNumPlayers() {
         return numPlayers;
     }
 
+    /**
+     * To check if all players arrived
+     * @return true if all players arrived
+     */
     public boolean allPlayersArrived() {
         return this.queue.size() == this.numPlayers;
     }
 
+    /**
+     * To add a new player in the game
+     * @param player the new player
+     */
     public void addNewPlayer(Player player) {
         if (queue.size() == this.numPlayers) {
             throw new GameFullException("Game is full.");
@@ -148,16 +171,28 @@ public class GameModel implements EventSource {
         modelListeners.forEach(l -> l.onPlayerAdded(player.getNickname(), queue.size(), numPlayers));
     }
 
+    /**
+     * To get all the available gods
+     * @return a list of available gods
+     */
     public List<God> getAvailableGods() {
         return new ArrayList<>(godsList);
     }
 
+    /**
+     * To get all the nicknames already in the game
+     * @return a list of nicknames already in the game
+     */
     public List<String> getPlayersNicknames() {
         return queue.stream()
                 .map(Player::getNickname)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * To set the gods for the game
+     * @param gods the list of gods
+     */
     public void setGods(List<String> gods) {
         this.godsList =
                 godsList.stream()
@@ -169,6 +204,12 @@ public class GameModel implements EventSource {
         nextPlayer();
     }
 
+    /**
+     * to set a color to a player of the game
+     * @param p the player
+     * @param c the color
+     * @throws IllegalArgumentException when player is not in the game or the color has already been assigned
+     */
     public void setPlayerColor(Player p, Color c) throws IllegalArgumentException {
         //Check that player p is part of the game
         if (!this.queue.contains(p)) {
@@ -183,6 +224,12 @@ public class GameModel implements EventSource {
         this.colors.remove(c);
     }
 
+    /**
+     * To assign a god to a player
+     * @param p the player
+     * @param g the gdd
+     * @throws IllegalArgumentException when the player is not in the game or the god has already been assigned
+     */
     public void assignGodToPlayer(Player p, God g) throws IllegalArgumentException {
         //Check that player p is part of the game
         if (!this.queue.contains(p)) {
@@ -201,6 +248,11 @@ public class GameModel implements EventSource {
         }
     }
 
+    /**
+     * To set a player as the starting player
+     * @param startPlayer the player to set
+     * @throws IllegalArgumentException when the player is not part of the game
+     */
     public void setStartPlayer(Player startPlayer) throws IllegalArgumentException {
 
         if (!queue.contains(startPlayer))
@@ -218,6 +270,10 @@ public class GameModel implements EventSource {
         currentPlayer.setAsStartPlayer();
     }
 
+    /**
+     * To initialize workers position of the current player on the board
+     * @param c the coordinates to place the worker
+     */
     public void initializeWorker(Coord c) {
 
         board.initializeWorker(currentPlayer, c);
@@ -234,6 +290,12 @@ public class GameModel implements EventSource {
 
     // GAME FUNCTIONS
 
+    /**
+     * To get a reference to a player by his nickname
+     * @param nick the nickname
+     * @return a reference to the Player object of the game with the given nickname
+     * @throws IllegalArgumentException when the nickname is not in the game
+     */
     public Player getPlayerByNickname(String nick) throws IllegalArgumentException {
 
         Player res = queue.stream()
@@ -246,20 +308,36 @@ public class GameModel implements EventSource {
         }
     }
 
+    /**
+     * To get a reference to the current player
+     * @return reference to the current player
+     */
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
 
+    /**
+     * Get a copy of the list of players of the game
+     * @return a copy of the list of players of the game
+     */
     public List<Player> getPlayers() {
         List<Player> result = new ArrayList<>();
         queue.forEach(p -> result.add(p.clone()));
         return result;
     }
 
+    /**
+     * To get a copy of the board of the game
+     * @return a copy of the board of the game
+     */
     public Board getBoard() {
         return this.board.clone();
     }
 
+    /**
+     * To set the worker choice of the current player
+     * @param workerPos the coordinates of the chosen worker
+     */
     public void setWorkerChoice(Coord workerPos) {
         Worker selected = board.getWorkerByPosition(workerPos);
 
@@ -276,6 +354,10 @@ public class GameModel implements EventSource {
         currentWorker = selected;
     }
 
+    /**
+     * To make the selected move for the selected worker
+     * @param moveChoice the coordinates for the move
+     */
     public void setMove(Coord moveChoice) {
         if (!turn.getMovableSpacesCopy().contains(moveChoice)) {
             notifyAction();
@@ -307,6 +389,10 @@ public class GameModel implements EventSource {
 
     }
 
+    /**
+     * To make the selected build for the selected worker
+     * @param buildChoice the coordinates for the build
+     */
     public void setBuild(Coord buildChoice, Level level) {
         if (!turn.getBuildableSpacesCopy().get(level).contains(buildChoice)) {
             notifyAction();
@@ -334,6 +420,9 @@ public class GameModel implements EventSource {
 
     }
 
+    /**
+     * To end the turn of the current player
+     */
     public void setEnd() {
 
         if (turn.hasEnded()) {
@@ -363,6 +452,9 @@ public class GameModel implements EventSource {
         }
     }
 
+    /**
+     * To set the next player in the queue as the current player, and to put the current at the end of the queue
+     */
     public void nextPlayer() {
         //Check the game is ready
         if (allPlayersArrived()) {
@@ -375,10 +467,18 @@ public class GameModel implements EventSource {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean hasNewCycleBegun() {
         return currentPlayer.isStartPlayer();
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean hasNewTurnBegun() {
         return currentWorker == null;
     }
@@ -512,6 +612,10 @@ public class GameModel implements EventSource {
         modelListeners.forEach(l -> l.onMessage(message));
     }
 
+    /**
+     * To add a listener to this game model
+     * @param listener the listener to add
+     */
     @Override
     public void addListener(Listener listener) {
         if (!(listener instanceof ModelEventListener)) {

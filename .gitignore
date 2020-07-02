@@ -99,3 +99,4 @@ target
 
 GC6.iml
 # End of https://www.gitignore.io/api/intellij
+/classes/

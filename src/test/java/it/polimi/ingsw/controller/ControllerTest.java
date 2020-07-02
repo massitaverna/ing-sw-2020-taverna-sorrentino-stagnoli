@@ -1,6 +1,8 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.GameModel;
+import it.polimi.ingsw.model.Level;
 import it.polimi.ingsw.server.Connection;
 import it.polimi.ingsw.view.RemotePlayerView;
 import org.junit.BeforeClass;
@@ -30,7 +32,9 @@ public class ControllerTest {
         view1 = new RemotePlayerView("A", new Connection(null,null,null));
         view2 = new RemotePlayerView("B", new Connection(null,null,null));
         view3 = new RemotePlayerView("C", new Connection(null,null,null));
-
+        model.addListener(view1);
+        model.addListener(view2);
+        model.addListener(view3);
     }
 
     @Test
@@ -39,6 +43,12 @@ public class ControllerTest {
         addPlayers();
         chooseGods();
         chooseGod();
+        startPlayer();
+        workerInit();
+        chooseWorker();
+        move();
+        build();
+        skip();
     }
 
     private void numPlayers() {
@@ -47,22 +57,57 @@ public class ControllerTest {
     }
 
     private void addPlayers() {
-        controller.onNicknameChosen(view1, "A");
-        controller.onNicknameChosen(view2, "B");
-        controller.onNicknameChosen(view3, "C");
+        controller.onNicknameChosen(view1, view1.getNickname());
+        controller.onNicknameChosen(view2, view2.getNickname());
+        controller.onNicknameChosen(view3, view3.getNickname());
     }
 
     private void chooseGods() {
-        List<String> gods = Arrays.asList("Apollo", "Artemis", "Atlas");
+        List<String> gods = Arrays.asList("Apollo", "Atlas", "Demeter");
+        gods = new ArrayList<>(gods);
         controller.onGodsChosen(view1, gods);
+        //assert model.getAvailableGods().get(0).getName().equals("Apollo");
+        //assert model.getAvailableGods().get(1).getName().equals("Atlas");
+        //assert model.getAvailableGods().get(2).getName().equals("Demeter");
     }
 
     private void chooseGod() {
-        List<String> gods = Arrays.asList("Apollo", "Artemis", "Atlas");
+        List<String> gods = Arrays.asList("Apollo", "Atlas", "Demeter");
         gods = new ArrayList<>(gods);
         controller.onGodChosen(view2, gods.remove(0));
         controller.onGodChosen(view3, gods.remove(0));
         controller.onGodChosen(view1, gods.remove(0));
+        assert model.getPlayerByNickname(view2.getNickname()).getGod().getName().equals("Apollo");
+        assert model.getPlayerByNickname(view3.getNickname()).getGod().getName().equals("Atlas");
+        assert model.getPlayerByNickname(view1.getNickname()).getGod().getName().equals("Demeter");
+    }
 
+    private void startPlayer(){
+        controller.onStartPlayerChosen(view1, view1.getNickname());
+    }
+
+    private void workerInit(){
+        controller.onWorkerInitialization(view1, new Coord(0, 0));
+        controller.onWorkerInitialization(view1, new Coord(0, 1));
+        controller.onWorkerInitialization(view2, new Coord(3, 1));
+        controller.onWorkerInitialization(view2, new Coord(3, 2));
+        controller.onWorkerInitialization(view3, new Coord(2, 0));
+        controller.onWorkerInitialization(view3, new Coord(2, 1));
+    }
+
+    private void chooseWorker(){
+        controller.onWorkerChosen(view1, new Coord(0, 0));
+    }
+
+    private void move(){
+        controller.onMoveChosen(view1, new Coord(1, 0));
+    }
+
+    private void build(){
+        controller.onBuildChosen(view1, new Coord(0, 0), Level.LVL1);
+    }
+
+    private void skip(){
+        controller.skipAction(view1);
     }
 }
