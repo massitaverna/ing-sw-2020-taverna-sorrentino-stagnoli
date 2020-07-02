@@ -1,5 +1,6 @@
 package it.polimi.ingsw.controller;
 
+import it.polimi.ingsw.exceptions.model.InvalidCoordinatesException;
 import it.polimi.ingsw.model.Coord;
 import it.polimi.ingsw.model.GameModel;
 import it.polimi.ingsw.model.Level;
@@ -8,7 +9,10 @@ import it.polimi.ingsw.view.RemotePlayerView;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -21,6 +25,7 @@ public class ControllerTest {
     private static RemotePlayerView view1;
     private static RemotePlayerView view2;
     private static RemotePlayerView view3;
+    private static RemotePlayerView view4;
 
 
     @BeforeClass
@@ -30,6 +35,7 @@ public class ControllerTest {
         view1 = new RemotePlayerView("A", new Connection(null,null,null));
         view2 = new RemotePlayerView("B", new Connection(null,null,null));
         view3 = new RemotePlayerView("C", new Connection(null,null,null));
+        view4 = new RemotePlayerView("D", new Connection(null,null,null));
         model.addListener(view1);
         model.addListener(view2);
         model.addListener(view3);
@@ -70,6 +76,15 @@ public class ControllerTest {
         List<String> gods = Arrays.asList("Apollo", "Atlas", "Demeter");
         gods = new ArrayList<>(gods);
         controller.onGodChosen(view2, gods.remove(0));
+        try {
+            controller.onGodChosen(view2, gods.get(0));
+        } catch (Exception ignored) {}
+        try {
+            controller.onGodChosen(view3, "Gigi");
+        } catch (Exception ignored) {}
+        try {
+            controller.onGodChosen(view4, "Atlas");
+        } catch (Exception ignored) {}
         controller.onGodChosen(view3, gods.remove(0));
         controller.onGodChosen(view1, gods.remove(0));
         assertEquals(model.getPlayerByNickname(view2.getNickname()).getGod().getName(), "Apollo");
@@ -78,12 +93,34 @@ public class ControllerTest {
     }
 
     private void startPlayer() {
+        try {
+            controller.onStartPlayerChosen(view2, view2.getNickname());
+        } catch (Exception ignored) {}
+        try {
+            controller.onStartPlayerChosen(view4, view4.getNickname());
+        } catch (Exception ignored) {}
         controller.onStartPlayerChosen(view1, view1.getNickname());
     }
 
     private void workerInit() {
+        try {
+            controller.onWorkerInitialization(view2, new Coord(3, 1));
+        } catch (Exception ignored) {}
+
         controller.onWorkerInitialization(view1, new Coord(0, 0));
+        try {
+            controller.onWorkerInitialization(view1, new Coord(0, 0));
+        } catch (Exception ignored) {}
+
         controller.onWorkerInitialization(view1, new Coord(0, 1));
+        try {
+            controller.onWorkerInitialization(view1, new Coord(3, 1));
+        } catch (Exception ignored) {}
+
+        try {
+            controller.onWorkerInitialization(view4, new Coord(3, 1));
+        } catch (Exception ignored) {}
+
         controller.onWorkerInitialization(view2, new Coord(3, 1));
         controller.onWorkerInitialization(view2, new Coord(3, 2));
         controller.onWorkerInitialization(view3, new Coord(2, 0));
@@ -92,17 +129,29 @@ public class ControllerTest {
 
     private void chooseWorker() {
         controller.onWorkerChosen(view1, new Coord(0, 0));
+        try {
+            controller.onWorkerChosen(view2, new Coord(3, 1));
+        }catch (IllegalStateException ignored){}
     }
 
     private void move() {
         controller.onMoveChosen(view1, new Coord(1, 0));
+        try {
+            controller.onMoveChosen(view2, new Coord(1, 0));
+        } catch (IllegalStateException ignored) {}
     }
 
     private void build() {
         controller.onBuildChosen(view1, new Coord(0, 0), Level.LVL1);
+        try {
+            controller.onBuildChosen(view2, new Coord(1, 0), Level.LVL1); }
+        catch (IllegalStateException ignored) {}
     }
 
     private void skip() {
         controller.skipAction(view1);
+        try {
+            controller.skipAction(view2);
+        } catch (Exception ignored) {}
     }
 }

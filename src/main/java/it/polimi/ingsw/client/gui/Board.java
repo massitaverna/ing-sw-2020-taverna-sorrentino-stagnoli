@@ -762,7 +762,7 @@ public class Board implements Initializable {
                             disableAll();
                             messagePopup("Game ended", "Game ended.");
                             System.out.println("Game Ended");
-                            close();
+
                             break;
 
                         case "onMessage":
