@@ -10,9 +10,9 @@ In our project we implemented:
 - CLI
 - GUI
 - Socket
-- 2 Advanced functionalities
+- 2 Advanced functionalities: Multiple games and Advanced gods
 
-The advanced functionalities we decided to implement allow the software to handle multiple games at the same times and you can play with 5 advanced gods. Theese new deities are Hera, Hestia, Limus, Triton and Zeus.
+The advanced deities are Hera, Hestia, Limus, Triton and Zeus.
 
 ## Test Coverage
 
