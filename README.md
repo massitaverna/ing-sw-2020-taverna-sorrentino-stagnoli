@@ -12,9 +12,9 @@ In our project we implemented:
 - Socket
 - 2 Advanced functionalities
 
-The advanced functionalities we decided to implement allow the software to handle multiple games at the same times and you can play with 5 advanced gods. Theese new deities are Zeus, Era ...
+The advanced functionalities we decided to implement allow the software to handle multiple games at the same times and you can play with 5 advanced gods. Theese new deities are Zeus, Era 
 
-## Test Coverage
+## Test Coverage
 
 | Package | Coverage |
 | ------- | :------: |
