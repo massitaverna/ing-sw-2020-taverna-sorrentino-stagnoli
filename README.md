@@ -54,7 +54,7 @@ cd target
 ```
 
 Now you should see something like this:
-![alt text][target_folder]
+![target_folder]
 
 ### Run the server
 
