@@ -22,7 +22,7 @@ public class Setup {
         model.setNumPlayers(numPlayers);
     }
 
-    public void addNewPlayer(Player p) {
+    private void addNewPlayer(Player p) {
         model.addNewPlayer(p); // The first player should be the Challenger
         if (model.allPlayersArrived()) {
             model.changeState(new GodSelectionState(model));
@@ -30,13 +30,13 @@ public class Setup {
         }
     }
 
-    public void setGods(List<String> gods) { // invoked by Challenger
+    private void setGods(List<String> gods) { // invoked by Challenger
         model.setGods(gods);
         model.nextStep();
 
     }
 
-    public void setStartPlayer(Player p) { // invoked by Challenger
+    private void setStartPlayer(Player p) { // invoked by Challenger
         model.setStartPlayer(p);
         model.nextStep();
     }
@@ -44,7 +44,7 @@ public class Setup {
     //NOTE: Order to assign the gods starts from the player after the Challenger
     //      Order to initialize workers' position starts from startPlayer
 
-    public void assignGodToPlayer(Player p, God g) throws IllegalArgumentException,
+    private void assignGodToPlayer(Player p, God g) throws IllegalArgumentException,
             IllegalStateException {
 
         if (p == null) {
@@ -71,7 +71,7 @@ public class Setup {
 
     }
 
-    public void initializeWorker(Player player, Coord place) throws IllegalStateException {
+    private void initializeWorker(Player player, Coord place) throws IllegalStateException {
         if (player == null) {
             throw new IllegalArgumentException("Cannot initialize workers for a Null player.");
         }
@@ -107,19 +107,38 @@ public class Setup {
         The following methods are called by the same-name methods in wrapper Controller.
         They actually implement interface methods on behalf of Controller.
      */
-
+    /**
+     * To make the controller to add a new player
+     * @param source the view firing the event
+     * @param nickname the nickname for the new player
+     */
     public void onNicknameChosen(EventSource source, String nickname) {
         addNewPlayer(new Player(nickname));
     }
 
+    /**
+     * To make the controller to set the number of players
+     * @param source the view firing the event
+     * @param num the number of players
+     */
     public void onNumberOfPlayersChosen(EventSource source, int num) {
         setNumPlayers(num);
     }
 
+    /**
+     * To make the controller to set the gods for the game
+     * @param source the view firing the event
+     * @param godsNames the list of gods
+     */
     public void onGodsChosen(EventSource source, List<String> godsNames) {
         setGods(godsNames);
     }
 
+    /**
+     * To make the controller to assign a god for the current player
+     * @param source the view firing the event
+     * @param godName the god to assign
+     */
     public void onGodChosen(EventSource source, String godName) {
         List<God> gods = model.getAvailableGods();
         God chosenGod = gods.stream().filter(god -> god.getName().toLowerCase().equals(godName.toLowerCase()))
@@ -148,6 +167,11 @@ public class Setup {
         }
     }
 
+    /**
+     * To make the controller to set the starting player
+     * @param source the view firing the event
+     * @param startPlayerNickname
+     */
     public void onStartPlayerChosen(EventSource source, String startPlayerNickname) {
         try {
             Player startPlayer = model.getPlayerByNickname(startPlayerNickname);
@@ -159,6 +183,11 @@ public class Setup {
         }
     }
 
+    /**
+     * To make the controller to initialize the workers position for the current player
+     * @param source the view firing the event
+     * @param coord the coordinates to place the worker
+     */
     public void onWorkerInitialization(EventSource source, Coord coord) {
         String nickname = ((RemotePlayerView) source).getNickname();
         Player player;
