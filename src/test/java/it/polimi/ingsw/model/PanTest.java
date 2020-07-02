@@ -4,6 +4,8 @@ import it.polimi.ingsw.model.exceptions.PrepareModelException;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Field;
+
 import static org.junit.Assert.*;
 
 public class PanTest extends GameRulesTest {
@@ -31,22 +33,33 @@ public class PanTest extends GameRulesTest {
         */
 
         src = Coord.convertStringToCoord("B1");
-        dest = Coord.convertStringToCoord("B2");
+        dest = Coord.convertStringToCoord("C1");
 
-        //Pre-action
+        //Do the move
         nextStep();
         model.setWorkerChoice(src);
         nextStep();
         setMove(dest);
 
-        //Do the build
-        dest = Coord.convertStringToCoord("C1");
-        nextStep();
-        setBuild(dest, Level.DOME);
+        //Check he won (the game is finished)
+        Field stateField;
+        ModelState modelState;
+        try {
+            stateField = GameModel.class.getDeclaredField("state");
+        }
+        catch (NoSuchFieldException e) {
+            fail();
+            return;
+        }
+        stateField.setAccessible(true);
+        try {
+            modelState = (ModelState) stateField.get(model);
+        }
+        catch (IllegalAccessException e) {
+            fail();
+            return;
+        }
 
-        //Check what changed
-        Board after = model.getBoard();
-        assertTrue(after.getSpace(dest).isDome());
-        assertEquals(before.getSpace(dest).getHeight(), after.getSpace(dest).getHeight());
+        assertTrue(modelState instanceof EndState);
     }
 }

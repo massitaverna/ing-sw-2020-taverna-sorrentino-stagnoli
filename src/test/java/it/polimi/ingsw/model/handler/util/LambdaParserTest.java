@@ -403,7 +403,8 @@ public class LambdaParserTest {
 
         s = "compareLevels(before, after, =0)";
         condition = LambdaParser.extractPredicate(s);
-        Level randomLevel = Level.values()[r.nextInt(Level.values().length)];
+        Level randomLevel = Level.values()[r.nextInt(Level.values().length - 1)];
+            // "-1" is to avoid DOME
         List<Coord> allCoord = board.getAllCoord();
         assertEquals(25, allCoord.size());
         coordList = allCoord.stream()

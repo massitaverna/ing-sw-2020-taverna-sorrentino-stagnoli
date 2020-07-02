@@ -9,8 +9,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-// Note: I can use Apollo, Artemis or Atlas as "other gods" when testing a particular god: they have no
-//       "side effects"
 public class TestUtils {
 
     public static GameModel prepareModel(String inputFile) throws PrepareModelException {
@@ -62,9 +60,13 @@ public class TestUtils {
         //Note: Challenger has the godUnderTest
         if (!godUnderTest.equals("None")) {
             List<String> chosenGods = new ArrayList<>();
-            allGods.remove(godUnderTest);
+            List<String> usableGods = Arrays.asList("Apollo", "Artemis", "Atlas");
+                // These gods have no "side effects" that blocks particular moves, so they are
+                // perfect to test godUnderTest without undesired effects
+            usableGods = new ArrayList<>(usableGods);
+            usableGods.remove(godUnderTest);
             for (int i = 1; i < numPlayers; i++) {
-                chosenGods.add(allGods.remove(random.nextInt(allGods.size())));
+                chosenGods.add(usableGods.remove(random.nextInt(usableGods.size())));
             }
             chosenGods.add(godUnderTest);
             model.setGods(chosenGods);
