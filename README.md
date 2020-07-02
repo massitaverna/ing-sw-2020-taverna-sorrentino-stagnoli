@@ -37,13 +37,13 @@ To run this piece of software you'll need to generate a .jar file. After you've 
 
 This is just a good practice to make sure it's a clean generation
 
-```shell
+```maven
 mvn clean
 ```
 
 This is the actual command that will generate the jar file
 
-```shell
+```maven
 mvn package shade:shade
 ```
 
