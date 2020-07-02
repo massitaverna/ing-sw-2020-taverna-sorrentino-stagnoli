@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 //                            To send coming messages (from the client) to the listener (the RemoteView)
@@ -22,7 +23,7 @@ public class Connection extends Observable<Object> implements Runnable {
 
     private boolean active = true;
 
-    private Executor ex = Executors.newFixedThreadPool(1);
+    private ExecutorService ex = Executors.newFixedThreadPool(1);
 
     public Connection(Socket socket, Lobby lobby, ObjectOutputStream o, ObjectInputStream i) {
         this.socket = socket;
@@ -96,6 +97,7 @@ public class Connection extends Observable<Object> implements Runnable {
         if(isActive()) {
             try {
                 socket.close();
+                ex.shutdown();
             } catch (IOException e) {
                 System.err.println("Error when closing socket!");
             }
