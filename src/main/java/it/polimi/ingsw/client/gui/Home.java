@@ -258,7 +258,7 @@ public class Home implements Initializable {
             } catch (IOException | ClassNotFoundException e) {
                 close();
             }
-        }else{
+        } else {
             //TODO Show error (no empty nickname)
         }
 

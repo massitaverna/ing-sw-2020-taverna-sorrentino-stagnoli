@@ -468,16 +468,16 @@ public class GameModel implements EventSource {
     }
 
     /**
-     *
-     * @return
+     * Returns true when the startPlayer is playing
+     * @return true when the startPlayer is playing
      */
     public boolean hasNewCycleBegun() {
         return currentPlayer.isStartPlayer();
     }
 
     /**
-     *
-     * @return
+     * Returns true when a player has just begun his turn
+     * @return true when a player has just begun his turn
      */
     public boolean hasNewTurnBegun() {
         return currentWorker == null;

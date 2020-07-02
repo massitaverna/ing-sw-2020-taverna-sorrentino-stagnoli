@@ -12,8 +12,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-//TODO: async read from server
-
 public class ClientMain
 {
     public static void main( String[] args ) {

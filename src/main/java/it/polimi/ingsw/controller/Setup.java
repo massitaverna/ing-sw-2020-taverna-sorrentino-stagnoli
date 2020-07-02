@@ -19,10 +19,6 @@ public class Setup {
     }
 
     public void setNumPlayers(int numPlayers) { // invoked by Challenger
-        /*if (!(invoker.equals(model.getChallenger()))) {
-            throw new IllegalAccessException("Player is invoking " +
-                    "challenger's methods, but he is not challenger.")
-        }*/
         model.setNumPlayers(numPlayers);
     }
 
@@ -35,31 +31,19 @@ public class Setup {
     }
 
     public void setGods(List<String> gods) { // invoked by Challenger
-        /*if (!(invoker.equals(model.getChallenger()))) {
-            throw new IllegalAccessException("Player is invoking " +
-                    "challenger's methods, but he is not challenger.");
-        }*/
         model.setGods(gods);
         model.nextStep();
-        //model.askForGodChoice();
-        // currentPlayer viene settato a Challenger+1
-        // l'ordine della queue non deve essere modificato fino a che non sono stati assegnati tutti i Gods
 
     }
 
     public void setStartPlayer(Player p) { // invoked by Challenger
-        /*if (!(invoker.equals(model.getChallenger()))) {
-            throw new IllegalAccessException("Player is invoking " +
-                    "challenger's methods, but he is not challenger.");
-        }*/
         model.setStartPlayer(p);
         model.nextStep();
-        // Deve ordinare la lista dei player nel model
     }
 
-    //NOTA: L'ordine per assegnare i Gods parte dal giocatore dopo Challenger
-    //      L'ordine per posizionare gli operai parte dallo startPlayer
-    //TODO: Correct handling of exceptions
+    //NOTE: Order to assign the gods starts from the player after the Challenger
+    //      Order to initialize workers' position starts from startPlayer
+
     public void assignGodToPlayer(Player p, God g) throws IllegalArgumentException,
             IllegalStateException {
 
@@ -137,7 +121,6 @@ public class Setup {
     }
 
     public void onGodChosen(EventSource source, String godName) {
-        //TODO: check that the player has not chosen his god yet
         List<God> gods = model.getAvailableGods();
         God chosenGod = gods.stream().filter(god -> god.getName().toLowerCase().equals(godName.toLowerCase()))
                 .findFirst().orElse(null);
@@ -162,7 +145,6 @@ public class Setup {
         catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
             System.out.println("This means no god has been assigned to the player.");
-            //Il turno deve rimanere al player che ha fatto sollevare l'eccezione
         }
     }
 
@@ -178,7 +160,6 @@ public class Setup {
     }
 
     public void onWorkerInitialization(EventSource source, Coord coord) {
-        //TODO: check that the player has not initialized both workers yet
         String nickname = ((RemotePlayerView) source).getNickname();
         Player player;
         try {

@@ -11,10 +11,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 
 import java.io.FileNotFoundException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +31,7 @@ public class ControllerTest {
     public static void before() throws FileNotFoundException {
         model = new GameModel();
         controller = new Controller(model);
+        System.err.close();
         view1 = new RemotePlayerView("A", new Connection(null,null,null));
         view2 = new RemotePlayerView("B", new Connection(null,null,null));
         view3 = new RemotePlayerView("C", new Connection(null,null,null));
