@@ -21,7 +21,7 @@ public class Controller implements PlayerViewEventListener, ChallengerViewEventL
     }
 
     @Override
-    public void onWorkerChosen(EventSource source, Coord workerPos) {
+    public synchronized void onWorkerChosen(EventSource source, Coord workerPos) {
         String nickname = ((RemotePlayerView) source).getNickname();
 
         if (!isCurrentPlayer(nickname)) {
@@ -34,7 +34,7 @@ public class Controller implements PlayerViewEventListener, ChallengerViewEventL
     }
 
     @Override
-    public void onMoveChosen(EventSource source, Coord moveChoice) {
+    public synchronized void onMoveChosen(EventSource source, Coord moveChoice) {
         String nickname = ((RemotePlayerView) source).getNickname();
 
         if (!isCurrentPlayer(nickname)) {
@@ -46,7 +46,7 @@ public class Controller implements PlayerViewEventListener, ChallengerViewEventL
     }
 
     @Override
-    public void onBuildChosen(EventSource source, Coord buildChoice, Level level) {
+    public synchronized void onBuildChosen(EventSource source, Coord buildChoice, Level level) {
         String nickname = ((RemotePlayerView) source).getNickname();
 
         if (!isCurrentPlayer(nickname)) {
@@ -82,33 +82,33 @@ public class Controller implements PlayerViewEventListener, ChallengerViewEventL
     */
 
     @Override
-    public void onNicknameChosen(EventSource source, String nickname) {
+    public synchronized void onNicknameChosen(EventSource source, String nickname) {
         setup.onNicknameChosen(source, nickname);
     }
 
 
     @Override
-    public void onNumberOfPlayersChosen(EventSource source, int num) {
+    public synchronized void onNumberOfPlayersChosen(EventSource source, int num) {
         setup.onNumberOfPlayersChosen(source, num);
     }
 
     @Override
-    public void onGodsChosen(EventSource source, List<String> gods) {
+    public synchronized void onGodsChosen(EventSource source, List<String> gods) {
         setup.onGodsChosen(source, gods);
     }
 
     @Override
-    public void onGodChosen(EventSource source, String god) {
+    public synchronized void onGodChosen(EventSource source, String god) {
         setup.onGodChosen(source, god);
     }
 
     @Override
-    public void onStartPlayerChosen(EventSource source, String startPlayerNickname) {
+    public synchronized void onStartPlayerChosen(EventSource source, String startPlayerNickname) {
         setup.onStartPlayerChosen(source, startPlayerNickname);
     }
 
     @Override
-    public void onWorkerInitialization(EventSource source, Coord choice) {
+    public synchronized void onWorkerInitialization(EventSource source, Coord choice) {
         setup.onWorkerInitialization(source, choice);
     }
 
