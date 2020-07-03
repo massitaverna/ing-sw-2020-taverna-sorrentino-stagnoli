@@ -44,8 +44,13 @@ reg add HKEY_CURRENT_USER\Console /v VirtualTerminalLevel /t REG_DWORD /d 0x0000
 ```
 
 ## External libraries
-Some external libraries are needed in order to run the software. They are already configured in the POM,
+Some external libraries are needed in order to run the software:
+- JavaFX
+- GSON
+
+They are already configured in the POM,
 so you'll just have to run Maven and let it do all the work for you. For this purpose, see next paragraph.
+
 ## How to use this software
 
 ### Generate the Jar
