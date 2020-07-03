@@ -18,7 +18,10 @@ The advanced deities are Hera, Hestia, Limus, Triton and Zeus.
 
 | Package | Coverage |
 | ------- | :------: |
-| Model   |   100%   |
+| Model   |   97%   |
+| Controller   |   98%   |
+
+You can find coverage report [here]()
 
 ## Prerequisites
 
