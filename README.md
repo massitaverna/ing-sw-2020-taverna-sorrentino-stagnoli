@@ -12,7 +12,7 @@ In our project we implemented:
 - Socket
 - 2 Advanced functionalities: Multiple games and Advanced gods
 
-The advanced deities are Hera, Hestia, Limus, Triton and Zeus.
+The advanced gods are Hera, Hestia, Limus, Triton and Zeus.
 
 ## Test Coverage
 
@@ -21,44 +21,51 @@ The advanced deities are Hera, Hestia, Limus, Triton and Zeus.
 | Model   |   97%   |
 | Controller   |   98%   |
 
-You can find coverage report [here]()
+You can find coverage report [here](https://github.com/massitaverna/ing-sw-2020-taverna-sorrentino-stagnoli/tree/master/deliverables/coverage).
 
 ## Prerequisites
 
-In order to use this piece of software it is required that you have **Maven** and **Java** installed. You can download both using the following links:
+In order to use this piece of software it is required that you have **Maven** and **Java 14** installed. You can download both using the following links:
 
 - Maven (3.6.3): https://maven.apache.org/download.cgi
 - Java (JDK 14.0.1): https://www.oracle.com/java/technologies/javase/jdk14-archive-downloads.html
 
 To install Maven follow this [guide](https://maven.apache.org/install.html) on their site.
 
+If you have multiple Java versions installed on your computer, please check Maven refers to the correct one (JDK 14).
+Otherwise, it will not be able to compile the source files.
+
 ### If you are using Windows
 
-Our CLI version of the game uses escape sequences and in order to work properly in the windows cmd you'll have to run this command inside your terminal:
+Our CLI version of the game uses escape sequences and in order to work properly in Windows cmd you'll have to run this command inside your terminal:
 
 ```shell
 reg add HKEY_CURRENT_USER\Console /v VirtualTerminalLevel /t REG_DWORD /d 0x00000001 /f
 ```
 
+## External libraries
+Some external libraries are needed in order to run the software. They are already configured in the POM,
+so you'll just have to run Maven and let it do all the work for you. For this purpose, see next paragraph.
 ## How to use this software
 
 ### Generate the Jar
 
 To run this piece of software you'll need to generate a .jar file. After you've cloned this repository make sure you are in the main directory called **_"ing-sw-2020-taverna-sorrentino-stagnoli"_**. Open your terminal in this position and type the following commands (it's the same for all operating system).
 
-This is just a good practice to make sure it's a clean generation
+This is just a good practice to make sure it's a clean generation:
 
 ```maven
 mvn clean
 ```
 
-This is the actual command that will generate the jar file
+This is the actual command that will generate the jar file:
 
 ```maven
 mvn package shade:shade
 ```
+In case Maven fails during test phase, please re-run the above command and it should work.
 
-After the jar is created you'll need to change directory into the **_"target"_** folder. Simply type
+After the jar is created you'll need to change directory into the **_"target"_** folder. Simply type:
 
 ```shell
 cd target
@@ -67,6 +74,12 @@ cd target
 Now you should see something like this:
 ![target_folder]
 
+The JAR is GC6-1.0-SNAPSHOT.jar
+
+### Download a pre-packaged .jar
+You can try to download the following .jar file and use this one instead of generating it by yourself.
+Despite this, it is recommended that you generate your own JAR as described above.
+[Download JAR]()
 ### Run the server
 
 Now that you are in the **_"target"_** folder all you need to do to run the server is type this simple command in your terminal:
