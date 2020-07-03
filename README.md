@@ -84,7 +84,12 @@ The JAR is GC6-1.0-SNAPSHOT.jar
 ### Download a pre-packaged .jar
 You can try to download the following .jar file and use this one instead of generating it by yourself.
 Despite this, it is recommended that you generate your own JAR as described above.
-[Download JAR](https://github.com/massitaverna/ing-sw-2020-taverna-sorrentino-stagnoli/blob/master/deliverables/JAR/GC6-1.0-SNAPSHOT.jar)
+
+Windows: [Download JAR](https://github.com/massitaverna/ing-sw-2020-taverna-sorrentino-stagnoli/blob/master/deliverables/JARs/windows/GC6-1.0-SNAPSHOT.jar)
+
+Mac: [Download JAR](https://github.com/massitaverna/ing-sw-2020-taverna-sorrentino-stagnoli/blob/master/deliverables/JARs/mac/GC6-1.0-SNAPSHOT.jar)
+
+Linux: [Download JAR](https://github.com/massitaverna/ing-sw-2020-taverna-sorrentino-stagnoli/blob/master/deliverables/JARs/linux/GC6-1.0-SNAPSHOT.jar)
 ### Run the server
 
 Now that you are in the **_"target"_** folder all you need to do to run the server is type this simple command in your terminal:
