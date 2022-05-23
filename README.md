@@ -2,6 +2,10 @@
 
 Software Engineering Project | A.A. 2019 - 2020 | GC6
 
+Project realized as Final Exam for a Bachelor's Degree in Engineering of Computing Systems, at Polictecnico di Milano.
+
+It implements the board game Santorini, by Roxley Games (official webpage [here](https://roxley.com/products/santorini))
+
 ## Functionalities
 
 In our project we implemented:
